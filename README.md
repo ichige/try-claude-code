@@ -22,3 +22,15 @@
 - Functions
 - Cosmos DB
 
+## 環境構築
+
+```bash
+# 最新LTSに固定
+node -v > .node-version
+# corepack を有効化
+corepack enable
+# pnpm を有効化
+corepack prepare pnpm@latest --activate
+# package の初期化
+pnpm init
+```
