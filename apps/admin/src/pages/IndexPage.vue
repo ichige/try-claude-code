@@ -6,6 +6,7 @@
       :todos="todos"
       :meta="meta"
     ></example-component>
+    <q-btn label="hello" @click="hello('btn')" />
   </q-page>
 </template>
 
@@ -13,6 +14,7 @@
 import { ref } from 'vue';
 import type { Todo, Meta } from 'components/models';
 import ExampleComponent from 'components/ExampleComponent.vue';
+import { hello } from '@shisamo/shared'
 
 const todos = ref<Todo[]>([
   {

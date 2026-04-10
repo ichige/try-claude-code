@@ -34,3 +34,7 @@ corepack prepare pnpm@latest --activate
 # package の初期化
 pnpm init
 ```
+
+```bash
+pnpm add @shisamo/shared --workspace --filter @shisamo/admin
+```

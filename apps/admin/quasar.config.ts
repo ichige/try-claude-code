@@ -4,6 +4,7 @@
 import { defineConfig } from '#q-app/wrappers';
 import { fileURLToPath } from 'node:url';
 
+
 export default defineConfig((ctx) => {
   return {
     // https://v2.quasar.dev/quasar-cli-vite/prefetch-feature
@@ -60,7 +61,13 @@ export default defineConfig((ctx) => {
       // polyfillModulePreload: true,
       // distDir
 
-      // extendViteConf (viteConf) {},
+      extendViteConf (viteConf) {
+        viteConf.resolve ??= {};
+        viteConf.resolve.alias = {
+          ...viteConf.resolve.alias,
+          '@shisamo/shared': fileURLToPath(new URL('../../packages/shared/src', import.meta.url)),
+        }
+      },
       // viteVuePluginOptions: {},
 
       vitePlugins: [
@@ -97,6 +104,10 @@ export default defineConfig((ctx) => {
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#devserver
     devServer: {
       // https: true,
+      fs: {
+        // pnpm で親の node_modules を見る場合に必要な設定
+        allow: ['../..'],
+      },
       open: true, // opens browser window automatically
     },
 
