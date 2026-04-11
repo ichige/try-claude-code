@@ -19,9 +19,13 @@ type FinallyCallback<T> = (passable: T) => void | Promise<void>;
 
 /**
  * ミドルウェアの登録インタフェース
+ * R・O は pipe() 時点では未確定で then() 呼び出し時に初めて決まるため、
+ * 内部的に any を使用する（外部 API の型安全性は pipe/then シグネチャで保証）
  */
 interface PipeEntry<T> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   middleware: AsyncMiddleware<T, any, any>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   options: any;
 }
 
@@ -45,6 +49,7 @@ export class Pipeline<T = never> {
   /**
    * ミドルウェアの登録チェーン
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   pipe<R = any, O = null>(middleware: AsyncMiddleware<T, R, O>, options?: O): this {
     this._pipes.push({ middleware, options: options ?? null });
     return this;
@@ -65,6 +70,9 @@ export class Pipeline<T = never> {
     const passable = this._passable as T;
 
     // destination をシードにすることで、各 middleware の next が Promise<R> を返す
+    // reduceRight の accumulator 型は実行時に R に収束するが、各 PipeEntry の R が
+    // 不定のため any で受ける（戻り値の型安全性は then<R> シグネチャで保証）
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const pipeline = this._pipes.reduceRight<(p: T) => Promise<any>>(
       (next, { middleware, options }) =>
         (p: T) =>
@@ -73,6 +81,7 @@ export class Pipeline<T = never> {
     );
 
     try {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return await pipeline(passable);
     } finally {
       if (this._finallyCallback) {
@@ -85,6 +94,7 @@ export class Pipeline<T = never> {
    * destination なしの実行(純粋なフィルタリング)
    */
   async thenReturn(): Promise<T> {
+    // eslint-disable-next-line @typescript-eslint/require-await
     return this.then(async (passable) => passable);
   }
 }
