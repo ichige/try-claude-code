@@ -1,0 +1,18 @@
+{
+  "name": "shisamo",
+  "version": "1.0.0",
+  "private": "true",
+  "description": "",
+  "scripts": {
+    "dev:admin": "turbo dev --filter=@shisamo/admin",
+    "lint:admin": "turbo lint --filter=@shisamo/admin",
+    "lint:shared": "turbo lint --filter=@shisamo/shared",
+    "test:shared": "turbo run test --filter=@shisamo/shared"
+  },
+  "keywords": [],
+  "author": "",
+  "packageManager": "pnpm@10.33.0",
+  "devDependencies": {
+    "turbo": "^2.9.5"
+  }
+}
