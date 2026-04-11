@@ -66,5 +66,31 @@ typescript: {
     tsConfig.include ??= [];
     tsConfig.include.push('../../../packages/shared/src/**/*');
   }
-},
+}
+```
+
+### HTTPS(SSL)
+
+- [mkcert](https://github.com/filosottile/mkcert)
+
+windows 上で証明書を発行し、wsl2 へコピーすれば利用できます。
+
+```ts
+devServer: {
+  // SSL
+  https: process.env.CI ? false : {
+    key: fs.readFileSync(
+      `${process.env.HOME}/.certs/_wildcard.shisamo.local+1-key.pem`,
+    ),
+    cert: fs.readFileSync(
+      `${process.env.HOME}/.certs/_wildcard.shisamo.local+1.pem`,
+    ),
+  },
+  host: 'admin.shisamo.local', 
+  fs: {
+    // pnpm で親の node_modules を見る場合に必要な設定
+    allow: ['../..'],
+  },
+  open: true, // opens browser window automatically
+}
 ```

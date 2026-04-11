@@ -3,6 +3,7 @@
 
 import { defineConfig } from '#q-app/wrappers';
 import { fileURLToPath } from 'node:url';
+import fs from 'node:fs'
 
 
 export default defineConfig((ctx) => {
@@ -111,7 +112,15 @@ export default defineConfig((ctx) => {
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#devserver
     devServer: {
-      // https: true,
+      https: process.env.CI ? false : {
+        key: fs.readFileSync(
+          `${process.env.HOME}/.certs/_wildcard.shisamo.local+1-key.pem`,
+        ),
+        cert: fs.readFileSync(
+          `${process.env.HOME}/.certs/_wildcard.shisamo.local+1.pem`,
+        ),
+      },
+      host: 'admin.shisamo.local',
       fs: {
         // pnpm で親の node_modules を見る場合に必要な設定
         allow: ['../..'],
