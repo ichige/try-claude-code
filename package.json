@@ -5,7 +5,8 @@
   "description": "",
   "scripts": {
     "dev:admin": "turbo dev --filter=@shisamo/admin",
-    "lint:admin": "turbo lint --filter=@shisamo/admin"
+    "lint:admin": "turbo lint --filter=@shisamo/admin",
+    "test:shared": "turbo run test --filter=@shisamo/shared"
   },
   "keywords": [],
   "author": "",
