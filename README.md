@@ -35,6 +35,36 @@ corepack prepare pnpm@latest --activate
 pnpm init
 ```
 
+共通ライブラリのシンボリックリンク生成。
+
 ```bash
 pnpm add @shisamo/shared --workspace --filter @shisamo/admin
+```
+
+pnpm の node_modules 管理において、IDE が import パスを解決出来ないケースがある。  
+その場合は `.npmrc` に `public-hoist-pattern` として登録しておく事で、node_modules 直下にパッケージが展開されるため、パスを解決出来るようになる。  
+
+```
+public-hoist-pattern[]=vite
+```
+
+### tsconfig.json
+
+Quasar はビルドなどのタイミングで動的に `.quasar/tsconfig.json` を生成する。  
+`admin/tsconfig.json` ではこのファイルを extends しているが、設定を拡張する場合は `quasar.config.ts` で行う方が混乱が少なくなる。
+
+```ts
+typescript: {
+  strict: true,
+  vueShim: true,
+  extendTsConfig (tsConfig) {
+    // tsconfig.json の拡張
+    tsConfig.compilerOptions ??= {};
+    tsConfig.compilerOptions.paths ??= {};
+    tsConfig.compilerOptions.paths['@shisamo/shared'] = ['../../../packages/shared/src/*'];
+    tsConfig.compilerOptions.paths['@/*'] = ["../src/*"];
+    tsConfig.include ??= [];
+    tsConfig.include.push('../../../packages/shared/src/**/*');
+  }
+},
 ```

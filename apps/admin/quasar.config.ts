@@ -42,7 +42,15 @@ export default defineConfig((ctx) => {
       typescript: {
         strict: true,
         vueShim: true,
-        // extendTsConfig (tsConfig) {}
+        extendTsConfig (tsConfig) {
+          // tsconfig.json の拡張
+          tsConfig.compilerOptions ??= {};
+          tsConfig.compilerOptions.paths ??= {};
+          tsConfig.compilerOptions.paths['@shisamo/shared'] = ['../../../packages/shared/src/*'];
+          tsConfig.compilerOptions.paths['@/*'] = ["../src/*"];
+          tsConfig.include ??= [];
+          tsConfig.include.push('../../../packages/shared/src/**/*');
+        }
       },
 
       vueRouterMode: 'hash', // available values: 'hash', 'history'
