@@ -6,6 +6,7 @@ Azure Application Insights を利用した Logger を生成する。
 ## prompt
 
 まずはインタフェースを作成させます。
+モデルは Sonnet 4.6 です。
 
 ```markdown
 SPAで利用する共通Loggerを作って。
