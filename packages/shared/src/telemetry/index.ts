@@ -38,13 +38,6 @@ export class Telemetry {
     this.appInsights = new ApplicationInsights({
       config: { ...config, connectionString },
     });
-  }
-
-  /**
-   * ApplicationInsights をロードする
-   * アプリケーションの起動時に1度だけ呼び出してください。
-   */
-  load(): void {
     this.appInsights.loadAppInsights();
   }
 

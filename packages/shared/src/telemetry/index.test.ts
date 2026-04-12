@@ -55,6 +55,12 @@ describe('constructor', () => {
     })
   })
 
+  it('constructor で loadAppInsights を呼び出す', () => {
+    new Telemetry({ connectionString: 'test' })
+
+    expect(mockLoadAppInsights).toHaveBeenCalledOnce()
+  })
+
   it('connectionString が未指定の場合は環境変数を使用する', () => {
     vi.stubEnv(
       'VITE_APPLICATIONINSIGHTS_CONNECTION_STRING',
@@ -83,23 +89,6 @@ describe('constructor', () => {
         connectionString: 'InstrumentationKey=from-config',
       }),
     })
-  })
-})
-
-// ---------------------------------------------------------------------------
-// load
-// ---------------------------------------------------------------------------
-
-describe('load', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-  })
-
-  it('loadAppInsights を呼び出す', () => {
-    const telemetry = new Telemetry({ connectionString: 'test' })
-    telemetry.load()
-
-    expect(mockLoadAppInsights).toHaveBeenCalledOnce()
   })
 })
 
