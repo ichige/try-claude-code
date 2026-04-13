@@ -1,14 +1,15 @@
-import {
+import type {
   AccountInfo,
   Configuration,
   PopupRequest,
-  PublicClientApplication,
   SilentRequest,
 } from '@azure/msal-browser';
+import { PublicClientApplication } from '@azure/msal-browser';
 
 export type { PopupRequest, SilentRequest };
 
-import { AsyncMiddleware, Pipeline } from '../pipeline';
+import type { AsyncMiddleware } from '../pipeline';
+import { Pipeline } from '../pipeline';
 
 /**
  * MSAuth の初期化コンフィグ
@@ -44,7 +45,7 @@ const initializeMiddleware: AsyncMiddleware<PublicClientApplication, any> = asyn
   next,
 ) => {
   await client.initialize();
-  return next(client);
+  return next(client) as Promise<AuthAccount>;
 };
 
 /**
@@ -57,7 +58,7 @@ const ssoSilentMiddleware: AsyncMiddleware<PublicClientApplication, AuthAccount,
     try {
       const result = await client.ssoSilent(request);
       return toAuthAccount(result.account);
-    } catch (e) {
+    } catch {
       return next(client);
     }
   };

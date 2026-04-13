@@ -11,7 +11,6 @@ const { mockLoadAppInsights, mockTrackTrace, MockApplicationInsights } =
     const mockLoadAppInsights = vi.fn()
     const mockTrackTrace = vi.fn()
     // アロー関数はコンストラクタとして使えないため通常の function を使用する
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const MockApplicationInsights = vi.fn(function (this: any) {
       this.loadAppInsights = mockLoadAppInsights
       this.trackTrace = mockTrackTrace
