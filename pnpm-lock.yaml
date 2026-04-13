@@ -84,6 +84,9 @@ importers:
 
   packages/shared:
     dependencies:
+      '@azure/msal-browser':
+        specifier: ^5.6.3
+        version: 5.6.3
       '@microsoft/applicationinsights-web':
         specifier: ^3.4.1
         version: 3.4.1(tslib@2.8.1)
@@ -114,6 +117,14 @@ importers:
         version: 4.1.4(@types/node@22.19.17)(vite@8.0.8(@types/node@22.19.17)(esbuild@0.27.7)(sass-embedded@1.99.0)(sass@1.99.0)(terser@5.46.1)(yaml@2.8.3))
 
 packages:
+
+  '@azure/msal-browser@5.6.3':
+    resolution: {integrity: sha512-sTjMtUm+bJpENU/1WlRzHEsgEHppZDZ1EtNyaOODg/sQBtMxxJzGB+MOCM+T2Q5Qe1fKBrdxUmjyRxm0r7Ez9w==}
+    engines: {node: '>=0.8.0'}
+
+  '@azure/msal-common@16.4.1':
+    resolution: {integrity: sha512-Bl8f+w37xkXsYh7QRkAKCFGYtWMYuOVO7Lv+BxILrvGz3HbIEF22Pt0ugyj0QPOl6NLrHcnNUQ9yeew98P/5iw==}
+    engines: {node: '>=0.8.0'}
 
   '@babel/code-frame@7.29.0':
     resolution: {integrity: sha512-9NhCeYjq9+3uxgdtp20LSiJXJvN0FeCtNGpJxuMFZ1Kv3cWUNb6DOhJwUvcVCzKGR66cw4njwM6hrJLqgOwbcw==}
@@ -3449,6 +3460,12 @@ packages:
     engines: {node: '>= 14'}
 
 snapshots:
+
+  '@azure/msal-browser@5.6.3':
+    dependencies:
+      '@azure/msal-common': 16.4.1
+
+  '@azure/msal-common@16.4.1': {}
 
   '@babel/code-frame@7.29.0':
     dependencies:

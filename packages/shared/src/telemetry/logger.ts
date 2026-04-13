@@ -46,14 +46,6 @@ export class Logger<TEventName extends string = string> {
   ) {}
 
   /**
-   * プレフィックス付きの Logger を返す
-   * @param prefix メッセージの先頭に付与するラベル
-   */
-  getLogger(prefix: string): Logger<TEventName> {
-    return new Logger<TEventName>(this.appInsights, { prefix });
-  }
-
-  /**
    * Debug Level
    */
   debug(message: string, properties?: LogProperties): void {

@@ -15,12 +15,12 @@ const passthrough = <T>(): AsyncMiddleware<T, T> =>
 
 describe('thenReturn', () => {
   it('passable をそのまま返す', async () => {
-    const result = await new Pipeline().send({ value: 1 }).thenReturn()
+    const result = await Pipeline.send({ value: 1 }).thenReturn()
     expect(result).toEqual({ value: 1 })
   })
 
   it('ミドルウェアなしでも動作する', async () => {
-    const result = await new Pipeline().send(42).thenReturn()
+    const result = await Pipeline.send(42).thenReturn()
     expect(result).toBe(42)
   })
 })
@@ -31,16 +31,14 @@ describe('thenReturn', () => {
 
 describe('then', () => {
   it('destination の戻り値を返す', async () => {
-    const result = await new Pipeline()
-      .send({ value: 10 })
+    const result = await Pipeline.send({ value: 10 })
       .then(async (p) => p.value * 2)
 
     expect(result).toBe(20)
   })
 
   it('destination で型を変換できる', async () => {
-    const result = await new Pipeline()
-      .send({ count: 3 })
+    const result = await Pipeline.send({ count: 3 })
       .then(async (p) => ({ label: `count: ${p.count}` }))
 
     expect(result).toEqual({ label: 'count: 3' })
@@ -55,7 +53,7 @@ describe('pipe (単体)', () => {
   it('ミドルウェアが passable を変換できる', async () => {
     const double: AsyncMiddleware<number, number> = async (n, next) => next(n * 2)
 
-    const result = await new Pipeline().send(5).pipe(double).thenReturn()
+    const result = await Pipeline.send(5).pipe(double).thenReturn()
 
     expect(result).toBe(10)
   })
@@ -69,7 +67,7 @@ describe('pipe (単体)', () => {
       return result
     }
 
-    await new Pipeline().send(1).pipe(mw).thenReturn()
+    await Pipeline.send(1).pipe(mw).thenReturn()
 
     expect(log).toEqual(['before', 'after'])
   })
@@ -77,8 +75,7 @@ describe('pipe (単体)', () => {
   it('ミドルウェアがレスポンス型を変換できる (T → R)', async () => {
     const stringify: AsyncMiddleware<number, string> = async (n, next) => next(n)
 
-    const result = await new Pipeline()
-      .send(99)
+    const result = await Pipeline.send(99)
       .pipe(stringify)
       .then(async (n) => String(n))
 
@@ -102,8 +99,7 @@ describe('pipe (複数)', () => {
         return result
       }
 
-    await new Pipeline()
-      .send(0)
+    await Pipeline.send(0)
       .pipe(mw('A'))
       .pipe(mw('B'))
       .pipe(mw('C'))
@@ -125,8 +121,7 @@ describe('pipe (複数)', () => {
       async (passable, next) =>
         next(passable + n)
 
-    const result = await new Pipeline()
-      .send(0)
+    const result = await Pipeline.send(0)
       .pipe(add(1))
       .pipe(add(2))
       .pipe(add(3))
@@ -146,8 +141,7 @@ describe('pipe options', () => {
     const mw: AsyncMiddleware<number, number, Opts> = async (n, next, opts) =>
       next(n * opts.multiplier)
 
-    const result = await new Pipeline()
-      .send(3)
+    const result = await Pipeline.send(3)
       .pipe(mw, { multiplier: 4 })
       .thenReturn()
 
@@ -161,7 +155,7 @@ describe('pipe options', () => {
       return next(n)
     }
 
-    await new Pipeline().send(1).pipe(mw).thenReturn()
+    await Pipeline.send(1).pipe(mw).thenReturn()
 
     expect(received).toBeNull()
   })
@@ -171,8 +165,7 @@ describe('pipe options', () => {
     const mw: AsyncMiddleware<string, string, Opts> = async (s, next, opts) =>
       next(`${opts.prefix}${s}`)
 
-    const result = await new Pipeline()
-      .send('world')
+    const result = await Pipeline.send('world')
       .pipe(mw, { prefix: 'hello ' })
       .pipe(mw, { prefix: '>>> ' })
       .thenReturn()
@@ -189,7 +182,7 @@ describe('finally', () => {
   it('then の後に finally が呼ばれる', async () => {
     const finallyCb = vi.fn()
 
-    await new Pipeline().send(1).finally(finallyCb).thenReturn()
+    await Pipeline.send(1).finally(finallyCb).thenReturn()
 
     expect(finallyCb).toHaveBeenCalledOnce()
   })
@@ -198,8 +191,7 @@ describe('finally', () => {
     let captured: unknown
     const double: AsyncMiddleware<number, number> = async (n, next) => next(n * 2)
 
-    await new Pipeline()
-      .send(5)
+    await Pipeline.send(5)
       .pipe(double)
       .finally(async (p) => {
         captured = p
@@ -217,7 +209,7 @@ describe('finally', () => {
     }
 
     await expect(
-      new Pipeline().send(1).pipe(boom).finally(finallyCb).thenReturn(),
+      Pipeline.send(1).pipe(boom).finally(finallyCb).thenReturn(),
     ).rejects.toThrow('boom')
 
     expect(finallyCb).toHaveBeenCalledOnce()
@@ -235,13 +227,12 @@ describe('エラー伝播', () => {
       throw err
     }
 
-    await expect(new Pipeline().send(1).pipe(mw).thenReturn()).rejects.toThrow(err)
+    await expect(Pipeline.send(1).pipe(mw).thenReturn()).rejects.toThrow(err)
   })
 
   it('destination のエラーが伝播する', async () => {
     await expect(
-      new Pipeline()
-        .send(1)
+      Pipeline.send(1)
         .pipe(passthrough())
         .then(async () => {
           throw new Error('destination error')

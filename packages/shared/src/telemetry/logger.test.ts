@@ -204,31 +204,3 @@ describe('prefix', () => {
   })
 })
 
-// ---------------------------------------------------------------------------
-// getLogger
-// ---------------------------------------------------------------------------
-
-describe('getLogger', () => {
-  let mock: MockAppInsights
-
-  beforeEach(() => {
-    mock = createMockAppInsights()
-  })
-
-  it('prefix 付きの Logger を返す', () => {
-    const child = createLogger(mock).getLogger('Child')
-    child.info('hello')
-
-    expect(mock.trackTrace).toHaveBeenCalledWith(
-      { message: '[Child] hello', severityLevel: 1 },
-      undefined,
-    )
-  })
-
-  it('同じ appInsights インスタンスを共有する', () => {
-    const child = createLogger(mock).getLogger('Child')
-    child.debug('msg')
-
-    expect(mock.trackTrace).toHaveBeenCalledOnce()
-  })
-})

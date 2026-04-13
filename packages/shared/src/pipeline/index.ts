@@ -32,18 +32,17 @@ interface PipeEntry<T> {
 /**
  * Pipeline
  */
-export class Pipeline<T = never> {
-  private _passable?: T;
+export class Pipeline<T> {
   private _pipes: PipeEntry<T>[] = [];
   private _finallyCallback?: FinallyCallback<T>;
 
+  private constructor(private readonly _passable: T) {}
+
   /**
-   * Passable の登録かつコンストラクタ
+   * Passable の登録かつファクトリ
    */
-  send<P>(passable: P): Pipeline<P> {
-    const pipeline = new Pipeline<P>();
-    pipeline._passable = passable;
-    return pipeline;
+  static send<P>(passable: P): Pipeline<P> {
+    return new Pipeline<P>(passable);
   }
 
   /**
@@ -67,7 +66,7 @@ export class Pipeline<T = never> {
    * Pipeline 実行
    */
   async then<R>(destination: (passable: T) => Promise<R>): Promise<R> {
-    const passable = this._passable as T;
+    const passable = this._passable;
 
     // destination をシードにすることで、各 middleware の next が Promise<R> を返す
     // reduceRight の accumulator 型は実行時に R に収束するが、各 PipeEntry の R が

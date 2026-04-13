@@ -25,6 +25,7 @@
     "vitest": "^4.1.4"
   },
   "dependencies": {
+    "@azure/msal-browser": "^5.6.3",
     "@microsoft/applicationinsights-web": "^3.4.1"
   }
 }
