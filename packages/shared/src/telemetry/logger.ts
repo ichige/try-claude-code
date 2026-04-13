@@ -1,7 +1,5 @@
-import {
-  ApplicationInsights,
-  SeverityLevel,
-} from '@microsoft/applicationinsights-web';
+import type { ApplicationInsights } from '@microsoft/applicationinsights-web';
+import { SeverityLevel } from '@microsoft/applicationinsights-web';
 
 /**
  * ログ出力時に付与できる任意のプロパティ

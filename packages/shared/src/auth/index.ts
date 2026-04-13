@@ -1,13 +1,15 @@
-import {
+import type {
   AccountInfo,
   Configuration,
-  InteractionRequiredAuthError,
   PopupRequest,
-  PublicClientApplication,
   SilentRequest,
 } from '@azure/msal-browser';
+import { PublicClientApplication } from '@azure/msal-browser';
 
-import { AsyncMiddleware, Pipeline } from '../pipeline';
+export type { PopupRequest, SilentRequest };
+
+import type { AsyncMiddleware } from '../pipeline';
+import { Pipeline } from '../pipeline';
 
 /**
  * MSAuth の初期化コンフィグ
@@ -43,24 +45,21 @@ const initializeMiddleware: AsyncMiddleware<PublicClientApplication, any> = asyn
   next,
 ) => {
   await client.initialize();
-  return next(client);
+  return next(client) as Promise<AuthAccount>;
 };
 
 /**
  * ssoSilent でサイレントログインを試みるミドルウェア
  * 成功時は AuthAccount を返して終了します。
- * InteractionRequiredAuthError の場合は next(loginPopup)へ委譲します。
+ * 失敗した場合は理由を問わず next(loginPopup)へ委譲します。
  */
 const ssoSilentMiddleware: AsyncMiddleware<PublicClientApplication, AuthAccount, PopupRequest> =
   async (client, next, request) => {
     try {
       const result = await client.ssoSilent(request);
       return toAuthAccount(result.account);
-    } catch (e) {
-      if (e instanceof InteractionRequiredAuthError) {
-        return next(client);
-      }
-      throw e;
+    } catch {
+      return next(client);
     }
   };
 

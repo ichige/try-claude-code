@@ -1,10 +1,10 @@
-import {
-  ApplicationInsights,
-  IConfig,
-  IConfiguration,
-} from '@microsoft/applicationinsights-web';
+import { ApplicationInsights } from '@microsoft/applicationinsights-web';
+import type { IConfig, IConfiguration } from '@microsoft/applicationinsights-web';
 
-import { Logger, LoggerOptions } from './logger';
+import { Logger } from './logger';
+import type { LoggerOptions } from './logger';
+export { Logger };
+export type { LoggerOptions };
 
 /**
  * Telemetry の初期化コンフィグ
@@ -33,7 +33,7 @@ export class Telemetry {
   constructor(config: TelemetryConfig = {}) {
     const connectionString =
       config.connectionString ??
-      import.meta.env.VITE_APPLICATIONINSIGHTS_CONNECTION_STRING;
+      (import.meta.env.VITE_APPLICATIONINSIGHTS_CONNECTION_STRING as string);
 
     this.appInsights = new ApplicationInsights({
       config: { ...config, connectionString },

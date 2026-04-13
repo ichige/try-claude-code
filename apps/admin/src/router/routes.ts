@@ -11,6 +11,8 @@ const routes: RouteRecordRaw[] = [
   // but you can also remove it
   {
     path: '/:catchAll(.*)*',
+    name: 'fallback',
+    meta: { public: true },
     component: () => import('pages/ErrorNotFound.vue'),
   },
 ];
