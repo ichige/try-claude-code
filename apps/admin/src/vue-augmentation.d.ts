@@ -5,3 +5,11 @@ declare module 'vue' {
     $logger: Logger;
   }
 }
+
+declare module 'vue-router' {
+  interface RouteMeta {
+    public?: boolean;
+    errorStatus?: number;
+    errorMessage?: string;
+  }
+}
