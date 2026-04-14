@@ -36,9 +36,11 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useQuasar } from 'quasar';
+import { useRouter } from 'vue-router';
 import { useAuthStore } from 'stores/auth';
 
 const $q = useQuasar();
+const router = useRouter();
 const authStore = useAuthStore();
 
 const isDark = computed({
@@ -47,6 +49,17 @@ const isDark = computed({
 });
 
 function handleLogout() {
-  // TODO: ログアウト処理を実装する
+  $q.dialog({
+    title: 'ログアウト',
+    message: 'ログアウトしますか？',
+    cancel: true,
+    persistent: true,
+  }).onOk(() => {
+    // callback に Promise<void> が返せない。
+    void (async () => {
+      await authStore.logout();
+      await router.push({ name: 'unauthorized' });
+    })();
+  });
 }
 </script>
