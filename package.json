@@ -5,7 +5,10 @@
   "description": "",
   "scripts": {
     "dev:admin": "turbo dev --filter=@shisamo/admin",
+    "dev:api": "turbo dev --filter=@shisamo/api",
+    "build:api": "turbo build --filter=@shisamo/api",
     "lint:admin": "turbo lint --filter=@shisamo/admin",
+    "lint:api": "turbo lint --filter=@shisamo/api",
     "lint:shared": "turbo lint --filter=@shisamo/shared",
     "test:shared": "turbo run test --filter=@shisamo/shared"
   },
