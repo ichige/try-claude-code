@@ -7,6 +7,13 @@ export const useAuthStore = defineStore('auth', () => {
   const account = ref<AuthAccount | null>(null);
 
   /**
+   * MSAL の login_hint に使用するメールアドレス。
+   * ページロード時の認証をスムーズにするため永続化する。
+   * ログアウト時はクリアする。
+   */
+  const loginHint = ref('');
+
+  /**
    * ログイン状態を返す。
    * @returns アカウント情報が存在する場合は `true`
    */
@@ -29,7 +36,9 @@ export const useAuthStore = defineStore('auth', () => {
    * @param request - ログインに使用するポップアップリクエスト設定
    */
   async function login(request: PopupRequest): Promise<void> {
-    account.value = await auth.login(request);
+    const hint = loginHint.value ? { loginHint: loginHint.value } : {};
+    account.value = await auth.login({ ...request, ...hint });
+    loginHint.value = account.value.username;
   }
 
   /**
@@ -38,6 +47,7 @@ export const useAuthStore = defineStore('auth', () => {
   async function logout(): Promise<void> {
     await auth.logout();
     account.value = null;
+    loginHint.value = ''
   }
 
   /**
@@ -50,8 +60,8 @@ export const useAuthStore = defineStore('auth', () => {
     return auth.acquireToken(request);
   }
 
-  return { account, isLoggedIn, name, email, login, logout, acquireToken };
-});
+  return { account, loginHint, isLoggedIn, name, email, login, logout, acquireToken };
+}, { persist: { pick: ['loginHint'] } });
 
 if (import.meta.hot) {
   import.meta.hot.accept(acceptHMRUpdate(useAuthStore, import.meta.hot));
