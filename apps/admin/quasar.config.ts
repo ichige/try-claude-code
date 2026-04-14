@@ -31,6 +31,7 @@ export default defineConfig((ctx) => {
 
       'roboto-font', // optional, you are not bound to it
       'material-icons', // optional, you are not bound to it
+      'material-symbols-outlined',
     ],
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#build
@@ -125,7 +126,7 @@ export default defineConfig((ctx) => {
         // pnpm で親の node_modules を見る場合に必要な設定
         allow: ['../..'],
       },
-      open: true, // opens browser window automatically
+      open: false, // opens browser window automatically
     },
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#framework

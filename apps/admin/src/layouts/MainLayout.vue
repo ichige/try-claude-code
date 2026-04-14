@@ -6,7 +6,7 @@
 
         <q-toolbar-title> Quasar App </q-toolbar-title>
 
-        <div>Quasar v{{ $q.version }}</div>
+<AccountSetting />
       </q-toolbar>
     </q-header>
 
@@ -27,6 +27,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import EssentialLink, { type EssentialLinkProps } from 'components/EssentialLink.vue';
+import AccountSetting from 'components/layouts/AccountSetting.vue';
 
 const linksList: EssentialLinkProps[] = [
   {
