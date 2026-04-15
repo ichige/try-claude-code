@@ -7,16 +7,18 @@
   "private": true,
   "main": "dist/src/{index.js,functions/*.js}",
   "scripts": {
-    "build": "tsc",
-    "build:watch": "tsc --watch",
+    "build": "node build.js",
+    "type-check": "tsc",
     "dev": "func start",
-    "predev": "npm run build"
+    "predev": "npm run build",
+    "postinstall": "ln -sf ../../packages/shared/src src/shared"
   },
   "dependencies": {
     "@azure/functions": "^4.7.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
+    "esbuild": "^0.28.0",
     "typescript": "^5.0.0"
   },
   "engines": {

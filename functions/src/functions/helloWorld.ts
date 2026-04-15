@@ -1,5 +1,5 @@
 import { app, type HttpRequest, type HttpResponseInit, type InvocationContext } from '@azure/functions';
-import { hello } from '../shared/hello.js';
+import { hello, Pipeline } from '../shared';
 
 /**
  * Hello World エンドポイント。
@@ -12,9 +12,12 @@ async function helloWorld(request: HttpRequest, context: InvocationContext): Pro
 
   const name = request.query.get('name') ?? 'World';
 
+  const message = await Pipeline.send(hello(name))
+    .then(async (msg) => `${msg} (via Pipeline)`);
+
   return {
     status: 200,
-    jsonBody: { message: hello(name) },
+    jsonBody: { message },
   };
 }
 

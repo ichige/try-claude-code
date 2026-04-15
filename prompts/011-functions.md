@@ -44,3 +44,11 @@ pnpm 環境が問題あるかもしれない。
 思考錯誤を栗化したが、やはり pnpm 環境では Functions へのデプロイが難しい(管理が大変)という判断となった。  
 workspace から除外してルート直下の `functions` ディレクトリで npm 管理とする。
 
+`packages/shared` はシンボリックリンクにて `functions/src` 配下に配置する。  
+
+```markdown
+post install で `packages/shared` はシンボリックリンクにて `functions/src` 配下に作るスクリプトを用意して。
+```
+
+[esbuild](https://esbuild.github.io/) を利用してバンドルする形にした。  
+Functions でも1関数1ファイルになるので、理論的に軽量化されることになる。
