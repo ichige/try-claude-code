@@ -15,5 +15,5 @@ cd apps/api
 # ログインする
 az login
 # デプロイ実行
-func azure functionapp publish shisamo-local
+func azure functionapp publish shisamo-api
 ```

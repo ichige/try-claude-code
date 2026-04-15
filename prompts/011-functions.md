@@ -15,20 +15,32 @@ apps/functions 配下に Azure Functions の環境を構成する。
 それっぽいものが出来た。
 デプロイまで出来るように進める。
 
-デプロイしてみたところ、node_modules などが dist に入ってないので、Functions が起動しないようである。
+デプロイ自体は出来るものの、関数が読み込まれない。  
+何か問題があるようなので、問題の切り分けを行う。
 
 ```markdown
-pnpm だと node_modules が dist に複製されないようなので、esbuild を使って調整してみてくれ。
+プロジェクトルート直下に `functions` ディレクトリを作成し、Azure Functions の v4開発環境を構成してほしい。
+- 言語は typescript とする。
+- pnpm workspace から独立した npm で構成する。
+- http トリガーの最も単純な hello world 関数を用意する。
 ```
 
-- [esbuild](https://esbuild.github.io/)
-
-さらに共通パッケージに問題があるらしい。
-そこの依存解決が出来てない臭い。
+いまいちなので、追加注文をする。
 
 ```markdown
-esbuild を使って src/functions 以下の TS ファイルをビルドし、@shisamo/shared を含む依存をバンドルして dist に出力するビルドスクリプトを作成してください。package.json の build スクリプトも合わせて更新してください。
+- main に `dist/src/{index.js,functions/*.js}` を指定するのでは？ 
 ```
 
-しかし、色々調べたところ、以前 Github Actions からデプロイしていたことで、不整合が出ていたようで動かなかった。  
-のちほど新規で作り直す。
+これはあっさり動いた。  
+pnpm 環境が問題あるかもしれない。
+
+```markdown
+この `functions` と同じ構成で `apps/api` を作り直して。
+- こちらは pnpm 環境とする。
+- README.md 意外は削除してやり直して問題ない。
+- まずは余計なことを考えずに、あくまで `functions` を複製することに集中すること。 
+```
+
+思考錯誤を栗化したが、やはり pnpm 環境では Functions へのデプロイが難しい(管理が大変)という判断となった。  
+workspace から除外してルート直下の `functions` ディレクトリで npm 管理とする。
+

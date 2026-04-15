@@ -1,0 +1,25 @@
+{
+  "name": "functions",
+  "version": "0.0.1",
+  "description": "Azure Functions v4",
+  "author": "T.Ichige <magromoe@gmail.com>",
+  "type": "module",
+  "private": true,
+  "main": "dist/src/{index.js,functions/*.js}",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "dev": "func start",
+    "predev": "npm run build"
+  },
+  "dependencies": {
+    "@azure/functions": "^4.7.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": "^22 || ^24"
+  }
+}
