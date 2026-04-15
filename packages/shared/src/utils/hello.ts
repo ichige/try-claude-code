@@ -1,3 +1,3 @@
-export const hello = (from: string): void => {
-  console.log(`Hello from ${from}!`)
+export const hello = (from: string): string => {
+  return `Hello from ${from}!`
 }
