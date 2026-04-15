@@ -1,6 +1,6 @@
-import { app } from '@azure/functions';
-import { createItem } from '../actions/create-item';
-import { bulkCreateItems } from '../actions/bulk-create-items';
+import { app } from '@azure/functions'
+import { createItem } from '../actions/create-item'
+import { bulkCreateItems } from '../actions/bulk-create-items'
 
 /**
  * アイテム作成
@@ -10,7 +10,7 @@ app.http('cosmos-create', {
   route: '{container}',
   authLevel: 'anonymous',
   handler: createItem,
-});
+})
 
 /**
  * アイテムバルク作成
@@ -20,4 +20,4 @@ app.http('cosmos-bulk-create', {
   route: '{container}/bulk',
   authLevel: 'anonymous',
   handler: bulkCreateItems,
-});
+})

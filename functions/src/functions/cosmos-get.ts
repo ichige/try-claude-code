@@ -1,6 +1,6 @@
-import { app } from '@azure/functions';
-import { getItem } from '../actions/get-item';
-import { listItems } from '../actions/list-items';
+import { app } from '@azure/functions'
+import { getItem } from '../actions/get-item'
+import { listItems } from '../actions/list-items'
 
 /**
  * アイテム一覧取得
@@ -10,7 +10,7 @@ app.http('cosmos-list', {
   route: '{container}',
   authLevel: 'anonymous',
   handler: listItems,
-});
+})
 
 /**
  * アイテム1件取得
@@ -20,4 +20,4 @@ app.http('cosmos-get', {
   route: '{container}/{id}',
   authLevel: 'anonymous',
   handler: getItem,
-});
+})

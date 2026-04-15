@@ -1,4 +1,4 @@
-import type { HttpRequest, HttpResponseInit, InvocationContext } from '@azure/functions';
+import type { HttpRequest, HttpResponseInit, InvocationContext } from '@azure/functions'
 
 /**
  * アイテム更新。
@@ -10,11 +10,11 @@ export async function updateItem(
   request: HttpRequest,
   context: InvocationContext,
 ): Promise<HttpResponseInit> {
-  const { container, id } = request.params;
-  context.log(`update item: container=${container}, id=${id}`);
+  const { container, id } = request.params
+  context.log(`update item: container=${container}, id=${id}`)
 
   return {
     status: 200,
     jsonBody: { item: null },
-  };
+  }
 }

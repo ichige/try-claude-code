@@ -6,19 +6,18 @@ import { Telemetry } from '.'
 // Mocks
 // ---------------------------------------------------------------------------
 
-const { mockLoadAppInsights, mockTrackTrace, MockApplicationInsights } =
-  vi.hoisted(() => {
-    const mockLoadAppInsights = vi.fn()
-    const mockTrackTrace = vi.fn()
-    // アロー関数はコンストラクタとして使えないため通常の function を使用する
-    const MockApplicationInsights = vi.fn(function (this: any) {
-      this.loadAppInsights = mockLoadAppInsights
-      this.trackTrace = mockTrackTrace
-      this.trackException = vi.fn()
-      this.trackEvent = vi.fn()
-    })
-    return { mockLoadAppInsights, mockTrackTrace, MockApplicationInsights }
+const { mockLoadAppInsights, mockTrackTrace, MockApplicationInsights } = vi.hoisted(() => {
+  const mockLoadAppInsights = vi.fn()
+  const mockTrackTrace = vi.fn()
+  // アロー関数はコンストラクタとして使えないため通常の function を使用する
+  const MockApplicationInsights = vi.fn(function (this: any) {
+    this.loadAppInsights = mockLoadAppInsights
+    this.trackTrace = mockTrackTrace
+    this.trackException = vi.fn()
+    this.trackEvent = vi.fn()
   })
+  return { mockLoadAppInsights, mockTrackTrace, MockApplicationInsights }
+})
 
 vi.mock('@microsoft/applicationinsights-web', () => ({
   ApplicationInsights: MockApplicationInsights,
@@ -61,10 +60,7 @@ describe('constructor', () => {
   })
 
   it('connectionString が未指定の場合は環境変数を使用する', () => {
-    vi.stubEnv(
-      'VITE_APPLICATIONINSIGHTS_CONNECTION_STRING',
-      'InstrumentationKey=from-env',
-    )
+    vi.stubEnv('VITE_APPLICATIONINSIGHTS_CONNECTION_STRING', 'InstrumentationKey=from-env')
 
     new Telemetry()
 
@@ -76,10 +72,7 @@ describe('constructor', () => {
   })
 
   it('config の connectionString が環境変数より優先される', () => {
-    vi.stubEnv(
-      'VITE_APPLICATIONINSIGHTS_CONNECTION_STRING',
-      'InstrumentationKey=from-env',
-    )
+    vi.stubEnv('VITE_APPLICATIONINSIGHTS_CONNECTION_STRING', 'InstrumentationKey=from-env')
 
     new Telemetry({ connectionString: 'InstrumentationKey=from-config' })
 

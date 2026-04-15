@@ -1,4 +1,4 @@
-import type { HttpRequest, HttpResponseInit, InvocationContext } from '@azure/functions';
+import type { HttpRequest, HttpResponseInit, InvocationContext } from '@azure/functions'
 
 /**
  * アイテム作成。
@@ -10,11 +10,11 @@ export async function createItem(
   request: HttpRequest,
   context: InvocationContext,
 ): Promise<HttpResponseInit> {
-  const container = request.params.container;
-  context.log(`create item: container=${container}`);
+  const container = request.params.container
+  context.log(`create item: container=${container}`)
 
   return {
     status: 201,
     jsonBody: { item: null },
-  };
+  }
 }

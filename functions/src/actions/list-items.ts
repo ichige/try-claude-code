@@ -1,5 +1,5 @@
-import type { HttpRequest, HttpResponseInit, InvocationContext } from '@azure/functions';
-import type { CosmosItem } from '../types/cosmos';
+import type { HttpRequest, HttpResponseInit, InvocationContext } from '@azure/functions'
+import type { CosmosItem } from '../types/cosmos'
 
 /**
  * アイテム一覧取得。
@@ -11,13 +11,13 @@ export async function listItems(
   request: HttpRequest,
   context: InvocationContext,
 ): Promise<HttpResponseInit> {
-  const container = request.params.container;
-  context.log(`list items: container=${container}`);
+  const container = request.params.container
+  context.log(`list items: container=${container}`)
 
-  const items: CosmosItem[] = [];
+  const items: CosmosItem[] = []
 
   return {
     status: 200,
     jsonBody: { items },
-  };
+  }
 }

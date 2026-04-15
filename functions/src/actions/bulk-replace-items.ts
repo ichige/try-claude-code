@@ -1,4 +1,4 @@
-import type { HttpRequest, HttpResponseInit, InvocationContext } from '@azure/functions';
+import type { HttpRequest, HttpResponseInit, InvocationContext } from '@azure/functions'
 
 /**
  * アイテムバルク全置換。
@@ -10,11 +10,11 @@ export async function bulkReplaceItems(
   request: HttpRequest,
   context: InvocationContext,
 ): Promise<HttpResponseInit> {
-  const container = request.params.container;
-  context.log(`bulk replace items: container=${container}`);
+  const container = request.params.container
+  context.log(`bulk replace items: container=${container}`)
 
   return {
     status: 200,
     jsonBody: { items: [] },
-  };
+  }
 }

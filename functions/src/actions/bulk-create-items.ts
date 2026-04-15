@@ -1,4 +1,4 @@
-import type { HttpRequest, HttpResponseInit, InvocationContext } from '@azure/functions';
+import type { HttpRequest, HttpResponseInit, InvocationContext } from '@azure/functions'
 
 /**
  * アイテムバルク作成。
@@ -10,11 +10,11 @@ export async function bulkCreateItems(
   request: HttpRequest,
   context: InvocationContext,
 ): Promise<HttpResponseInit> {
-  const container = request.params.container;
-  context.log(`bulk create items: container=${container}`);
+  const container = request.params.container
+  context.log(`bulk create items: container=${container}`)
 
   return {
     status: 201,
     jsonBody: { items: [] },
-  };
+  }
 }

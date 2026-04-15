@@ -1,4 +1,4 @@
-import type { HttpRequest, HttpResponseInit, InvocationContext } from '@azure/functions';
+import type { HttpRequest, HttpResponseInit, InvocationContext } from '@azure/functions'
 
 /**
  * アイテムバルク物理削除。
@@ -10,11 +10,11 @@ export async function bulkDeleteItems(
   request: HttpRequest,
   context: InvocationContext,
 ): Promise<HttpResponseInit> {
-  const container = request.params.container;
-  context.log(`bulk delete items: container=${container}`);
+  const container = request.params.container
+  context.log(`bulk delete items: container=${container}`)
 
   return {
     status: 200,
     jsonBody: { deleted: true },
-  };
+  }
 }

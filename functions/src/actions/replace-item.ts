@@ -1,4 +1,4 @@
-import type { HttpRequest, HttpResponseInit, InvocationContext } from '@azure/functions';
+import type { HttpRequest, HttpResponseInit, InvocationContext } from '@azure/functions'
 
 /**
  * アイテム全置換。
@@ -10,11 +10,11 @@ export async function replaceItem(
   request: HttpRequest,
   context: InvocationContext,
 ): Promise<HttpResponseInit> {
-  const { container, id } = request.params;
-  context.log(`replace item: container=${container}, id=${id}`);
+  const { container, id } = request.params
+  context.log(`replace item: container=${container}, id=${id}`)
 
   return {
     status: 200,
     jsonBody: { item: null },
-  };
+  }
 }

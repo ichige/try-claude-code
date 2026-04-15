@@ -50,3 +50,7 @@ Database および Container はポータル上で作成すれば良いだろう
 - `functions/cosmos-get` に `functions/cosmos-list` を統合しておいて。
 - functions にも prettier 入れておいて。
 ```
+
+ここまでで、約3時間程度かな。  
+次は実装フェーズ。
+
