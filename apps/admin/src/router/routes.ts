@@ -1,4 +1,4 @@
-import type { RouteRecordRaw } from 'vue-router';
+import type { RouteRecordRaw } from 'vue-router'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -28,6 +28,6 @@ const routes: RouteRecordRaw[] = [
     meta: { public: true, errorStatus: 404, errorMessage: 'ページが見つかりません' },
     component: () => import('pages/ErrorPage.vue'),
   },
-];
+]
 
-export default routes;
+export default routes
