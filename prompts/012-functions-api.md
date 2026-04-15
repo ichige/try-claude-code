@@ -54,3 +54,22 @@ Database および Container はポータル上で作成すれば良いだろう
 ここまでで、約3時間程度かな。  
 次は実装フェーズ。
 
+```markdown
+`functions/src/actions/get-item.ts` で、コンテナ名とidを元に Cosmos DB から Itemを取得する処理を書いてみて。
+```
+
+普通にクエリを書いた。  
+そっち方面を選択するとは…。
+
+```markdown
+- query は利用せずに、Container → Item → Read → Resource を返すというパターンで実装しなおして。
+- database メソッドを各ごとに環境変数を見る処理を書くのは冗長なので、`functions/src/lib/cosmos.ts` に関数を追加して。
+- telemetry で発生するエラーだけど、functions でそこを参照するケースはないので除外できる？
+- `actions/get-item.ts` に Pipeline を導入して、request を send して then でアイテムを取得するように変更して。
+- 404 エラー判定とレスポンスをミドルウェアに置き換えそうだろ？
+- それは違うね。destination こそ本来の目的であるDB取得しょりを行うところだよ。よく考えて。
+- 404エラー判定のミドルは、それだけに徹したロジックとしてミドルを分離してくれ。すなわち toResponse が null を返せばOKやろ？
+- ではミドルウェアは actions/middlewares/xxx として切り出しつつ、index.ts でexportする形にしてくれ。
+```
+
+だいぶ完成系に近づいた。もう少し。
