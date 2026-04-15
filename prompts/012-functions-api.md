@@ -73,3 +73,10 @@ Database および Container はポータル上で作成すれば良いだろう
 ```
 
 だいぶ完成系に近づいた。もう少し。
+
+```markdown
+- まず postInvocation を使って統括したエラーハンドラを作成してくれ。基本は500エラーで良いだろう。
+- src/errors とか に NotFoundError かなんか定義して、それを 404 エラーとして返すように機能追加してみてくれ。
+- 404コードは NotFoundError に持たせた方がハンドリングしやすいだろ。
+- `functions/src/actions/middlewares/not-found.ts` が不要になって、NotFoundError を投げる形に修正してみてくれ。
+```
