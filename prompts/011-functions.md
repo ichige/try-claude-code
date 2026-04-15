@@ -52,3 +52,5 @@ post install で `packages/shared` はシンボリックリンクにて `functio
 
 [esbuild](https://esbuild.github.io/) を利用してバンドルする形にした。  
 Functions でも1関数1ファイルになるので、理論的に軽量化されることになる。
+
+ベース作成まで半日くらいはかかってしまったけど、やはりインフラが絡んでくるとAIだけでの解決は難しい。
