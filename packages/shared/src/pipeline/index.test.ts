@@ -6,8 +6,10 @@ import { type AsyncMiddleware, Pipeline } from '.'
 // ---------------------------------------------------------------------------
 
 /** passable をそのまま next へ渡すだけのミドルウェア */
-const passthrough = <T>(): AsyncMiddleware<T, T> =>
-  async (passable, next) => next(passable)
+const passthrough =
+  <T>(): AsyncMiddleware<T, T> =>
+  async (passable, next) =>
+    next(passable)
 
 // ---------------------------------------------------------------------------
 // thenReturn
@@ -31,15 +33,15 @@ describe('thenReturn', () => {
 
 describe('then', () => {
   it('destination の戻り値を返す', async () => {
-    const result = await Pipeline.send({ value: 10 })
-      .then(async (p) => p.value * 2)
+    const result = await Pipeline.send({ value: 10 }).then(async (p) => p.value * 2)
 
     expect(result).toBe(20)
   })
 
   it('destination で型を変換できる', async () => {
-    const result = await Pipeline.send({ count: 3 })
-      .then(async (p) => ({ label: `count: ${p.count}` }))
+    const result = await Pipeline.send({ count: 3 }).then(async (p) => ({
+      label: `count: ${p.count}`,
+    }))
 
     expect(result).toEqual({ label: 'count: 3' })
   })
@@ -99,20 +101,9 @@ describe('pipe (複数)', () => {
         return result
       }
 
-    await Pipeline.send(0)
-      .pipe(mw('A'))
-      .pipe(mw('B'))
-      .pipe(mw('C'))
-      .thenReturn()
+    await Pipeline.send(0).pipe(mw('A')).pipe(mw('B')).pipe(mw('C')).thenReturn()
 
-    expect(order).toEqual([
-      'A:before',
-      'B:before',
-      'C:before',
-      'C:after',
-      'B:after',
-      'A:after',
-    ])
+    expect(order).toEqual(['A:before', 'B:before', 'C:before', 'C:after', 'B:after', 'A:after'])
   })
 
   it('各ミドルウェアが passable を順に変換できる', async () => {
@@ -121,11 +112,7 @@ describe('pipe (複数)', () => {
       async (passable, next) =>
         next(passable + n)
 
-    const result = await Pipeline.send(0)
-      .pipe(add(1))
-      .pipe(add(2))
-      .pipe(add(3))
-      .thenReturn()
+    const result = await Pipeline.send(0).pipe(add(1)).pipe(add(2)).pipe(add(3)).thenReturn()
 
     expect(result).toBe(6)
   })
@@ -141,9 +128,7 @@ describe('pipe options', () => {
     const mw: AsyncMiddleware<number, number, Opts> = async (n, next, opts) =>
       next(n * opts.multiplier)
 
-    const result = await Pipeline.send(3)
-      .pipe(mw, { multiplier: 4 })
-      .thenReturn()
+    const result = await Pipeline.send(3).pipe(mw, { multiplier: 4 }).thenReturn()
 
     expect(result).toBe(12)
   })
@@ -208,9 +193,9 @@ describe('finally', () => {
       throw new Error('boom')
     }
 
-    await expect(
-      Pipeline.send(1).pipe(boom).finally(finallyCb).thenReturn(),
-    ).rejects.toThrow('boom')
+    await expect(Pipeline.send(1).pipe(boom).finally(finallyCb).thenReturn()).rejects.toThrow(
+      'boom',
+    )
 
     expect(finallyCb).toHaveBeenCalledOnce()
   })

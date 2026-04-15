@@ -25,10 +25,7 @@ const createMockAppInsights = () => ({
 type MockAppInsights = ReturnType<typeof createMockAppInsights>
 
 const createLogger = (mock: MockAppInsights, prefix?: string) =>
-  new Logger(
-    mock as unknown as ApplicationInsights,
-    prefix ? { prefix } : undefined,
-  )
+  new Logger(mock as unknown as ApplicationInsights, prefix ? { prefix } : undefined)
 
 // ---------------------------------------------------------------------------
 // debug
@@ -148,19 +145,13 @@ describe('event', () => {
   it('trackEvent を指定のイベント名で呼び出す', () => {
     createLogger(mock).event('button:click')
 
-    expect(mock.trackEvent).toHaveBeenCalledWith(
-      { name: 'button:click' },
-      undefined,
-    )
+    expect(mock.trackEvent).toHaveBeenCalledWith({ name: 'button:click' }, undefined)
   })
 
   it('properties を渡せる', () => {
     createLogger(mock).event('form:submit', { formId: 'login' })
 
-    expect(mock.trackEvent).toHaveBeenCalledWith(
-      { name: 'form:submit' },
-      { formId: 'login' },
-    )
+    expect(mock.trackEvent).toHaveBeenCalledWith({ name: 'form:submit' }, { formId: 'login' })
   })
 })
 
@@ -203,4 +194,3 @@ describe('prefix', () => {
     )
   })
 })
-

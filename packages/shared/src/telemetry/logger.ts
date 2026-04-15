@@ -1,17 +1,17 @@
-import type { ApplicationInsights } from '@microsoft/applicationinsights-web';
-import { SeverityLevel } from '@microsoft/applicationinsights-web';
+import type { ApplicationInsights } from '@microsoft/applicationinsights-web'
+import { SeverityLevel } from '@microsoft/applicationinsights-web'
 
 /**
  * ログ出力時に付与できる任意のプロパティ
  */
-export type LogProperties = Record<string, unknown>;
+export type LogProperties = Record<string, unknown>
 
 /**
  * Logger の生成オプション
  */
 export interface LoggerOptions {
   /** メッセージの先頭に付与するラベル（例: "MyComponent"） */
-  prefix?: string;
+  prefix?: string
 }
 
 /**
@@ -47,21 +47,21 @@ export class Logger<TEventName extends string = string> {
    * Debug Level
    */
   debug(message: string, properties?: LogProperties): void {
-    this.log(SeverityLevel.Verbose, message, properties);
+    this.log(SeverityLevel.Verbose, message, properties)
   }
 
   /**
    * Info Level
    */
   info(message: string, properties?: LogProperties): void {
-    this.log(SeverityLevel.Information, message, properties);
+    this.log(SeverityLevel.Information, message, properties)
   }
 
   /**
    * Warning Level
    */
   warn(message: string, properties?: LogProperties): void {
-    this.log(SeverityLevel.Warning, message, properties);
+    this.log(SeverityLevel.Warning, message, properties)
   }
 
   /**
@@ -75,9 +75,9 @@ export class Logger<TEventName extends string = string> {
       this.appInsights.trackException(
         { exception: message, severityLevel: SeverityLevel.Error },
         { ...properties, prefix: this.options?.prefix },
-      );
+      )
     } else {
-      this.log(SeverityLevel.Error, message, properties);
+      this.log(SeverityLevel.Error, message, properties)
     }
   }
 
@@ -88,28 +88,21 @@ export class Logger<TEventName extends string = string> {
    * prefix は付与されません。
    */
   event(name: TEventName, properties?: LogProperties): void {
-    this.appInsights.trackEvent({ name }, properties);
+    this.appInsights.trackEvent({ name }, properties)
   }
 
   /**
    * 共通ログ送信処理
    */
-  private log(
-    severityLevel: SeverityLevel,
-    message: string,
-    properties?: LogProperties,
-  ): void {
-    this.appInsights.trackTrace(
-      { message: this.formatMessage(message), severityLevel },
-      properties,
-    );
+  private log(severityLevel: SeverityLevel, message: string, properties?: LogProperties): void {
+    this.appInsights.trackTrace({ message: this.formatMessage(message), severityLevel }, properties)
   }
 
   /**
    * message のフォーマッタ
    */
   private formatMessage(message: string): string {
-    const { prefix } = this.options ?? {};
-    return prefix ? `[${prefix}] ${message}` : message;
+    const { prefix } = this.options ?? {}
+    return prefix ? `[${prefix}] ${message}` : message
   }
 }
