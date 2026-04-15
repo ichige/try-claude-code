@@ -11,14 +11,19 @@
     "type-check": "tsc",
     "dev": "func start",
     "predev": "npm run build",
-    "postinstall": "ln -sf ../../packages/shared/src src/shared"
+    "postinstall": "ln -sf ../../packages/shared/src src/shared",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.ts\""
   },
   "dependencies": {
-    "@azure/functions": "^4.7.0"
+    "@azure/cosmos": "^4.9.2",
+    "@azure/functions": "^4.7.0",
+    "@azure/identity": "^4.13.1"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
     "esbuild": "^0.28.0",
+    "prettier": "^3.8.3",
     "typescript": "^5.0.0"
   },
   "engines": {

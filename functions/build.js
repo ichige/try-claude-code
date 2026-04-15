@@ -1,5 +1,7 @@
 import * as esbuild from 'esbuild';
-import { glob } from 'node:fs/promises';
+import { glob, rm } from 'node:fs/promises';
+
+await rm('dist', { recursive: true, force: true });
 
 const entryPoints = await Array.fromAsync(glob('src/**/*.ts'));
 

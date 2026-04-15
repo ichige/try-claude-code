@@ -1,4 +1,9 @@
-import { app, type HttpRequest, type HttpResponseInit, type InvocationContext } from '@azure/functions';
+import {
+  app,
+  type HttpRequest,
+  type HttpResponseInit,
+  type InvocationContext,
+} from '@azure/functions';
 import { hello, Pipeline } from '../shared';
 
 /**
@@ -7,13 +12,15 @@ import { hello, Pipeline } from '../shared';
  * @param context - 関数の実行コンテキスト
  * @returns 挨拶メッセージを含む JSON レスポンス
  */
-async function helloWorld(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
+async function helloWorld(
+  request: HttpRequest,
+  context: InvocationContext,
+): Promise<HttpResponseInit> {
   context.log('hello-world function processed a request.');
 
   const name = request.query.get('name') ?? 'World';
 
-  const message = await Pipeline.send(hello(name))
-    .then(async (msg) => `${msg} (via Pipeline)`);
+  const message = await Pipeline.send(hello(name)).then(async (msg) => `${msg} (via Pipeline)`);
 
   return {
     status: 200,
