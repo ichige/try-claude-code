@@ -1,9 +1,10 @@
 import type { HttpRequest, HttpResponseInit, InvocationContext } from '@azure/functions'
 import { NotFoundError } from '../errors'
 import { getDatabase } from '../lib/cosmos'
+import { getItemParamsSchema } from '../schemas'
 import { Pipeline } from '../shared'
 import type { CosmosItem } from '../types/cosmos'
-import { toResponse } from './middlewares'
+import { toResponse, validateParams } from './middlewares'
 
 /**
  * アイテム1件取得。
@@ -19,6 +20,7 @@ export async function getItem(
   context.log(`get item: container=${container}, id=${id}`)
 
   return Pipeline.send(request)
+    .pipe(validateParams, getItemParamsSchema)
     .pipe(toResponse)
     .then(async (req) => {
       const { resource } = await getDatabase()

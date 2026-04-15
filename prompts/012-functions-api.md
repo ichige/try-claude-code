@@ -72,11 +72,33 @@ Database および Container はポータル上で作成すれば良いだろう
 - ではミドルウェアは actions/middlewares/xxx として切り出しつつ、index.ts でexportする形にしてくれ。
 ```
 
-だいぶ完成系に近づいた。もう少し。
+だいぶ完成系に近づいた。もう少し。  
+統合エラーハンドラを追加する。
 
 ```markdown
 - まず postInvocation を使って統括したエラーハンドラを作成してくれ。基本は500エラーで良いだろう。
 - src/errors とか に NotFoundError かなんか定義して、それを 404 エラーとして返すように機能追加してみてくれ。
 - 404コードは NotFoundError に持たせた方がハンドリングしやすいだろ。
 - `functions/src/actions/middlewares/not-found.ts` が不要になって、NotFoundError を投げる形に修正してみてくれ。
+```
+
+続いてバリデータを追加する。
+
+```markdown
+getItem に渡される HttpRequest の container と id を検証するバリデータを zod を使って実装してほしい。
+- container は `Consignees`, `Carriers`, `Forwarders`, `Consignors` の4つだが、今後も増える想定。
+- id は UUID 型
+- 検証スキーマ(ルール)は `src/schemas` あたりに保存。
+- バリデーションミドルウェアは `src/actions/middlewares` あたりに保存すれば良いかと。
+- バリデーションエラーは postInvocation でハンドリングして、エラーメッセージ詳細も渡せるとなおよろしい。
+```
+
+いくつか問題点があるので修正させる。
+
+```markdown
+- `id: z.string().uuid(),` の `uuid` は非推奨になっている。代替機能があればそれを使い、なければ文字列+文字長か正規表現でも良い。
+- postInvocation の例外ハンドリングの見通しが悪くなっている。これもPipeline で段階的にレスポンスを構成できるのでは？
+- ctx を send して、destination なしの　thenReturn すれば(というか直接更新で充分)良さそうだけど？
+- 問題は handleHttpError で、せっかくエラーのクラスがあるので、プロパティではなくクラスでミドルウェアを分けたほうがスッキリ明確になるのでは？
+- hooks は index.ts で export して、import をまとめておこう。
 ```
