@@ -10,7 +10,8 @@ await esbuild.build({
   outbase: 'src',
   outdir: 'dist/src',
   bundle: true,
+  splitting: true,
   platform: 'node',
   format: 'esm',
-  external: ['@azure/functions'],
+  external: ['@azure/functions', '@azure/cosmos', '@azure/identity'],
 });

@@ -11,6 +11,6 @@ import type { AsyncMiddleware, CosmosItem } from '../../shared'
  */
 export const toResponse: AsyncMiddleware<HttpRequest, HttpResponseInit, CosmosItem & Resource> =
   async (req, next) => {
-    const { _rid, _ts, _self, ...item } = await next(req)
+    const { _rid, _ts, _self, _attachments, ...item } = await next(req)
     return { status: 200, jsonBody: { item } }
   }

@@ -1,2 +1,2 @@
 export { toResponse } from './to-response'
-export { validateParams } from './validate-params'
+export { type EnrichedRequest, validateParams } from './validate-params'
