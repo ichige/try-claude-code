@@ -13,7 +13,9 @@
     "predev": "npm run build",
     "postinstall": "ln -sf ../../packages/shared/src src/shared",
     "format": "prettier --write \"src/**/*.ts\"",
-    "format:check": "prettier --check \"src/**/*.ts\""
+    "format:check": "prettier --check \"src/**/*.ts\"",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@azure/cosmos": "^4.9.2",
@@ -25,7 +27,8 @@
     "@types/node": "^22.0.0",
     "esbuild": "^0.28.0",
     "prettier": "^3.8.3",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "vitest": "^4.1.4"
   },
   "engines": {
     "node": "^22 || ^24"
