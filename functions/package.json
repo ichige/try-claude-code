@@ -5,7 +5,7 @@
   "author": "T.Ichige <magromoe@gmail.com>",
   "type": "module",
   "private": true,
-  "main": "dist/src/{index.js,functions/*.js}",
+  "main": "dist/src/{index.js,routes/*.js}",
   "scripts": {
     "build": "node build.js",
     "type-check": "tsc",

@@ -15,4 +15,6 @@ export interface CosmosItem {
   deletedAt: string | null
   /** 論理削除フラグ */
   isDeleted: boolean
+  /** Cosmos DB が管理する ETag。楽観的同時実行制御に使用する */
+  _etag: string
 }

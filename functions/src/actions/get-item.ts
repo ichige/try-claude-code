@@ -3,7 +3,8 @@ import { NotFoundError } from '../errors'
 import { getDatabase } from '../lib/cosmos'
 import { getItemParamsSchema } from '../schemas'
 import { Pipeline } from '../shared'
-import type { CosmosItem } from '../types/cosmos'
+import type { Resource } from '@azure/cosmos'
+import type { CosmosItem } from '../shared'
 import { toResponse, validateParams } from './middlewares'
 
 /**
@@ -26,7 +27,7 @@ export async function getItem(
       const { resource } = await getDatabase()
         .container(req.params.container)
         .item(req.params.id)
-        .read<CosmosItem>()
+        .read<CosmosItem & Resource>()
       if (!resource) throw new NotFoundError()
       return resource
     })
