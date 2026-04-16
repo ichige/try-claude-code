@@ -234,3 +234,53 @@ actions/middlewares/to-response.ts
 ```markdown
 `functions/http-tests` に delete のテストリクエストを作っておいて。
 ```
+
+### Bulk Delete Item
+
+まずは相談から始める。
+
+```markdown
+- バルク削除だけど、実際にSDKではどんなメソッドを使うことになる？
+- その operations のデータ型はどんなイメージ？SQL？
+- そのわりに、container.items.bulk(operations) だと明示的に削除っぽくないやん？
+- つまり、operationType で操作がきまる？
+- となると、実質他のバルク系と処理的には共通化できるわけやな？
+- それは、あくまでバリデート zod スキーマで解決する話かな？
+- では、operations の中身の問題(create/deleteが混ざっても関係ない)なわけやろ？
+- 普通に考えれば、operationType をデフォルトで設定してもいいわけやな？
+- いや、zod で注入できないのかね？
+- であれば、zod のバリデートを通過した operations は、そのまま共通 bulk 処理出来るわけだな？
+```
+
+設計を詰めたので、実装をお願いする。
+
+```markdown
+`routes/cosmos-delete.ts` の bulkDeleteItems の実装をしてほしい。
+- operationType は schema レベルで zod のデフォルトとして注入する。
+- 実際に受け取るリクエストは `{"id": "xxx", "pk": "xxx"}` のコレクション配列である。
+- bulkDeleteItems での bulk 処理は共通化するかもしれないが、現時点では直接実装して欲しい。
+- レスポンスはいったんおまかせする。
+```
+
+いくつか修正をお願いする。
+
+```markdown
+- `const bulkResults = await getDatabase().container(container).items.bulk(operations)` の `bulk` メソッドが非推奨らしい。
+- `schemas/bulk-delete-items.ts` で以下のエラーが出てるようだ。
+- TS1355: A 'const' assertions can only be applied to references to enum members, or string, number, boolean, array, or object literals.
+```
+
+リクエスト body のバリデートが出来てなかったので注文をする。
+
+```markdown
+- bulkDeleteItemsBodySchema によるバリデートは、validateParams ミドルウェアで実行できないのかな？
+- 作ってくれ。POSTで必要になるんで。
+```
+
+テストこーどもお願いしよう。
+
+```markdown
+- 例のごとく `schemas` と `actions/middleware` のテストコードをお願いします。
+- `http-tests` にも、bulkDeleteItems のHTTPテストを追加して。
+- このレスポンス型を `packages/shared/src/types/cosmos.ts` あたりに追加しておいて。
+```

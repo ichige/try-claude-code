@@ -1,4 +1,23 @@
 /**
+ * バルク操作の各アイテム結果。
+ */
+export interface BulkOperationResult {
+  /** 対象アイテムの ID */
+  id: string
+  /** 削除成功の場合 true（statusCode 204）、対象なしの場合 false（statusCode 404） */
+  deleted: boolean
+  /** Cosmos DB が返した HTTP ステータスコード */
+  statusCode: number | undefined
+}
+
+/**
+ * バルク削除レスポンス。
+ */
+export interface BulkDeleteResponse {
+  results: BulkOperationResult[]
+}
+
+/**
  * Cosmos DB コンテナアイテムの基底インタフェース。
  * すべてのドキュメントはこのインタフェースを拡張する。
  */
