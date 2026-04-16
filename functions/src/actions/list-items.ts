@@ -1,5 +1,11 @@
+import type { Resource } from '@azure/cosmos'
 import type { HttpRequest, HttpResponseInit, InvocationContext } from '@azure/functions'
+import type { z } from 'zod'
+import { getDatabase } from '../lib/cosmos'
+import { listItemsParamsSchema } from '../schemas'
+import { Pipeline } from '../shared'
 import type { CosmosItem } from '../shared'
+import { type EnrichedRequest, toResponses, validateParams } from './middlewares'
 
 /**
  * アイテム一覧取得。
@@ -11,13 +17,18 @@ export async function listItems(
   request: HttpRequest,
   context: InvocationContext,
 ): Promise<HttpResponseInit> {
-  const container = request.params.container
+  const { container } = request.params
   context.log(`list items: container=${container}`)
 
-  const items: CosmosItem[] = []
-
-  return {
-    status: 200,
-    jsonBody: { items },
-  }
+  return Pipeline.send(request)
+    .pipe(validateParams, listItemsParamsSchema)
+    .pipe(toResponses)
+    .then(async (req) => {
+      const { container, pk } = (req as EnrichedRequest<z.infer<typeof listItemsParamsSchema>>).safeData
+      const { resources } = await getDatabase()
+        .container(container)
+        .items.readAll<CosmosItem & Resource>({ partitionKey: pk })
+        .fetchAll()
+      return resources ?? []
+    })
 }

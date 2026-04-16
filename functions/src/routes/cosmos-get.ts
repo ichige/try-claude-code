@@ -7,7 +7,7 @@ import { listItems } from '../actions/list-items'
  */
 app.http('cosmos-list', {
   methods: ['GET'],
-  route: '{container}',
+  route: 'item-list/{container}/{pk?}',
   authLevel: 'anonymous',
   handler: listItems,
 })
@@ -17,7 +17,7 @@ app.http('cosmos-list', {
  */
 app.http('cosmos-get', {
   methods: ['GET'],
-  route: '{container}/{id}/{pk?}',
+  route: 'item/{container}/{id}/{pk?}',
   authLevel: 'anonymous',
   handler: getItem,
 })
