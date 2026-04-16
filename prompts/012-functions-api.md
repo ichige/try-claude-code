@@ -198,3 +198,14 @@ cosmos-update: [PATCH] http://localhost:7071/api/update-item/{container}/{id}
 ```
 
 ルーティング問題で手こずったものの、新しい実装はトータル90分程度で終わった。
+
+IDEがコメント追加しろとか警告を出したのでこれもやってもらう。
+
+```markdown
+actions/middlewares/to-response.ts
+- 警告:(10, 29) パラメータ _rid は JSDoc で説明されていません
+- 警告:(10, 35) パラメータ _ts は JSDoc で説明されていません
+- 警告:(10, 40) パラメータ _self は JSDoc で説明されていません
+- 警告:(10, 47) パラメータ _attachments は JSDoc で説明されていません
+コメントを追加してあげて。
+```

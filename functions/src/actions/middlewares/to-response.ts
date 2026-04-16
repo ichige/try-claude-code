@@ -4,7 +4,11 @@ import type { AsyncMiddleware, CosmosItem } from '../../shared'
 
 /**
  * Cosmos DB のシステムプロパティを除外する。
- * @param item - Cosmos DB から取得したアイテム
+ * @param _rid - Cosmos DB 内部管理用のリソース ID
+ * @param _ts - 最終更新タイムスタンプ
+ * @param _self - リソースへの自己参照 URI
+ * @param _attachments - レガシーの添付ファイル参照
+ * @param item - 除外後の残りのフィールド
  * @returns システムプロパティを除いたアイテム
  */
 function stripSystemProps({ _rid, _ts, _self, _attachments, ...item }: CosmosItem & Resource): CosmosItem {
