@@ -1,8 +1,8 @@
-GET http://localhost:7071/api/Consignors/6e0b379b-5998-4e91-ba20-443e861b5b8a/unko
+GET http://localhost:7071/api/item/Consignors/6e0b379b-5998-4e91-ba20-443e861b5b8a/unko
 Accept: application/json
 
 ###
-GET http://localhost:7071/api/Consignors/6e0b379b-5998-4e91-ba20-443e861b5b8a
+GET http://localhost:7071/api/item/Consignors/6e0b379b-5998-4e91-ba20-443e861b5b8a
 Accept: application/json
 
 ###

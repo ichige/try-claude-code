@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { toResponse } from './to-response'
+import { toResponse, toResponses } from './to-response'
 
 const baseItem = {
   id: 'test-id',
@@ -61,5 +61,47 @@ describe('toResponse', () => {
     const result = await toResponse(req, async () => cosmosItem, null)
     const item = (result.jsonBody as any).item
     expect(item).toMatchObject(baseItem)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// toResponses
+// ---------------------------------------------------------------------------
+
+describe('toResponses', () => {
+  it('200 レスポンスを返す', async () => {
+    const result = await toResponses(req, async () => [cosmosItem], null)
+    expect(result.status).toBe(200)
+  })
+
+  it('items を jsonBody に含める', async () => {
+    const result = await toResponses(req, async () => [cosmosItem], null)
+    expect((result.jsonBody as any).items).toBeDefined()
+  })
+
+  it('空配列を返す', async () => {
+    const result = await toResponses(req, async () => [], null)
+    expect((result.jsonBody as any).items).toEqual([])
+  })
+
+  it('各アイテムのシステムプロパティを除外する', async () => {
+    const result = await toResponses(req, async () => [cosmosItem, cosmosItem], null)
+    const items = (result.jsonBody as any).items
+    for (const item of items) {
+      expect(item._rid).toBeUndefined()
+      expect(item._ts).toBeUndefined()
+      expect(item._self).toBeUndefined()
+      expect(item._attachments).toBeUndefined()
+    }
+  })
+
+  it('各アイテムの _etag は残す', async () => {
+    const result = await toResponses(req, async () => [cosmosItem], null)
+    expect((result.jsonBody as any).items[0]._etag).toBe('"test-etag"')
+  })
+
+  it('各アイテムの業務データを残す', async () => {
+    const result = await toResponses(req, async () => [cosmosItem], null)
+    expect((result.jsonBody as any).items[0]).toMatchObject(baseItem)
   })
 })

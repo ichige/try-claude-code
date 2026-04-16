@@ -1,0 +1,8 @@
+GET http://localhost:7071/api/item-list/Consignors/unko
+Accept: application/json
+
+###
+GET http://localhost:7071/api/item-list/Consignors
+Accept: application/json
+
+###
