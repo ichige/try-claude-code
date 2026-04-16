@@ -1,12 +1,11 @@
 import type { Resource } from '@azure/cosmos'
 import type { HttpRequest, HttpResponseInit, InvocationContext } from '@azure/functions'
 import type { z } from 'zod'
-import { ValidationError } from '../errors'
 import { getDatabase } from '../lib/cosmos'
 import { createItemBodySchema, createItemParamsSchema } from '../schemas'
 import { Pipeline } from '../shared'
 import type { CosmosItem } from '../shared'
-import { type EnrichedRequest, type EnrichedRequestBody, toResponse, validateParams } from './middlewares'
+import { type EnrichedRequest, type EnrichedRequestBody, toResponse, validateBody, validateParams } from './middlewares'
 
 /**
  * アイテム作成。
@@ -23,12 +22,7 @@ export async function createItem(
 
   return Pipeline.send(request)
     .pipe(validateParams, createItemParamsSchema)
-    .pipe(async (req, next) => {
-      const { container } = (req as EnrichedRequest<z.infer<typeof createItemParamsSchema>>).safeData
-      const result = createItemBodySchema(container).safeParse(await req.json())
-      if (!result.success) throw new ValidationError(result.error)
-      return next(Object.assign(req, { safeBody: result.data }))
-    })
+    .pipe(validateBody, createItemBodySchema)
     .pipe(toResponse)
     .then(async (req) => {
       const { container } = (req as EnrichedRequest<z.infer<typeof createItemParamsSchema>>).safeData
