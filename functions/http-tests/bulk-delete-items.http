@@ -3,8 +3,8 @@ POST http://localhost:7071/api/bulk-delete/Consignors
 Content-Type: application/json
 
 [
-  { "id": "92b5c8cd-9d8d-4c8b-8c60-f1047c821d16", "pk": "pk-consignors" },
-  { "id": "a0b6c9be-9223-487e-b972-7e0f948bf760", "pk": "pk-consignors" }
+  { "id": "632915ae-20e3-426f-b5cc-5bb34100f226", "pk": "pk-consignors" },
+  { "id": "7852fe81-f909-4916-ae4c-403113ac3119", "pk": "pk-consignors" }
 ]
 
 ###

@@ -1,4 +1,5 @@
 export { containerSchema } from './container'
+export { bulkCreateItemsBodySchema, bulkCreateItemsParamsSchema } from './bulk-create-items'
 export { bulkDeleteItemsBodySchema, bulkDeleteItemsParamsSchema } from './bulk-delete-items'
 export { createItemBodySchema, createItemParamsSchema } from './create-item'
 export { deleteItemParamsSchema } from './delete-item'
