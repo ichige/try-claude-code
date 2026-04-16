@@ -284,3 +284,53 @@ actions/middlewares/to-response.ts
 - `http-tests` にも、bulkDeleteItems のHTTPテストを追加して。
 - このレスポンス型を `packages/shared/src/types/cosmos.ts` あたりに追加しておいて。
 ```
+
+### createItem
+
+やや注文が多いけどどうか？
+
+```markdown
+`functions/src/routes/cosmos-create.ts` の createItem を実装してください。
+- リクエストでは `id` が指定されない場合、zod のデフォルトとしてUUIDを発行する。
+- `createdAt` と `updatedAt` はリクエストでは受け取らず、zod でデフォルトとして現在時刻(`Date().toISOString()`)を設定する。
+    - 仮にリクエストで渡されたとしても、上書きするイメージ。
+- `deletedAt` はデフォルトで null として、同様に上書きと考える。
+- `isDeleted` はデフォルト false として、同様に上書きと考える。
+- `_etag` はあっても良いけど、こちらで設定することはない。
+- それ以外の body は id を含めて Record<string, any> と考えてバリデーションはパスしてOKである。
+- create メソッドの前に、HttpRequest.safeBody に登録するデータが構成されているような状態とする。
+    - 前述の `createdAt` などを含めておく。
+    - `_etag` 以外なので、CosmosItem などを分割するか、何かで型を再定義できるのでは？
+- レスポンスは getItem を同じく toResponse を通せばよいだろう。
+```
+
+うむ、3分超くらいで完成。  
+いつものことながら、修正をお願いする。
+
+```markdown
+- `schemas/create-item.ts` で `CosmosItem` は参照なし。非推奨である `z.string().uuid()` が利用されている。
+- なぜか作成したファイルの改行コードがCRLFになるけど、LFに統一してね。
+- .editorconfig をプロジェクトルートに追加しておいて。IDEはデフォ設定になってる。
+- 例のごとく `schemas` にテストコードを追加して。
+- pk を忘れてたので、createItemBodySchema で pk がなければデフォで Container 名から作成するようにしておいて。
+- createItemBodySchema が何故かPipeline から外れてるけど？
+- このAPIのレスポンス型は `packages/shared/src/types/cosmos.ts` に定義されてる？
+```
+
+HTTPテストも作ってもらう。
+
+```markdown
+{
+    "code": "test-0022",
+    "name": "お名前です",
+    "invoiceNumber": "T30303",
+    "paymentRate": 80,
+    "note": "備考欄"
+}
+こんな内容のbodyで、`http-tests` にテストリクエストを追加して。
+対象は Consignors でOK
+```
+
+だいたい完成した。  
+この程度だと60分かからないね。  
+夕飯食べたあとで脳みそもリフレッシュしてたからかも？
