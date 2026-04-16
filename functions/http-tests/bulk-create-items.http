@@ -1,0 +1,66 @@
+# 正常バルク作成（id・pk 省略 → UUID 自動発行・コンテナ名から導出）
+POST http://localhost:7071/api/bulk-create/Consignors
+Content-Type: application/json
+
+[
+  { "code": "test-0031", "name": "荷主A", "invoiceNumber": "T10001", "paymentRate": 80, "note": "備考A" },
+  { "code": "test-0032", "name": "荷主B", "invoiceNumber": "T10002", "paymentRate": 90, "note": "備考B" }
+]
+
+###
+
+# 正常バルク作成（id・pk 明示）
+POST http://localhost:7071/api/bulk-create/Consignors
+Content-Type: application/json
+
+[
+  {
+    "id": "92b5c8cd-9d8d-4c8b-8c60-f1047c821d16",
+    "pk": "pk-consignors",
+    "code": "test-0033",
+    "name": "荷主C",
+    "invoiceNumber": "T10003",
+    "paymentRate": 75
+  },
+  {
+    "id": "a0b6c9be-9223-487e-b972-7e0f948bf760",
+    "pk": "pk-consignors",
+    "code": "test-0034",
+    "name": "荷主D",
+    "invoiceNumber": "T10004",
+    "paymentRate": 85
+  }
+]
+
+###
+
+# 正常バルク作成（一部 id 省略、一部明示の混在）
+POST http://localhost:7071/api/bulk-create/Consignors
+Content-Type: application/json
+
+[
+  { "code": "test-0035", "name": "荷主E" },
+  { "id": "6e0b379b-5998-4e91-ba20-443e861b5b8a", "code": "test-0036", "name": "荷主F" }
+]
+
+###
+
+# 400（無効な UUID を含む）
+POST http://localhost:7071/api/bulk-create/Consignors
+Content-Type: application/json
+
+[
+  { "id": "not-a-uuid", "code": "test-0037", "name": "荷主G" }
+]
+
+###
+
+# 400（無効なコンテナ名）
+POST http://localhost:7071/api/bulk-create/Unknown
+Content-Type: application/json
+
+[
+  { "code": "test-0038", "name": "荷主H" }
+]
+
+###

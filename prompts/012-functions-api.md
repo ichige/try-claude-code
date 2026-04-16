@@ -358,3 +358,57 @@ validateBody ミドルウェアを使うべきでしょ？
 しかし、お手本コードがあっても、まだまだ忘れるというか？微妙なところで手を抜くというか？  
 気が抜けないところはある。でも修正は速いので良しよする。
 
+### bulkCreateItems
+
+```markdown
+`functions/src/routes/cosmos-create.ts` の bulkCreateItems を実装してください。
+- 総合的なデザインは `functions/src/actions/bulk-delete-items.ts` と一緒です。
+- body の schema は `functions/src/schemas/create-item.ts` の配列版です。
+    - 初期値も同じになるので、可能であれば共通化してください。
+    - operationType の挿入も必要です。
+- ミドルウェアでschemaを使ってバリデーションを実施してください。
+    - `actions/bulk-delete-items.ts` とデザインは同じになるはず。
+- 戻り値も `actions/bulk-delete-items.ts` と近い構造で良いです。
+```
+
+約3分超でそこそこのレベルで作成できた。  
+いくつか修正させる。
+
+```markdown
+  return {
+    status: 201,
+    jsonBody: {
+      results: bulkResults.map((r, i) => ({
+        id: (operations[i].resourceBody as { id: string }).id,
+        created: r.response?.statusCode === 201,
+        statusCode: r.response?.statusCode ?? r.error?.code,
+      })),
+    },
+  }
+---
+このレスポンス生成をミドルウェアとして切り出したい。
+`actions/create-item.ts` と同じパターンで `toResponse` の代わりに `toBulkResponse` を作ってくれ。  
+まずは単純に移植するだけで良い。
+```
+
+続いて共通化させる。
+
+```markdown
+- `toBulkCreateResponse` で bulkResults の型は BulkOperationResult になるはずでは？
+- BulkOperationResult の operationInput プロパティは `OperationInput` 型になり、今回で言えば `CreateOperationInput` 型になるはずです。
+この `CreateOperationInput` 型の判断をして id を取得するようにしてください。
+- `toBulkCreateResponse` は `toBulkResponse` に名前を変更して、別のファイルに切り出してください。
+- `actions/bulk-delete-items.ts` の `bulkDeleteItems` にも、この `toBulkResponse` を適用します。
+`created` や `deleted` は `success` というフィールドで共通化します。 
+BulkOperationResult の型で判断することで、id を参照できるはずです。
+```
+
+やや過剰なコードがあったので、面倒だから自分で削除・修正した。
+
+```markdown
+例のごとく追加した `schemas` と `actions/middleware` にテストコードを書いてください。 
+変更があった場合は、テストコードの見直しもお願いします。
+`http-tests` に bulkCreate のリクエストを作成してください。
+```
+
+やく60分ほどで完了。
