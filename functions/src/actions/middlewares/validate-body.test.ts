@@ -29,4 +29,16 @@ describe('validateBody', () => {
     await validateBody(req, next, schema)
     expect(next).toHaveBeenCalledWith(expect.objectContaining({ safeData: { container: 'Consignors' } }))
   })
+
+  it('ファクトリ関数を渡した場合はリクエストからスキーマを生成して検証する', async () => {
+    const req = createReq({ name: 'test' })
+    const next = vi.fn(async (r: any) => r)
+    await validateBody(req, next, () => schema)
+    expect(next).toHaveBeenCalledWith(expect.objectContaining({ safeBody: { name: 'test' } }))
+  })
+
+  it('ファクトリ関数が返すスキーマで検証失敗した場合は ValidationError をスローする', async () => {
+    const req = createReq({ name: '' })
+    await expect(validateBody(req, async (r) => r, () => schema)).rejects.toBeInstanceOf(ValidationError)
+  })
 })

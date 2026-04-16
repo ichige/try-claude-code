@@ -334,3 +334,27 @@ HTTPテストも作ってもらう。
 だいたい完成した。  
 この程度だと60分かからないね。  
 夕飯食べたあとで脳みそもリフレッシュしてたからかも？
+
+と思ったら一つ見逃した。
+
+```markdown
+あ、よく見たら createItemBodySchema が pipeline に入ってないよ？
+validateBody ミドルウェアを使うべきでしょ？
+```
+
+また変な修正をしたよ？
+
+```markdown
+.pipe(validateBody, (req) => {
+  const { container } = (req as EnrichedRequest<z.infer<typeof createItemParamsSchema>>).safeData
+  return createItemBodySchema(container)
+})
+
+---
+これって、ここで container 渡さなくても validateBody で渡せるのでは？
+```
+
+こうやって追加注文して、ようやくいい形になった。  
+しかし、お手本コードがあっても、まだまだ忘れるというか？微妙なところで手を抜くというか？  
+気が抜けないところはある。でも修正は速いので良しよする。
+

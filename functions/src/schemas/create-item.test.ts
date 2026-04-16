@@ -3,7 +3,9 @@ import { createItemBodySchema, createItemParamsSchema } from './create-item'
 
 const validId = '6e0b379b-5998-4e91-ba20-443e861b5b8a'
 const isoPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z$/
-const schema = createItemBodySchema('Consignors')
+
+const mockReq = (container: string) => ({ safeData: { container } }) as any
+const schema = createItemBodySchema(mockReq('Consignors'))
 
 describe('createItemParamsSchema', () => {
   it('有効なコンテナ名を受け入れる', () => {
@@ -51,7 +53,7 @@ describe('createItemBodySchema', () => {
       ['Forwarders', 'pk-forwarders'],
       ['Consignors', 'pk-consignors'],
     ])('container "%s" → pk "%s"', (container, expectedPk) => {
-      const result = createItemBodySchema(container).safeParse({})
+      const result = createItemBodySchema(mockReq(container)).safeParse({})
       expect(result.success && result.data.pk).toBe(expectedPk)
     })
   })

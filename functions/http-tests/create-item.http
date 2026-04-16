@@ -4,7 +4,7 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "code": "test-0022",
+  "code": "test-0023",
   "name": "お名前です",
   "invoiceNumber": "T30303",
   "paymentRate": 80,
