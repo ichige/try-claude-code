@@ -209,3 +209,28 @@ actions/middlewares/to-response.ts
 - 警告:(10, 47) パラメータ _attachments は JSDoc で説明されていません
 コメントを追加してあげて。
 ```
+
+### deleteItem
+
+```markdown
+`routes/cosmos-delete.ts` の deleteItem を実装したい、
+- 例のごとく pk が必要なので、getItem と同じデフォルト付きの path オプションとしてURLに追加してくれ。
+- あとの流れは getItem と同じで作ってみてくれ。
+- 対象のアイテムがない事が delete の結果でわかるようであれば、deleted に false を設定して、不明なら true でOKす。
+```
+
+今回は5分くらいかかった。もう少し早いとは思ったが、自分で書くよりは早い。  
+少々修正する。
+
+```markdown
+- delete の結果から 404 が判断できるのであれば、一応 NotFoundError を投げておこう。
+- その他のエラーは自動で500エラーになるようにしてもらって、事実上 deleted: true を返しておこう。
+- たぶんフロント側では 200 以外は削除に失敗したよって判断になるかと。
+- 404エラーコードの判定はキャストした方がすっきりするのでは？
+```
+
+さらに http test も作ってもらう。
+
+```markdown
+`functions/http-tests` に delete のテストリクエストを作っておいて。
+```

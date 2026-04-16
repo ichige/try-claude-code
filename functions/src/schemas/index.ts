@@ -1,3 +1,5 @@
 export { containerSchema } from './container'
+export { deleteItemParamsSchema } from './delete-item'
 export { getItemParamsSchema } from './get-item'
+export { itemParamsSchema } from './item-params'
 export { listItemsParamsSchema } from './list-items'

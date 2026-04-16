@@ -7,7 +7,7 @@ import { deleteItem } from '../actions/delete-item'
  */
 app.http('cosmos-delete', {
   methods: ['DELETE'],
-  route: 'delete-item/{container}/{id}',
+  route: 'delete-item/{container}/{id}/{pk?}',
   authLevel: 'anonymous',
   handler: deleteItem,
 })

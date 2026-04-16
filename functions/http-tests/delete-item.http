@@ -1,0 +1,23 @@
+# 正常削除（pk 省略 → コンテナ名から導出）
+DELETE http://localhost:7071/api/delete-item/Consignors/6e0b379b-5998-4e91-ba20-443e861b5b8a
+Accept: application/json
+
+###
+
+# 正常削除（pk 明示）
+DELETE http://localhost:7071/api/delete-item/Consignors/a42bf96f-1a69-4530-9575-d1e5181f8c86/pk-consignors
+Accept: application/json
+
+###
+
+# 404（存在しない ID）
+DELETE http://localhost:7071/api/delete-item/Consignors/00000000-0000-0000-0000-000000000000
+Accept: application/json
+
+###
+
+# 400（無効な UUID）
+DELETE http://localhost:7071/api/delete-item/Consignors/not-a-uuid
+Accept: application/json
+
+###
