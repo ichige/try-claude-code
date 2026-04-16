@@ -6,7 +6,7 @@
 
         <q-toolbar-title> Quasar App </q-toolbar-title>
 
-<AccountSetting />
+        <AccountSetting />
       </q-toolbar>
     </q-header>
 
@@ -25,9 +25,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import EssentialLink, { type EssentialLinkProps } from 'components/EssentialLink.vue';
-import AccountSetting from 'components/layouts/AccountSetting.vue';
+import { ref } from 'vue'
+import EssentialLink, { type EssentialLinkProps } from 'components/EssentialLink.vue'
+import AccountSetting from 'components/layouts/AccountSetting.vue'
 
 const linksList: EssentialLinkProps[] = [
   {
@@ -72,11 +72,11 @@ const linksList: EssentialLinkProps[] = [
     icon: 'favorite',
     link: 'https://awesome.quasar.dev',
   },
-];
+]
 
-const leftDrawerOpen = ref(false);
+const leftDrawerOpen = ref(false)
 
 function toggleLeftDrawer() {
-  leftDrawerOpen.value = !leftDrawerOpen.value;
+  leftDrawerOpen.value = !leftDrawerOpen.value
 }
 </script>

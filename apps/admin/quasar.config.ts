@@ -1,10 +1,9 @@
 // Configuration for your app
 // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file
 
-import { defineConfig } from '#q-app/wrappers';
-import { fileURLToPath } from 'node:url';
+import { defineConfig } from '#q-app/wrappers'
+import { fileURLToPath } from 'node:url'
 import fs from 'node:fs'
-
 
 export default defineConfig((ctx) => {
   return {
@@ -44,15 +43,15 @@ export default defineConfig((ctx) => {
       typescript: {
         strict: true,
         vueShim: true,
-        extendTsConfig (tsConfig) {
+        extendTsConfig(tsConfig) {
           // tsconfig.json の拡張
-          tsConfig.compilerOptions ??= {};
-          tsConfig.compilerOptions.paths ??= {};
-          tsConfig.compilerOptions.paths['@shisamo/shared'] = ['../../../packages/shared/src/*'];
-          tsConfig.compilerOptions.paths['@/*'] = ["../src/*"];
-          tsConfig.include ??= [];
-          tsConfig.include.push('../../../packages/shared/src/**/*');
-        }
+          tsConfig.compilerOptions ??= {}
+          tsConfig.compilerOptions.paths ??= {}
+          tsConfig.compilerOptions.paths['@shisamo/shared'] = ['../../../packages/shared/src/*']
+          tsConfig.compilerOptions.paths['@/*'] = ['../src/*']
+          tsConfig.include ??= []
+          tsConfig.include.push('../../../packages/shared/src/**/*')
+        },
       },
 
       vueRouterMode: 'hash', // available values: 'hash', 'history'
@@ -71,8 +70,8 @@ export default defineConfig((ctx) => {
       // polyfillModulePreload: true,
       // distDir
 
-      extendViteConf (viteConf) {
-        viteConf.resolve ??= {};
+      extendViteConf(viteConf) {
+        viteConf.resolve ??= {}
         viteConf.resolve.alias = {
           ...viteConf.resolve.alias,
           '@shisamo/shared': fileURLToPath(new URL('../../packages/shared/src', import.meta.url)),
@@ -113,14 +112,12 @@ export default defineConfig((ctx) => {
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#devserver
     devServer: {
-      https: process.env.CI ? false : {
-        key: fs.readFileSync(
-          `${process.env.HOME}/.certs/_wildcard.shisamo.local+1-key.pem`,
-        ),
-        cert: fs.readFileSync(
-          `${process.env.HOME}/.certs/_wildcard.shisamo.local+1.pem`,
-        ),
-      },
+      https: process.env.CI
+        ? false
+        : {
+            key: fs.readFileSync(`${process.env.HOME}/.certs/_wildcard.shisamo.local+1-key.pem`),
+            cert: fs.readFileSync(`${process.env.HOME}/.certs/_wildcard.shisamo.local+1.pem`),
+          },
       host: 'admin.shisamo.local',
       fs: {
         // pnpm で親の node_modules を見る場合に必要な設定
@@ -259,5 +256,5 @@ export default defineConfig((ctx) => {
        */
       extraScripts: [],
     },
-  };
-});
+  }
+})

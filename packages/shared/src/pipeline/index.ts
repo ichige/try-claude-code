@@ -1,14 +1,16 @@
 /**
  * ミドルウェアで受け取る next 関数の定義
  */
-export type NextFunction<T, R> = (passable: T) => Promise<R>
+export type NextFunction<T, D> = (passable: T) => Promise<D>
 
 /**
  * ミドルウェアの定義(asyncのみ)
+ * R: このミドルウェア自身の戻り値型
+ * D: next(destination)の戻り値型（デフォルトは R と同じ）
  */
-export type AsyncMiddleware<T, R = T, O = null> = (
+export type AsyncMiddleware<T, R = T, D = R, O = null> = (
   passable: T,
-  next: NextFunction<T, R>,
+  next: NextFunction<T, D>,
   options: O,
 ) => Promise<R>
 
@@ -24,15 +26,16 @@ type FinallyCallback<T> = (passable: T) => void | Promise<void>
  */
 interface PipeEntry<T> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  middleware: AsyncMiddleware<T, any, any>
+  middleware: AsyncMiddleware<T, any, any, any>
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   options: any
 }
 
 /**
  * Pipeline
+ * Ret: 最初の pipe で確定する戻り値型。未設定の場合は never。
  */
-export class Pipeline<T> {
+export class Pipeline<T, Ret = never> {
   private _pipes: PipeEntry<T>[] = []
   private _finallyCallback?: FinallyCallback<T>
 
@@ -41,17 +44,22 @@ export class Pipeline<T> {
   /**
    * Passable の登録かつファクトリ
    */
-  static send<P>(passable: P): Pipeline<P> {
+  static send<P>(passable: P): Pipeline<P, never> {
     return new Pipeline<P>(passable)
   }
 
   /**
-   * ミドルウェアの登録チェーン
+   * ミドルウェアの登録チェーン。
+   * 最初の pipe 呼び出しのみ Ret を R に確定し、以降は維持する。
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  pipe<R = any, O = null>(middleware: AsyncMiddleware<T, R, O>, options?: O): this {
+  pipe<R = any, D = R, O = null>(
+    middleware: AsyncMiddleware<T, R, D, O>,
+    options?: O,
+  ): Pipeline<T, [Ret] extends [never] ? R : Ret> {
     this._pipes.push({ middleware, options: options ?? null })
-    return this
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return this as unknown as Pipeline<T, [Ret] extends [never] ? R : Ret>
   }
 
   /**
@@ -65,7 +73,8 @@ export class Pipeline<T> {
   /**
    * Pipeline 実行
    */
-  async then<R>(destination: (passable: T) => Promise<R>): Promise<R> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async then<D = any>(destination: (passable: T) => Promise<D>): Promise<[Ret] extends [never] ? D : Ret> {
     const passable = this._passable
 
     // destination をシードにすることで、各 middleware の next が Promise<R> を返す
@@ -80,8 +89,8 @@ export class Pipeline<T> {
     )
 
     try {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      return await pipeline(passable)
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any
+      return await pipeline(passable) as any
     } finally {
       if (this._finallyCallback) {
         await this._finallyCallback(passable)
@@ -92,8 +101,8 @@ export class Pipeline<T> {
   /**
    * destination なしの実行(純粋なフィルタリング)
    */
-  async thenReturn(): Promise<T> {
+  async thenReturn(): Promise<[Ret] extends [never] ? T : Ret> {
     // eslint-disable-next-line @typescript-eslint/require-await
-    return this.then(async (passable) => passable)
+    return this.then(async (passable) => passable as unknown as T)
   }
 }

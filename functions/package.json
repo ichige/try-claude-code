@@ -5,7 +5,7 @@
   "author": "T.Ichige <magromoe@gmail.com>",
   "type": "module",
   "private": true,
-  "main": "dist/src/{index.js,functions/*.js}",
+  "main": "dist/src/{index.js,routes/*.js}",
   "scripts": {
     "build": "node build.js",
     "type-check": "tsc",
@@ -13,18 +13,22 @@
     "predev": "npm run build",
     "postinstall": "ln -sf ../../packages/shared/src src/shared",
     "format": "prettier --write \"src/**/*.ts\"",
-    "format:check": "prettier --check \"src/**/*.ts\""
+    "format:check": "prettier --check \"src/**/*.ts\"",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@azure/cosmos": "^4.9.2",
     "@azure/functions": "^4.7.0",
-    "@azure/identity": "^4.13.1"
+    "@azure/identity": "^4.13.1",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
     "esbuild": "^0.28.0",
     "prettier": "^3.8.3",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "vitest": "^4.1.4"
   },
   "engines": {
     "node": "^22 || ^24"

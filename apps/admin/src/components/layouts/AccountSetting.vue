@@ -34,19 +34,19 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import { useQuasar } from 'quasar';
-import { useRouter } from 'vue-router';
-import { useAuthStore } from 'stores/auth';
+import { computed } from 'vue'
+import { useQuasar } from 'quasar'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from 'stores/auth'
 
-const $q = useQuasar();
-const router = useRouter();
-const authStore = useAuthStore();
+const $q = useQuasar()
+const router = useRouter()
+const authStore = useAuthStore()
 
 const isDark = computed({
   get: () => $q.dark.isActive,
   set: (val) => $q.dark.set(val),
-});
+})
 
 function handleLogout() {
   $q.dialog({
@@ -57,9 +57,9 @@ function handleLogout() {
   }).onOk(() => {
     // callback に Promise<void> が返せない。
     void (async () => {
-      await authStore.logout();
-      await router.push({ name: 'unauthorized' });
-    })();
-  });
+      await authStore.logout()
+      await router.push({ name: 'unauthorized' })
+    })()
+  })
 }
 </script>

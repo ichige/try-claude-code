@@ -125,7 +125,7 @@ describe('pipe (複数)', () => {
 describe('pipe options', () => {
   it('options がミドルウェアに渡される', async () => {
     type Opts = { multiplier: number }
-    const mw: AsyncMiddleware<number, number, Opts> = async (n, next, opts) =>
+    const mw: AsyncMiddleware<number, number, number, Opts> = async (n, next, opts) =>
       next(n * opts.multiplier)
 
     const result = await Pipeline.send(3).pipe(mw, { multiplier: 4 }).thenReturn()
@@ -147,7 +147,7 @@ describe('pipe options', () => {
 
   it('複数の pipe でそれぞれ異なる options を渡せる', async () => {
     type Opts = { prefix: string }
-    const mw: AsyncMiddleware<string, string, Opts> = async (s, next, opts) =>
+    const mw: AsyncMiddleware<string, string, string, Opts> = async (s, next, opts) =>
       next(`${opts.prefix}${s}`)
 
     const result = await Pipeline.send('world')

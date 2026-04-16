@@ -51,6 +51,7 @@ const initializeMiddleware: AsyncMiddleware<PublicClientApplication, any> = asyn
 const ssoSilentMiddleware: AsyncMiddleware<
   PublicClientApplication,
   AuthAccount,
+  AuthAccount,
   PopupRequest
 > = async (client, next, request) => {
   try {

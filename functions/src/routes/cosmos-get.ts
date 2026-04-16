@@ -17,7 +17,7 @@ app.http('cosmos-list', {
  */
 app.http('cosmos-get', {
   methods: ['GET'],
-  route: '{container}/{id}',
+  route: '{container}/{id}/{pk?}',
   authLevel: 'anonymous',
   handler: getItem,
 })

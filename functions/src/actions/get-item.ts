@@ -1,4 +1,12 @@
+import type { Resource } from '@azure/cosmos'
 import type { HttpRequest, HttpResponseInit, InvocationContext } from '@azure/functions'
+import type { z } from 'zod'
+import { NotFoundError } from '../errors'
+import { getDatabase } from '../lib/cosmos'
+import { getItemParamsSchema } from '../schemas'
+import { Pipeline } from '../shared'
+import type { CosmosItem } from '../shared'
+import { type EnrichedRequest, toResponse, validateParams } from './middlewares'
 
 /**
  * アイテム1件取得。
@@ -13,8 +21,16 @@ export async function getItem(
   const { container, id } = request.params
   context.log(`get item: container=${container}, id=${id}`)
 
-  return {
-    status: 200,
-    jsonBody: { item: null },
-  }
+  return Pipeline.send(request)
+    .pipe(validateParams, getItemParamsSchema)
+    .pipe(toResponse)
+    .then(async (req) => {
+      const { container, id, pk } = (req as EnrichedRequest<z.infer<typeof getItemParamsSchema>>).safeData
+      const { resource } = await getDatabase()
+        .container(container)
+        .item(id, pk)
+        .read<CosmosItem & Resource>()
+      if (!resource) throw new NotFoundError()
+      return resource
+    })
 }

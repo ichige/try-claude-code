@@ -1,5 +1,5 @@
 import type { HttpRequest, HttpResponseInit, InvocationContext } from '@azure/functions'
-import type { CosmosItem } from '../types/cosmos'
+import type { CosmosItem } from '../shared'
 
 /**
  * アイテム一覧取得。
