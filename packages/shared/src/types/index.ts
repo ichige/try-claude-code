@@ -1,1 +1,1 @@
-export { CosmosItem } from './cosmos'
+export { BulkDeleteResponse, BulkOperationResult, CosmosItem } from './cosmos'

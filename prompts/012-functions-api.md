@@ -209,3 +209,78 @@ actions/middlewares/to-response.ts
 - 警告:(10, 47) パラメータ _attachments は JSDoc で説明されていません
 コメントを追加してあげて。
 ```
+
+### deleteItem
+
+```markdown
+`routes/cosmos-delete.ts` の deleteItem を実装したい、
+- 例のごとく pk が必要なので、getItem と同じデフォルト付きの path オプションとしてURLに追加してくれ。
+- あとの流れは getItem と同じで作ってみてくれ。
+- 対象のアイテムがない事が delete の結果でわかるようであれば、deleted に false を設定して、不明なら true でOKす。
+```
+
+今回は5分くらいかかった。もう少し早いとは思ったが、自分で書くよりは早い。  
+少々修正する。
+
+```markdown
+- delete の結果から 404 が判断できるのであれば、一応 NotFoundError を投げておこう。
+- その他のエラーは自動で500エラーになるようにしてもらって、事実上 deleted: true を返しておこう。
+- たぶんフロント側では 200 以外は削除に失敗したよって判断になるかと。
+- 404エラーコードの判定はキャストした方がすっきりするのでは？
+```
+
+さらに http test も作ってもらう。
+
+```markdown
+`functions/http-tests` に delete のテストリクエストを作っておいて。
+```
+
+### Bulk Delete Item
+
+まずは相談から始める。
+
+```markdown
+- バルク削除だけど、実際にSDKではどんなメソッドを使うことになる？
+- その operations のデータ型はどんなイメージ？SQL？
+- そのわりに、container.items.bulk(operations) だと明示的に削除っぽくないやん？
+- つまり、operationType で操作がきまる？
+- となると、実質他のバルク系と処理的には共通化できるわけやな？
+- それは、あくまでバリデート zod スキーマで解決する話かな？
+- では、operations の中身の問題(create/deleteが混ざっても関係ない)なわけやろ？
+- 普通に考えれば、operationType をデフォルトで設定してもいいわけやな？
+- いや、zod で注入できないのかね？
+- であれば、zod のバリデートを通過した operations は、そのまま共通 bulk 処理出来るわけだな？
+```
+
+設計を詰めたので、実装をお願いする。
+
+```markdown
+`routes/cosmos-delete.ts` の bulkDeleteItems の実装をしてほしい。
+- operationType は schema レベルで zod のデフォルトとして注入する。
+- 実際に受け取るリクエストは `{"id": "xxx", "pk": "xxx"}` のコレクション配列である。
+- bulkDeleteItems での bulk 処理は共通化するかもしれないが、現時点では直接実装して欲しい。
+- レスポンスはいったんおまかせする。
+```
+
+いくつか修正をお願いする。
+
+```markdown
+- `const bulkResults = await getDatabase().container(container).items.bulk(operations)` の `bulk` メソッドが非推奨らしい。
+- `schemas/bulk-delete-items.ts` で以下のエラーが出てるようだ。
+- TS1355: A 'const' assertions can only be applied to references to enum members, or string, number, boolean, array, or object literals.
+```
+
+リクエスト body のバリデートが出来てなかったので注文をする。
+
+```markdown
+- bulkDeleteItemsBodySchema によるバリデートは、validateParams ミドルウェアで実行できないのかな？
+- 作ってくれ。POSTで必要になるんで。
+```
+
+テストこーどもお願いしよう。
+
+```markdown
+- 例のごとく `schemas` と `actions/middleware` のテストコードをお願いします。
+- `http-tests` にも、bulkDeleteItems のHTTPテストを追加して。
+- このレスポンス型を `packages/shared/src/types/cosmos.ts` あたりに追加しておいて。
+```

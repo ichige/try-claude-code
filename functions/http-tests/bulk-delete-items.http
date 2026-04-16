@@ -1,0 +1,41 @@
+# 正常バルク削除
+POST http://localhost:7071/api/bulk-delete/Consignors
+Content-Type: application/json
+
+[
+  { "id": "92b5c8cd-9d8d-4c8b-8c60-f1047c821d16", "pk": "pk-consignors" },
+  { "id": "a0b6c9be-9223-487e-b972-7e0f948bf760", "pk": "pk-consignors" }
+]
+
+###
+
+# 一部存在しない ID を含む
+POST http://localhost:7071/api/bulk-delete/Consignors
+Content-Type: application/json
+
+[
+  { "id": "6e0b379b-5998-4e91-ba20-443e861b5b8a", "pk": "pk-consignors" },
+  { "id": "00000000-0000-0000-0000-000000000000", "pk": "pk-consignors" }
+]
+
+###
+
+# 400（無効な UUID を含む）
+POST http://localhost:7071/api/bulk-delete/Consignors
+Content-Type: application/json
+
+[
+  { "id": "not-a-uuid", "pk": "pk-consignors" }
+]
+
+###
+
+# 400（無効なコンテナ名）
+POST http://localhost:7071/api/bulk-delete/Unknown
+Content-Type: application/json
+
+[
+  { "id": "6e0b379b-5998-4e91-ba20-443e861b5b8a", "pk": "pk-consignors" }
+]
+
+###
