@@ -1,0 +1,27 @@
+import { z } from 'zod'
+import { itemParamsSchema } from './item-params'
+
+/**
+ * replaceItem エンドポイントのパスパラメータスキーマ。
+ * pk は省略時にコンテナ名から導出する。
+ */
+export const replaceItemParamsSchema = itemParamsSchema
+
+/**
+ * replaceItem エンドポイントのリクエストボディスキーマ。
+ * id / pk / _etag は必須。
+ * updatedAt はリクエスト値を無視してサーバ側で現在時刻に上書きする。
+ * その他のフィールドは任意の値を受け付ける。
+ * _etag はアクションで accessCondition に使用するためそのまま出力に残す。
+ */
+export const replaceItemBodySchema = z
+  .object({
+    id: z.uuid(),
+    pk: z.string(),
+    _etag: z.string(),
+  })
+  .catchall(z.unknown())
+  .transform(({ updatedAt: _, ...rest }) => ({
+    ...rest,
+    updatedAt: new Date().toISOString(),
+  }))
