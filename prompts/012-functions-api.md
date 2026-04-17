@@ -498,4 +498,27 @@ id は不要らしい。
 こちらも所要時間は30分程度。  
 `schemas` が溢れてきたので、あとで対応したいところ。
 
+### bulkUpdateItems
+
+```markdown
+`functions/src/routes/cosmos-update.ts` の bulkUpdateItems を実装してください。
+- デザインは `actions/bulk-replace-items.ts` とほぼ一緒なので参考にしてください。
+- 可能であれば、`schemas/bulk-replace-items.ts` と同じように、スキーマの設定を共通化してください。
+    - schema で適切な `operationType` を設定してください。
+    - `isDeleted` や `deletedAt` も対応が必要です。
+- レスポンスは toBulkResponse を利用して、`operationInput.operationType` の分岐を適切に追加して対応してください。
+```
+
+なんと命令してないのに、テストコードからHTTPリクエストまで作ってくれた。  
+なんておりこうさんなんだ！とか思いつつも、修正があるとトークンを無駄に消費することになるので、貧乏人目線からは「まだやってくれるな!」みたいな気持ちにはなる。
+
+しかし見たところ、大きな問題はなさそう。  
+やはりサンプルコードがあると精度が上がるという事かな。
+
+実行しみたところエラーがあったので修正させる。
+
+エラーもあったので45分ほどで完成。
+
+### 微調整など
+
 

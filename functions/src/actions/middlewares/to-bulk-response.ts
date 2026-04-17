@@ -1,5 +1,5 @@
 import { BulkOperationType } from '@azure/cosmos'
-import type { BulkOperationResult, CreateOperationInput, DeleteOperationInput, ReplaceOperationInput } from '@azure/cosmos'
+import type { BulkOperationResult, CreateOperationInput, DeleteOperationInput, PatchOperationInput, ReplaceOperationInput } from '@azure/cosmos'
 import type { HttpRequest, HttpResponseInit } from '@azure/functions'
 import type { AsyncMiddleware } from '../../shared'
 
@@ -17,6 +17,8 @@ function resolveId(operationInput: BulkOperationResult['operationInput']): strin
       return (operationInput as DeleteOperationInput).id
     case BulkOperationType.Replace:
       return (operationInput as ReplaceOperationInput).id
+    case BulkOperationType.Patch:
+      return (operationInput as PatchOperationInput).id
     default:
       throw new Error(`Unsupported operationType: ${operationInput.operationType}`)
   }
@@ -32,6 +34,7 @@ function resolveSuccessCode(operationInput: BulkOperationResult['operationInput'
     case BulkOperationType.Create: return 201
     case BulkOperationType.Delete: return 204
     case BulkOperationType.Replace: return 200
+    case BulkOperationType.Patch: return 200
     default:
       throw new Error(`Unsupported operationType: ${operationInput.operationType}`)
   }
