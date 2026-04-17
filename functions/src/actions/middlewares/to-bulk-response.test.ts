@@ -14,7 +14,7 @@ const makeCreateResult = (
     operationType: BulkOperationType.Create,
     resourceBody: { id, pk: 'pk-consignors' },
   },
-  response: statusCode !== undefined ? { statusCode, requestCharge: 1 } : undefined,
+  response: statusCode !== undefined ? ({ statusCode, requestCharge: 1 } as any) : undefined,
   error: errorCode !== undefined ? ({ code: errorCode } as any) : undefined,
 })
 
@@ -28,7 +28,7 @@ const makeDeleteResult = (
     id,
     partitionKey: 'pk-consignors',
   },
-  response: statusCode !== undefined ? { statusCode, requestCharge: 1 } : undefined,
+  response: statusCode !== undefined ? ({ statusCode, requestCharge: 1 } as any) : undefined,
   error: errorCode !== undefined ? ({ code: errorCode } as any) : undefined,
 })
 
@@ -128,7 +128,7 @@ describe('toBulkResponse', () => {
     it('Read 操作でエラーをスローする', async () => {
       const unsupported: BulkOperationResult = {
         operationInput: { operationType: BulkOperationType.Read, id: validId },
-        response: { statusCode: 200, requestCharge: 1 },
+        response: { statusCode: 200, requestCharge: 1 } as any,
       }
       await expect(toBulkResponse(req, async () => [unsupported], null)).rejects.toThrow('Unsupported operationType')
     })

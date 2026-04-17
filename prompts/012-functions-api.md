@@ -412,3 +412,33 @@ BulkOperationResult の型で判断することで、id を参照できるはず
 ```
 
 やく60分ほどで完了。
+
+### replaceItem
+
+```markdown
+`functions/src/routes/cosmos-update.ts` の `replaceItem` を実装してください。
+- 全体の流れとしては、`actions/create-item.ts` と同じデザインになる。
+- schema は `id` と `pk`、`_etag` は必須として取り扱うこと。
+    - `updatedAt` は現在時刻に上書き更新すること。
+    - それ以外のフィールドは無視してOK。
+- replaceItem では、`_etag` を指定して、不正な更新を制御すること。
+- レスポンスは `actions/create-item.ts` と同様で、`toResponse` を利用してください。
+```
+
+２分くらいで、なかなかの精度で出来た。
+
+```markdown
+- 例のごとく、追加した `schemas` のテストコードを作成して。
+- `http-tests` に replaceItem へのリクエスト作成して。
+body は create-item を参考にしてください。
+```
+
+エラーハンドリングがいまいちなので、追加指示を出す。
+
+```markdown
+- 404 エラーに対しては NotFoundErrorがある。deleteItem を参考にして。
+- 412 エラーは etag の不一致 Error を新規で定義して対応してほしい。
+- その他エラーはとりあえずは放置してOK。出たら対応するイメージで。
+```
+
+計40分くらいで実装完了。

@@ -1,5 +1,5 @@
 import { app } from '@azure/functions'
-import { handleNotFoundError, handleValidationError, logUnhandledError } from './hooks'
+import { handleNotFoundError, handlePreconditionFailedError, handleValidationError, logUnhandledError } from './hooks'
 import { Pipeline } from './shared'
 
 app.setup({
@@ -11,6 +11,7 @@ app.hook.postInvocation(async (ctx) => {
 
   await Pipeline.send(ctx)
     .pipe(handleNotFoundError)
+    .pipe(handlePreconditionFailedError)
     .pipe(handleValidationError)
     .pipe(logUnhandledError)
     .thenReturn()

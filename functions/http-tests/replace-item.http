@@ -1,0 +1,63 @@
+# 正常置換
+POST http://localhost:7071/api/replace-item/Consignors/6e0b379b-5998-4e91-ba20-443e861b5b8a
+Content-Type: application/json
+Accept: application/json
+
+{
+  "id": "6e0b379b-5998-4e91-ba20-443e861b5b8a",
+  "pk": "pk-consignors",
+  "_etag": "\"a202c11d-0000-2400-0000-69e176890000\"",
+  "code": "test-0022",
+  "name": "お名前です（更新２）",
+  "invoiceNumber": "T30303",
+  "paymentRate": 85,
+  "note": "備考欄（更新）"
+}
+
+###
+
+# 412（_etag が一致しない → 楽観的同時実行制御エラー）
+POST http://localhost:7071/api/replace-item/Consignors/6e0b379b-5998-4e91-ba20-443e861b5b8a
+Content-Type: application/json
+Accept: application/json
+
+{
+  "id": "6e0b379b-5998-4e91-ba20-443e861b5b8a",
+  "pk": "pk-consignors",
+  "_etag": "\"00000000-0000-0000-0000-000000000000\"",
+  "code": "test-0022",
+  "name": "お名前です（更新）",
+  "invoiceNumber": "T30303",
+  "paymentRate": 85,
+  "note": "備考欄（更新）"
+}
+
+###
+
+# 400（_etag 未指定）
+POST http://localhost:7071/api/replace-item/Consignors/6e0b379b-5998-4e91-ba20-443e861b5b8a
+Content-Type: application/json
+Accept: application/json
+
+{
+  "id": "6e0b379b-5998-4e91-ba20-443e861b5b8a",
+  "pk": "pk-consignors",
+  "code": "test-0022",
+  "name": "お名前です（更新）"
+}
+
+###
+
+# 400（無効なコンテナ名）
+POST http://localhost:7071/api/replace-item/Unknown/6e0b379b-5998-4e91-ba20-443e861b5b8a
+Content-Type: application/json
+Accept: application/json
+
+{
+  "id": "6e0b379b-5998-4e91-ba20-443e861b5b8a",
+  "pk": "pk-consignors",
+  "_etag": "\"your-etag-here\"",
+  "name": "お名前です（更新）"
+}
+
+###
