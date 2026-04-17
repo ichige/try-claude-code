@@ -4,9 +4,10 @@ import { bulkReplaceItemSchema, bulkReplaceItemsBodySchema, bulkReplaceItemsPara
 
 const validId = '6e0b379b-5998-4e91-ba20-443e861b5b8a'
 const validEtag = '"abc123"'
+const validCreatedAt = '2024-01-01T00:00:00.000Z'
 const isoPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z$/
 
-const validItem = { id: validId, pk: 'pk-consignors', _etag: validEtag }
+const validItem = { id: validId, pk: 'pk-consignors', _etag: validEtag, createdAt: validCreatedAt }
 
 describe('bulkReplaceItemsParamsSchema', () => {
   it('有効なコンテナ名を受け入れる', () => {
@@ -69,11 +70,19 @@ describe('bulkReplaceItemSchema', () => {
 
   describe('必須フィールドのバリデーション', () => {
     it('pk 未指定を拒否する', () => {
-      expect(bulkReplaceItemSchema.safeParse({ id: validId, _etag: validEtag }).success).toBe(false)
+      expect(bulkReplaceItemSchema.safeParse({ id: validId, _etag: validEtag, createdAt: validCreatedAt }).success).toBe(false)
     })
 
     it('_etag 未指定を拒否する', () => {
-      expect(bulkReplaceItemSchema.safeParse({ id: validId, pk: 'pk-consignors' }).success).toBe(false)
+      expect(bulkReplaceItemSchema.safeParse({ id: validId, pk: 'pk-consignors', createdAt: validCreatedAt }).success).toBe(false)
+    })
+
+    it('createdAt 未指定を拒否する', () => {
+      expect(bulkReplaceItemSchema.safeParse({ id: validId, pk: 'pk-consignors', _etag: validEtag }).success).toBe(false)
+    })
+
+    it('createdAt に ISO 日時以外の文字列を拒否する', () => {
+      expect(bulkReplaceItemSchema.safeParse({ ...validItem, createdAt: 'not-a-date' }).success).toBe(false)
     })
   })
 })
@@ -82,7 +91,7 @@ describe('bulkReplaceItemsBodySchema', () => {
   it('アイテム配列を受け入れる', () => {
     const result = bulkReplaceItemsBodySchema.safeParse([
       validItem,
-      { id: 'a42bf96f-1a69-4530-9575-d1e5181f8c86', pk: 'pk-consignors', _etag: '"def456"' },
+      { id: 'a42bf96f-1a69-4530-9575-d1e5181f8c86', pk: 'pk-consignors', _etag: '"def456"', createdAt: validCreatedAt },
     ])
     expect(result.success).toBe(true)
   })
@@ -92,7 +101,7 @@ describe('bulkReplaceItemsBodySchema', () => {
   })
 
   it('無効なアイテムを含む配列を拒否する', () => {
-    expect(bulkReplaceItemsBodySchema.safeParse([{ id: 'bad', pk: 'pk-consignors', _etag: validEtag }]).success).toBe(false)
+    expect(bulkReplaceItemsBodySchema.safeParse([{ id: 'bad', pk: 'pk-consignors', _etag: validEtag, createdAt: validCreatedAt }]).success).toBe(false)
   })
 
   it('各アイテムに operationType: Replace を注入する', () => {

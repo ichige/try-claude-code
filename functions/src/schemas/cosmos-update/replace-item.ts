@@ -19,6 +19,7 @@ export const replaceItemSchema = z
     id: z.uuid(),
     pk: z.string(),
     _etag: z.string(),
+    createdAt: z.iso.datetime(),
   })
   .catchall(z.unknown())
   .transform(({ updatedAt: _, ...rest }) => ({
