@@ -1,0 +1,83 @@
+# 正常部分更新（特定フィールドのみ）
+PATCH http://localhost:7071/api/update-item/Consignors/6e0b379b-5998-4e91-ba20-443e861b5b8a
+Content-Type: application/json
+Accept: application/json
+
+{
+  "_etag": "\"a2021134-0000-2400-0000-69e179fc0000\"",
+  "paymentRate": 90,
+  "note": "備考欄（部分更新）"
+}
+
+###
+
+# 正常部分更新（isDeleted: true → 論理削除）
+PATCH http://localhost:7071/api/update-item/Consignors/6e0b379b-5998-4e91-ba20-443e861b5b8a
+Content-Type: application/json
+Accept: application/json
+
+{
+  "_etag": "\"a3025139-0000-2400-0000-69e193490000\"",
+  "isDeleted": true
+}
+
+###
+
+# 正常部分更新（isDeleted: false → 論理削除解除）
+PATCH http://localhost:7071/api/update-item/Consignors/6e0b379b-5998-4e91-ba20-443e861b5b8a
+Content-Type: application/json
+Accept: application/json
+
+{
+  "_etag": "\"a302c03c-0000-2400-0000-69e193700000\"",
+  "isDeleted": false
+}
+
+###
+
+# 412（_etag が一致しない → 楽観的同時実行制御エラー）
+PATCH http://localhost:7071/api/update-item/Consignors/6e0b379b-5998-4e91-ba20-443e861b5b8a
+Content-Type: application/json
+Accept: application/json
+
+{
+  "_etag": "\"00000000-0000-0000-0000-000000000000\"",
+  "paymentRate": 90
+}
+
+###
+
+# 400（_etag 未指定）
+PATCH http://localhost:7071/api/update-item/Consignors/6e0b379b-5998-4e91-ba20-443e861b5b8a
+Content-Type: application/json
+Accept: application/json
+
+{
+  "paymentRate": 90
+}
+
+###
+
+# 400（isDeleted に boolean 以外）
+PATCH http://localhost:7071/api/update-item/Consignors/6e0b379b-5998-4e91-ba20-443e861b5b8a
+Content-Type: application/json
+Accept: application/json
+
+{
+  "_etag": "\"your-etag-here\"",
+  "isDeleted": "true"
+}
+
+###
+
+# 400（無効なコンテナ名）
+PATCH http://localhost:7071/api/update-item/Unknown/6e0b379b-5998-4e91-ba20-443e861b5b8a
+Content-Type: application/json
+Accept: application/json
+
+{
+  "_etag": "\"your-etag-here\"",
+  "paymentRate": 90
+}
+
+###
