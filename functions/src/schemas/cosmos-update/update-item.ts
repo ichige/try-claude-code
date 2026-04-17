@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { itemParamsSchema } from './item-params'
+import { itemParamsSchema } from '../item-params'
 
 /**
  * updateItem エンドポイントのパスパラメータスキーマ。

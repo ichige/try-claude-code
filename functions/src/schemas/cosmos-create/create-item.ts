@@ -1,6 +1,6 @@
 import type { HttpRequest } from '@azure/functions'
 import { z } from 'zod'
-import { containerSchema } from './container'
+import { containerSchema } from '../container'
 
 /**
  * createItem エンドポイントのパスパラメータスキーマ。

@@ -1,6 +1,6 @@
 import { BulkOperationType, PatchOperationType } from '@azure/cosmos'
 import { z } from 'zod'
-import { containerSchema } from './container'
+import { containerSchema } from '../container'
 import { applyUpdateFields } from './update-item'
 
 /**
