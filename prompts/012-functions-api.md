@@ -439,6 +439,7 @@ body は create-item を参考にしてください。
 - 404 エラーに対しては NotFoundErrorがある。deleteItem を参考にして。
 - 412 エラーは etag の不一致 Error を新規で定義して対応してほしい。
 - その他エラーはとりあえずは放置してOK。出たら対応するイメージで。
+- `replaceItem` の `if (!resource) throw new Error('Failed to replace item')` って必要か？
 ```
 
 計40分くらいで実装完了。

@@ -38,8 +38,8 @@ export async function replaceItem(
             body as unknown as CosmosItem & Resource,
             { accessCondition: { type: 'IfMatch', condition: _etag } },
           )
-        if (!resource) throw new Error('Failed to replace item')
-        return resource
+        // 型としては undefined があるものの、更新失敗時は例外が投げられるので理論的にはない。
+        return resource!
       } catch (e) {
         if (e instanceof ErrorResponse) {
           if (Number(e.code) === 404) throw new NotFoundError()
