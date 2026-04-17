@@ -4,7 +4,7 @@ import { createItemBodySchema, createItemParamsSchema } from './create-item'
 const validId = '6e0b379b-5998-4e91-ba20-443e861b5b8a'
 const isoPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z$/
 
-const mockReq = (container: string) => ({ safeData: { container } }) as any
+const mockReq = (container: string) => ({ params: { container } }) as any
 const schema = createItemBodySchema(mockReq('Consignors'))
 
 describe('createItemParamsSchema', () => {

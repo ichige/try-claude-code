@@ -26,12 +26,11 @@ export async function createItem(
     .pipe(toResponse)
     .then(async (req) => {
       const { container } = (req as EnrichedRequest<z.infer<typeof createItemParamsSchema>>).safeData
-      const body = (req as EnrichedRequestBody<ReturnType<typeof createItemBodySchema>>).safeBody
+      const body = (req as EnrichedRequestBody<z.infer<ReturnType<typeof createItemBodySchema>>>).safeBody
       const { resource } = await getDatabase()
         .container(container)
         .items
         .create<CosmosItem & Resource>(body as unknown as CosmosItem & Resource)
-      if (!resource) throw new Error('Failed to create item')
-      return resource
+      return resource!
     })
 }

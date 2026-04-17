@@ -527,5 +527,61 @@ id は不要らしい。
 - `schemas/cosmos-update/replace-item.ts` で、`createdAt` を必須にしてほしい。
 - `cratedAt` の型は、日付型にもできるのか？例) 2026-04-17T04:46:53.198Z
 - 同様に、`replace-item.ts` で `isDeleted` と `deletedAt` も必須にするが、`deletedAt` は null 許容にしたい。
-
 ```
+
+さらに自己レビューをお願いする。
+
+```markdown
+`functions/src/routes/cosmos-get.ts` の `cosmos-get` ルートの実装において、気になる点はあるか？
+```
+
+2点指摘があった。
+
+> readAll().fetchAll() はパーティション内の全件を一度にメモリに展開します。件数が増えると応答サイズ・メモリ・タイムアウ
+トのリスクがあります。ページネーション（continuationToken）の対応が将来的には必要になります。
+
+アプリの要件として全件取得するケースが多いが、限界があるかも？
+
+```markdown
+`readAll().fetchAll()` では、取得件数に最大リミットがあったりするか？
+```
+
+リミットがないとの説明だったので、保険的に10000件とか入れても良いかもしれない。  
+現時点では対応なし。
+
+>  isDeleted: true の論理削除済みアイテムも一覧に混入します。update-item / replace-item で isDeleted
+を管理しているなら、クエリ側でも WHERE c.isDeleted = false 相当のフィルタが必要になるはずです。readAll()
+はクエリを指定できないので、items.query() への切り替えも合わせて検討が必要です。
+
+こちらもアプリ上で表示・非表示を制御するので、取得時に isDeleted を見る必要はなし。
+
+```markdown
+`functions/src/routes/cosmos-get.ts` の `cosmos-list` ルートの実装において、気になる点はあるか？
+```
+
+pk がないことに懸念があるとの事だが、完全な全件取得とpk指定の取得があるという理由があるので、この指摘も問題なし。
+
+```markdown
+`functions/src/routes/cosmos-create.ts` の `cosmos-create` ルートの実装において、気になる点はあるか？
+```
+
+>  replace-item.ts のときに「SDK は失敗時に例外を投げるので !resource チェックは不要、return resource!
+で十分」という話をしました。create-item.ts だけ古いパターンのままです。
+
+ここは修正してもらう。
+
+> createItemBodySchema がファクトリ関数のため safeBody の型が推論できず、unknown
+経由で無理やりキャストしています。他のアクション（replace-item.ts など）では (req as
+EnrichedRequestBody<...>).safeBody と直接キャストしているのに、ここだけ ReturnType<typeof createItemBodySchema>
+を使っていて一貫性がありません。
+
+これも修正してもらう。初期時に作ったので洗練されてなかった系かな。
+
+しかし言及するわりに、イイ感じに修正出来ないのは笑うしかない。  
+何度も指示を繰り返してやっと修正できた。
+
+```markdown
+`functions/src/routes/cosmos-create.ts` の `cosmos-bulk-create` ルートの実装において、気になる点はあるか？
+```
+
+上記で修正した内容で同じ部分があるとの指摘があったが、schema 層と action 層でのデータの取り扱いに違いがあると説明してあげた。
