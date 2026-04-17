@@ -1,6 +1,6 @@
 import { BulkOperationType } from '@azure/cosmos'
 import { z } from 'zod'
-import { containerSchema } from './container'
+import { containerSchema } from '../container'
 import { replaceItemSchema } from './replace-item'
 
 /**

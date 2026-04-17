@@ -32,6 +32,6 @@ export async function deleteItem(
         }
         throw e
       }
-      return { status: 200, jsonBody: { deleted: true } }
+      return { status: 204 }
     })
 }

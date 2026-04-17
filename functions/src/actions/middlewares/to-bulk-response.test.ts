@@ -47,6 +47,21 @@ const makeReplaceResult = (
   error: errorCode !== undefined ? ({ code: errorCode } as any) : undefined,
 })
 
+const makePatchResult = (
+  id: string,
+  statusCode?: number,
+  errorCode?: number,
+): BulkOperationResult => ({
+  operationInput: {
+    operationType: BulkOperationType.Patch,
+    id,
+    resourceBody: { operations: [{ op: 'set', path: '/name', value: 'テスト' }] },
+    partitionKey: 'pk-consignors',
+  } as any,
+  response: statusCode !== undefined ? ({ statusCode, requestCharge: 1 } as any) : undefined,
+  error: errorCode !== undefined ? ({ code: errorCode } as any) : undefined,
+})
+
 const validId = '6e0b379b-5998-4e91-ba20-443e861b5b8a'
 
 describe('toBulkResponse', () => {
@@ -129,6 +144,28 @@ describe('toBulkResponse', () => {
 
     it('response の statusCode を含む', async () => {
       const result = await toBulkResponse(req, async () => [makeReplaceResult(validId, 200)], null)
+      expect((result.jsonBody as any).results[0].statusCode).toBe(200)
+    })
+  })
+
+  describe('Patch 操作', () => {
+    it('id を operationInput から直接取得する', async () => {
+      const result = await toBulkResponse(req, async () => [makePatchResult(validId, 200)], null)
+      expect((result.jsonBody as any).results[0].id).toBe(validId)
+    })
+
+    it('statusCode 200 のとき success: true', async () => {
+      const result = await toBulkResponse(req, async () => [makePatchResult(validId, 200)], null)
+      expect((result.jsonBody as any).results[0].success).toBe(true)
+    })
+
+    it('statusCode 200 以外のとき success: false', async () => {
+      const result = await toBulkResponse(req, async () => [makePatchResult(validId, 412)], null)
+      expect((result.jsonBody as any).results[0].success).toBe(false)
+    })
+
+    it('response の statusCode を含む', async () => {
+      const result = await toBulkResponse(req, async () => [makePatchResult(validId, 200)], null)
       expect((result.jsonBody as any).results[0].statusCode).toBe(200)
     })
   })

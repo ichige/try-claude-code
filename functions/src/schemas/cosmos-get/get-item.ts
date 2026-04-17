@@ -1,4 +1,4 @@
-import { itemParamsSchema } from './item-params'
+import { itemParamsSchema } from '../item-params'
 
 /**
  * getItem エンドポイントのパスパラメータスキーマ。

@@ -498,4 +498,147 @@ id は不要らしい。
 こちらも所要時間は30分程度。  
 `schemas` が溢れてきたので、あとで対応したいところ。
 
+### bulkUpdateItems
 
+```markdown
+`functions/src/routes/cosmos-update.ts` の bulkUpdateItems を実装してください。
+- デザインは `actions/bulk-replace-items.ts` とほぼ一緒なので参考にしてください。
+- 可能であれば、`schemas/bulk-replace-items.ts` と同じように、スキーマの設定を共通化してください。
+    - schema で適切な `operationType` を設定してください。
+    - `isDeleted` や `deletedAt` も対応が必要です。
+- レスポンスは toBulkResponse を利用して、`operationInput.operationType` の分岐を適切に追加して対応してください。
+```
+
+なんと命令してないのに、テストコードからHTTPリクエストまで作ってくれた。  
+なんておりこうさんなんだ！とか思いつつも、修正があるとトークンを無駄に消費することになるので、貧乏人目線からは「まだやってくれるな!」みたいな気持ちにはなる。
+
+しかし見たところ、大きな問題はなさそう。  
+やはりサンプルコードがあると精度が上がるという事かな。
+
+実行しみたところエラーがあったので修正させる。
+
+エラーもあったので45分ほどで完成。
+
+### 微調整など
+
+```markdown
+- `src/schemas` 配下が散らかってきたので、`src/routes` の構成に合わせて1段階ネストしたフォルダ構成に変更してみてくれ。
+- 今更ながら functions に Linter を整備しわすれたので、追加してほしい。
+- `schemas/cosmos-update/replace-item.ts` で、`createdAt` を必須にしてほしい。
+- `cratedAt` の型は、日付型にもできるのか？例) 2026-04-17T04:46:53.198Z
+- 同様に、`replace-item.ts` で `isDeleted` と `deletedAt` も必須にするが、`deletedAt` は null 許容にしたい。
+```
+
+さらに自己レビューをお願いする。
+
+```markdown
+`functions/src/routes/cosmos-get.ts` の `cosmos-get` ルートの実装において、気になる点はあるか？
+```
+
+2点指摘があった。
+
+> readAll().fetchAll() はパーティション内の全件を一度にメモリに展開します。件数が増えると応答サイズ・メモリ・タイムアウ
+トのリスクがあります。ページネーション（continuationToken）の対応が将来的には必要になります。
+
+アプリの要件として全件取得するケースが多いが、限界があるかも？
+
+```markdown
+`readAll().fetchAll()` では、取得件数に最大リミットがあったりするか？
+```
+
+リミットがないとの説明だったので、保険的に10000件とか入れても良いかもしれない。  
+現時点では対応なし。
+
+>  isDeleted: true の論理削除済みアイテムも一覧に混入します。update-item / replace-item で isDeleted
+を管理しているなら、クエリ側でも WHERE c.isDeleted = false 相当のフィルタが必要になるはずです。readAll()
+はクエリを指定できないので、items.query() への切り替えも合わせて検討が必要です。
+
+こちらもアプリ上で表示・非表示を制御するので、取得時に isDeleted を見る必要はなし。
+
+```markdown
+`functions/src/routes/cosmos-get.ts` の `cosmos-list` ルートの実装において、気になる点はあるか？
+```
+
+pk がないことに懸念があるとの事だが、完全な全件取得とpk指定の取得があるという理由があるので、この指摘も問題なし。
+
+```markdown
+`functions/src/routes/cosmos-create.ts` の `cosmos-create` ルートの実装において、気になる点はあるか？
+```
+
+>  replace-item.ts のときに「SDK は失敗時に例外を投げるので !resource チェックは不要、return resource!
+で十分」という話をしました。create-item.ts だけ古いパターンのままです。
+
+ここは修正してもらう。
+
+> createItemBodySchema がファクトリ関数のため safeBody の型が推論できず、unknown
+経由で無理やりキャストしています。他のアクション（replace-item.ts など）では (req as
+EnrichedRequestBody<...>).safeBody と直接キャストしているのに、ここだけ ReturnType<typeof createItemBodySchema>
+を使っていて一貫性がありません。
+
+これも修正してもらう。初期時に作ったので洗練されてなかった系かな。
+
+しかし言及するわりに、イイ感じに修正出来ないのは笑うしかない。  
+何度も指示を繰り返してやっと修正できた。
+
+```markdown
+`functions/src/routes/cosmos-create.ts` の `cosmos-bulk-create` ルートの実装において、気になる点はあるか？
+```
+
+上記で修正した内容で同じ部分があるとの指摘があったが、schema 層と action 層でのデータの取り扱いに違いがあると説明してあげた。
+
+```markdown
+`functions/src/routes/cosmos-update.ts` の `cosmos-replace` ルートの実装において、気になる点はあるか？
+```
+
+いくつかキャストが必要な点が気になるようだが、cosmos 側の型定義の都合で今はこのままが良さそうとのこと。
+
+```markdown
+`functions/src/routes/cosmos-update.ts` の `cosmos-bulk-replace` ルートの実装において、気になる点はあるか？
+```
+
+zod の利用で少々気になる点があるらしいが、これも zod の仕様上仕方ないなということで放置。  
+※ zod がコンテキストを注入しない点が使いづらい。
+
+```markdown
+`functions/src/routes/cosmos-update.ts` の `cosmos-update` ルートの実装において、気になる点はあるか？
+```
+
+これも一部アサーションが気になるとのこと。  
+String でラップすることで解決。
+
+```markdown
+`functions/src/routes/cosmos-update.ts` の `cosmos-bulk-update` ルートの実装において、気になる点はあるか？
+```
+
+こちらも他の実装と同じような部分で、現状は害なしとの判断。
+
+```markdown
+`functions/src/routes/cosmos-delete.ts` の `cosmos-delete` ルートの実装において、気になる点はあるか？
+```
+
+204 No Content がいいとか。直しておく。
+
+```markdown
+`functions/src/routes/cosmos-delete.ts` の `cosmos-bulk-delete` ルートの実装において、気になる点はあるか？
+```
+
+気になる点はなしとのこと。
+
+### OpenAPI スキーマ生成
+
+```markdown
+`functions/src/routes` の OpenAPI スキーマを作って、`functions` のルートへ保存してください。
+- hello-world は除外してOK。
+- 認証はMSアカウントのアクセストークンによる Authorization になる予定。
+- host は localhost:7071 でOK
+```
+
+一発でイケルかと思いきや、微妙なミスをした。
+バリデーションエラーの型も違ったので直してもらった。
+500エラーも追加したいなと言ったところで、セッション切れた。  
+レビューはコストがかかるのかな？
+
+しかし OpenAPIスキーマが数分で出来てしまうとか、とんでもないよね。  
+手で書いてると脳がバグるし、非常にストレスも溜まるし、なんと言っても実装と乖離するので保守が大変。  
+しかし AI に頼むと瞬殺やで？  
+※ もちろんソースコードもわかりやすくないとダメやけど。

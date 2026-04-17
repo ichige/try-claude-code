@@ -1,0 +1,127 @@
+# 正常バルク部分更新
+PATCH http://localhost:7071/api/bulk-update/Consignors
+Content-Type: application/json
+
+[
+  {
+    "id": "92b5c8cd-9d8d-4c8b-8c60-f1047c821d16",
+    "pk": "pk-consignors",
+    "_etag": "\"a20268e5-0000-2400-0000-69e18c0b0000\"",
+    "paymentRate": 95,
+    "note": "バルク部分更新テスト"
+  },
+  {
+    "id": "a0b6c9be-9223-487e-b972-7e0f948bf760",
+    "pk": "pk-consignors",
+    "_etag": "\"a20269e5-0000-2400-0000-69e18c0b0000\"",
+    "paymentRate": 85
+  }
+]
+
+###
+
+# 正常バルク部分更新（isDeleted: true → 論理削除）
+PATCH http://localhost:7071/api/bulk-update/Consignors
+Content-Type: application/json
+
+[
+  {
+    "id": "92b5c8cd-9d8d-4c8b-8c60-f1047c821d16",
+    "pk": "pk-consignors",
+    "_etag": "\"a5029903-0000-2400-0000-69e1ba6f0000\"",
+    "isDeleted": true
+  }
+]
+
+###
+
+# 正常バルク部分更新（isDeleted: false → 論理削除解除）
+PATCH http://localhost:7071/api/bulk-update/Consignors
+Content-Type: application/json
+
+[
+  {
+    "id": "92b5c8cd-9d8d-4c8b-8c60-f1047c821d16",
+    "pk": "pk-consignors",
+    "_etag": "\"a502990a-0000-2400-0000-69e1bb160000\"",
+    "isDeleted": false
+  }
+]
+
+###
+
+# 一部 _etag が不一致（success: false が混在）
+PATCH http://localhost:7071/api/bulk-update/Consignors
+Content-Type: application/json
+
+[
+  {
+    "id": "92b5c8cd-9d8d-4c8b-8c60-f1047c821d16",
+    "pk": "pk-consignors",
+    "_etag": "\"a502970b-0000-2400-0000-69e1bb3b0000\"",
+
+    "paymentRate": 95
+  },
+  {
+    "id": "a0b6c9be-9223-487e-b972-7e0f948bf760",
+    "pk": "pk-consignors",
+    "_etag": "\"00000000-0000-0000-0000-000000000000\"",
+    "paymentRate": 85
+  }
+]
+
+###
+
+# 400（_etag 未指定）
+PATCH http://localhost:7071/api/bulk-update/Consignors
+Content-Type: application/json
+
+[
+  {
+    "id": "92b5c8cd-9d8d-4c8b-8c60-f1047c821d16",
+    "pk": "pk-consignors",
+    "paymentRate": 95
+  }
+]
+
+###
+
+# 400（isDeleted に boolean 以外）
+PATCH http://localhost:7071/api/bulk-update/Consignors
+Content-Type: application/json
+
+[
+  {
+    "id": "92b5c8cd-9d8d-4c8b-8c60-f1047c821d16",
+    "pk": "pk-consignors",
+    "_etag": "\"your-etag-here\"",
+    "isDeleted": "true"
+  }
+]
+
+###
+
+# 400（無効な UUID を含む）
+PATCH http://localhost:7071/api/bulk-update/Consignors
+Content-Type: application/json
+
+[
+  { "id": "not-a-uuid", "pk": "pk-consignors", "_etag": "\"your-etag-here\"" }
+]
+
+###
+
+# 400（無効なコンテナ名）
+PATCH http://localhost:7071/api/bulk-update/Unknown
+Content-Type: application/json
+
+[
+  {
+    "id": "92b5c8cd-9d8d-4c8b-8c60-f1047c821d16",
+    "pk": "pk-consignors",
+    "_etag": "\"your-etag-here\"",
+    "paymentRate": 95
+  }
+]
+
+###

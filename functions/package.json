@@ -12,6 +12,8 @@
     "dev": "func start",
     "predev": "npm run build",
     "postinstall": "ln -sf ../../packages/shared/src src/shared",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix",
     "format": "prettier --write \"src/**/*.ts\"",
     "format:check": "prettier --check \"src/**/*.ts\"",
     "test": "vitest run",
@@ -26,8 +28,10 @@
   "devDependencies": {
     "@types/node": "^24.12.2",
     "esbuild": "^0.28.0",
+    "eslint": "^10.2.0",
     "prettier": "^3.8.3",
     "typescript": "^5.0.0",
+    "typescript-eslint": "^8.58.2",
     "vitest": "^4.1.4"
   },
   "engines": {

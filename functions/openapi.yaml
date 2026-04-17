@@ -1,0 +1,572 @@
+openapi: 3.1.0
+info:
+  title: Cosmos DB REST API
+  version: 0.0.1
+
+servers:
+  - url: http://localhost:7071/api
+
+security:
+  - bearerAuth: []
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: Microsoft アカウントのアクセストークン
+
+  parameters:
+    container:
+      name: container
+      in: path
+      required: true
+      schema:
+        type: string
+        enum: [Consignees, Carriers, Forwarders, Consignors]
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    pk:
+      name: pk
+      in: path
+      required: true
+      schema:
+        type: string
+      description: "省略時はコンテナ名から導出（例: Consignors → pk-consignors）"
+
+  schemas:
+    CosmosItem:
+      type: object
+      required: [id, pk, createdAt, updatedAt, deletedAt, isDeleted]
+      properties:
+        id:
+          type: string
+          format: uuid
+        pk:
+          type: string
+        _etag:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        deletedAt:
+          type: string
+          format: date-time
+          nullable: true
+        isDeleted:
+          type: boolean
+      additionalProperties: true
+
+    BulkResult:
+      type: object
+      required: [id, success, statusCode]
+      properties:
+        id:
+          type: string
+          format: uuid
+        success:
+          type: boolean
+        statusCode:
+          type: integer
+
+    BulkResponse:
+      type: object
+      required: [results]
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/BulkResult'
+
+    ValidationError:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+          example: Validation Error
+        details:
+          type: array
+          items:
+            type: object
+            required: [message]
+            properties:
+              origin:
+                type: string
+              code:
+                type: string
+              format:
+                type: string
+              pattern:
+                type: string
+              path:
+                type: array
+                items:
+                  oneOf:
+                    - type: string
+                    - type: integer
+              message:
+                type: string
+
+    NotFoundError:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+          example: Not Found
+
+    PreconditionFailedError:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+          example: Precondition Failed
+
+    InternalServerError:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+          example: Internal Server Error
+
+paths:
+  /item/{container}/{id}/{pk}:
+    get:
+      operationId: getItem
+      summary: アイテム1件取得
+      parameters:
+        - $ref: '#/components/parameters/container'
+        - $ref: '#/components/parameters/id'
+        - $ref: '#/components/parameters/pk'
+      responses:
+        '200':
+          description: 取得成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CosmosItem'
+        '400':
+          description: バリデーションエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '404':
+          description: アイテムが存在しない
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+        '500':
+          description: サーバ内部エラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /item-list/{container}/{pk}:
+    get:
+      operationId: listItems
+      summary: アイテム一覧取得
+      parameters:
+        - $ref: '#/components/parameters/container'
+        - $ref: '#/components/parameters/pk'
+      responses:
+        '200':
+          description: 取得成功
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CosmosItem'
+        '400':
+          description: バリデーションエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '500':
+          description: サーバ内部エラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /create-item/{container}:
+    post:
+      operationId: createItem
+      summary: アイテム作成
+      parameters:
+        - $ref: '#/components/parameters/container'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  format: uuid
+                  description: 省略時は自動発行
+                pk:
+                  type: string
+                  description: 省略時はコンテナ名から導出
+              additionalProperties: true
+      responses:
+        '200':
+          description: 作成成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CosmosItem'
+        '400':
+          description: バリデーションエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '500':
+          description: サーバ内部エラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /bulk-create/{container}:
+    post:
+      operationId: bulkCreateItems
+      summary: アイテムバルク作成
+      parameters:
+        - $ref: '#/components/parameters/container'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    description: 省略時は自動発行
+                  pk:
+                    type: string
+                    description: 省略時はコンテナ名から導出
+                additionalProperties: true
+      responses:
+        '200':
+          description: バルク作成結果
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BulkResponse'
+        '400':
+          description: バリデーションエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '500':
+          description: サーバ内部エラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /delete-item/{container}/{id}/{pk}:
+    delete:
+      operationId: deleteItem
+      summary: アイテム物理削除
+      parameters:
+        - $ref: '#/components/parameters/container'
+        - $ref: '#/components/parameters/id'
+        - $ref: '#/components/parameters/pk'
+      responses:
+        '204':
+          description: 削除成功
+        '400':
+          description: バリデーションエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '404':
+          description: アイテムが存在しない
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+        '500':
+          description: サーバ内部エラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /bulk-delete/{container}:
+    post:
+      operationId: bulkDeleteItems
+      summary: アイテムバルク物理削除
+      parameters:
+        - $ref: '#/components/parameters/container'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  pk:
+                    type: string
+      responses:
+        '200':
+          description: バルク削除結果
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BulkResponse'
+        '400':
+          description: バリデーションエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '500':
+          description: サーバ内部エラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /replace-item/{container}/{id}/{pk}:
+    post:
+      operationId: replaceItem
+      summary: アイテム全置換
+      parameters:
+        - $ref: '#/components/parameters/container'
+        - $ref: '#/components/parameters/id'
+        - $ref: '#/components/parameters/pk'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  format: uuid
+                pk:
+                  type: string
+                _etag:
+                  type: string
+                createdAt:
+                  type: string
+                  format: date-time
+                isDeleted:
+                  type: boolean
+                deletedAt:
+                  type: string
+                  format: date-time
+                  nullable: true
+              additionalProperties: true
+      responses:
+        '200':
+          description: 置換成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CosmosItem'
+        '400':
+          description: バリデーションエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '404':
+          description: アイテムが存在しない
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+        '412':
+          description: etag 不一致（楽観的同時実行制御エラー）
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PreconditionFailedError'
+        '500':
+          description: サーバ内部エラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /bulk-replace/{container}:
+    post:
+      operationId: bulkReplaceItems
+      summary: アイテムバルク全置換
+      parameters:
+        - $ref: '#/components/parameters/container'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  pk:
+                    type: string
+                  _etag:
+                    type: string
+                  createdAt:
+                    type: string
+                    format: date-time
+                  isDeleted:
+                    type: boolean
+                  deletedAt:
+                    type: string
+                    format: date-time
+                    nullable: true
+                additionalProperties: true
+      responses:
+        '200':
+          description: バルク置換結果
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BulkResponse'
+        '400':
+          description: バリデーションエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '500':
+          description: サーバ内部エラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /update-item/{container}/{id}/{pk}:
+    patch:
+      operationId: updateItem
+      summary: アイテム部分更新
+      parameters:
+        - $ref: '#/components/parameters/container'
+        - $ref: '#/components/parameters/id'
+        - $ref: '#/components/parameters/pk'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                _etag:
+                  type: string
+                isDeleted:
+                  type: boolean
+              additionalProperties: true
+      responses:
+        '200':
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CosmosItem'
+        '400':
+          description: バリデーションエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '404':
+          description: アイテムが存在しない
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+        '412':
+          description: etag 不一致（楽観的同時実行制御エラー）
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PreconditionFailedError'
+        '500':
+          description: サーバ内部エラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /bulk-update/{container}:
+    patch:
+      operationId: bulkUpdateItems
+      summary: アイテムバルク部分更新
+      parameters:
+        - $ref: '#/components/parameters/container'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  pk:
+                    type: string
+                  _etag:
+                    type: string
+                  isDeleted:
+                    type: boolean
+                additionalProperties: true
+      responses:
+        '200':
+          description: バルク更新結果
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BulkResponse'
+        '400':
+          description: バリデーションエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '500':
+          description: サーバ内部エラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'

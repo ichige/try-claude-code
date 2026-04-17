@@ -41,7 +41,7 @@ export async function updateItem(
           .item(id, pk)
           .patch<CosmosItem & Resource>(
             operations,
-            { accessCondition: { type: 'IfMatch', condition: _etag as string } },
+            { accessCondition: { type: 'IfMatch', condition: String(_etag) } },
           )
         return resource!
       } catch (e) {

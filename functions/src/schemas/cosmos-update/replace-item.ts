@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { itemParamsSchema } from './item-params'
+import { itemParamsSchema } from '../item-params'
 
 /**
  * replaceItem エンドポイントのパスパラメータスキーマ。
@@ -19,6 +19,9 @@ export const replaceItemSchema = z
     id: z.uuid(),
     pk: z.string(),
     _etag: z.string(),
+    createdAt: z.iso.datetime(),
+    isDeleted: z.boolean(),
+    deletedAt: z.iso.datetime().nullable(),
   })
   .catchall(z.unknown())
   .transform(({ updatedAt: _, ...rest }) => ({
