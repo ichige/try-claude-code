@@ -467,3 +467,35 @@ body は create-item を参考にしてください。
 今回はわりとあっさり完成した。  
 所要時間は30分程度ではあるが、人間側にはリフレッシュが必要である。  
 
+### updateItem
+
+```markdown
+`functions/src/routes/cosmos-update.ts` の updateItem を実装して下さい。
+- 基本的に `replaceItem` と同じ構成で、`patch` メソッドを利用するくらいしか違いがないかと。
+- body の schema で `isDeleted` が boolean 型であることを検証してください。オプションフィールドです。
+- `isDeleted` が true の場合は `deletedAt` を現在時刻で上書きしてください。
+    - 同様に `isDeleted` が false であれば `deletedAt` は null で上書きしてください。
+    - zod での対応が難しい場合、`actions/middleware` に新規でミドルウェアを作成してください。
+- レスポンスは replaceItem と同様で、`toResponse` を使ってください。
+```
+
+いくつか怪しいところがある。
+
+```markdown
+- `patch` メソッドの body には `id` は不要なのでしょうか？
+- そもそも `id` の変更は `replace` でも不可能なのでは？
+- では間違いなく `patch` では `id` 不要なんですね？微妙な気がしないでもないですが。
+```
+
+id は不要らしい。  
+そもそも replace で id を要求するのが微妙なんだけど。
+
+```markdown
+- 例のごとく追加した schema のテストコードを作成してください。
+- `http-tests` に updateItem のリクエストを作成してください。
+```
+
+こちらも所要時間は30分程度。  
+`schemas` が溢れてきたので、あとで対応したいところ。
+
+
