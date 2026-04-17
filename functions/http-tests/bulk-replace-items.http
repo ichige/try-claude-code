@@ -1,0 +1,89 @@
+# 正常バルク置換
+POST http://localhost:7071/api/bulk-replace/Consignors
+Content-Type: application/json
+
+[
+  {
+    "id": "92b5c8cd-9d8d-4c8b-8c60-f1047c821d16",
+    "pk": "pk-consignors",
+    "_etag": "\"a102f9f2-0000-2400-0000-69e16df10000\"",
+    "code": "test-0033",
+    "name": "荷主C（更新）",
+    "invoiceNumber": "T10003",
+    "paymentRate": 78
+  },
+  {
+    "id": "a0b6c9be-9223-487e-b972-7e0f948bf760",
+    "pk": "pk-consignors",
+    "_etag": "\"a102faf2-0000-2400-0000-69e16df10000\"",
+    "code": "test-0034",
+    "name": "荷主D（更新）",
+    "invoiceNumber": "T10004",
+    "paymentRate": 88
+  }
+]
+
+###
+
+# 一部 _etag が不一致（success: false が混在）
+POST http://localhost:7071/api/bulk-replace/Consignors
+Content-Type: application/json
+
+[
+  {
+    "id": "92b5c8cd-9d8d-4c8b-8c60-f1047c821d16",
+    "pk": "pk-consignors",
+    "_etag": "\"your-etag-here\"",
+    "code": "test-0033",
+    "name": "荷主C（更新）"
+  },
+  {
+    "id": "a0b6c9be-9223-487e-b972-7e0f948bf760",
+    "pk": "pk-consignors",
+    "_etag": "\"00000000-0000-0000-0000-000000000000\"",
+    "code": "test-0034",
+    "name": "荷主D（更新）"
+  }
+]
+
+###
+
+# 400（_etag 未指定）
+POST http://localhost:7071/api/bulk-replace/Consignors
+Content-Type: application/json
+
+[
+  {
+    "id": "92b5c8cd-9d8d-4c8b-8c60-f1047c821d16",
+    "pk": "pk-consignors",
+    "code": "test-0033",
+    "name": "荷主C（更新）"
+  }
+]
+
+###
+
+# 400（無効な UUID を含む）
+POST http://localhost:7071/api/bulk-replace/Consignors
+Content-Type: application/json
+
+[
+  { "id": "not-a-uuid", "pk": "pk-consignors", "_etag": "\"your-etag-here\"" }
+]
+
+###
+
+# 400（無効なコンテナ名）
+POST http://localhost:7071/api/bulk-replace/Unknown
+Content-Type: application/json
+
+[
+  {
+    "id": "92b5c8cd-9d8d-4c8b-8c60-f1047c821d16",
+    "pk": "pk-consignors",
+    "_etag": "\"your-etag-here\"",
+    "name": "荷主C（更新）"
+  }
+]
+
+###

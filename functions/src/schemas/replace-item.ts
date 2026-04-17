@@ -8,13 +8,13 @@ import { itemParamsSchema } from './item-params'
 export const replaceItemParamsSchema = itemParamsSchema
 
 /**
- * replaceItem エンドポイントのリクエストボディスキーマ。
+ * 単一アイテムの置換スキーマ（replaceItemBodySchema / bulkReplaceItemsBodySchema で共用）。
  * id / pk / _etag は必須。
  * updatedAt はリクエスト値を無視してサーバ側で現在時刻に上書きする。
  * その他のフィールドは任意の値を受け付ける。
- * _etag はアクションで accessCondition に使用するためそのまま出力に残す。
+ * _etag はアクションで accessCondition / ifMatch に使用するためそのまま出力に残す。
  */
-export const replaceItemBodySchema = z
+export const replaceItemSchema = z
   .object({
     id: z.uuid(),
     pk: z.string(),
@@ -25,3 +25,6 @@ export const replaceItemBodySchema = z
     ...rest,
     updatedAt: new Date().toISOString(),
   }))
+
+/** replaceItem エンドポイントのリクエストボディスキーマ。 */
+export const replaceItemBodySchema = replaceItemSchema

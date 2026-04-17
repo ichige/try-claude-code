@@ -1,11 +1,11 @@
 import { BulkOperationType } from '@azure/cosmos'
-import type { BulkOperationResult, CreateOperationInput, DeleteOperationInput } from '@azure/cosmos'
+import type { BulkOperationResult, CreateOperationInput, DeleteOperationInput, ReplaceOperationInput } from '@azure/cosmos'
 import type { HttpRequest, HttpResponseInit } from '@azure/functions'
 import type { AsyncMiddleware } from '../../shared'
 
 /**
  * BulkOperationResult の operationInput から id を取得する。
- * Create 操作は resourceBody.id、Delete 操作は id を参照する。
+ * Create 操作は resourceBody.id、Delete / Replace 操作は id を参照する。
  * @param operationInput - バルク操作の入力
  * @returns アイテム ID
  */
@@ -15,6 +15,8 @@ function resolveId(operationInput: BulkOperationResult['operationInput']): strin
       return String((operationInput as CreateOperationInput).resourceBody.id)
     case BulkOperationType.Delete:
       return (operationInput as DeleteOperationInput).id
+    case BulkOperationType.Replace:
+      return (operationInput as ReplaceOperationInput).id
     default:
       throw new Error(`Unsupported operationType: ${operationInput.operationType}`)
   }
@@ -29,6 +31,7 @@ function resolveSuccessCode(operationInput: BulkOperationResult['operationInput'
   switch (operationInput.operationType) {
     case BulkOperationType.Create: return 201
     case BulkOperationType.Delete: return 204
+    case BulkOperationType.Replace: return 200
     default:
       throw new Error(`Unsupported operationType: ${operationInput.operationType}`)
   }
