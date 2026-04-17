@@ -585,3 +585,41 @@ EnrichedRequestBody<...>).safeBody と直接キャストしているのに、こ
 ```
 
 上記で修正した内容で同じ部分があるとの指摘があったが、schema 層と action 層でのデータの取り扱いに違いがあると説明してあげた。
+
+```markdown
+`functions/src/routes/cosmos-update.ts` の `cosmos-replace` ルートの実装において、気になる点はあるか？
+```
+
+いくつかキャストが必要な点が気になるようだが、cosmos 側の型定義の都合で今はこのままが良さそうとのこと。
+
+```markdown
+`functions/src/routes/cosmos-update.ts` の `cosmos-bulk-replace` ルートの実装において、気になる点はあるか？
+```
+
+zod の利用で少々気になる点があるらしいが、これも zod の仕様上仕方ないなということで放置。  
+※ zod がコンテキストを注入しない点が使いづらい。
+
+```markdown
+`functions/src/routes/cosmos-update.ts` の `cosmos-update` ルートの実装において、気になる点はあるか？
+```
+
+これも一部アサーションが気になるとのこと。  
+String でラップすることで解決。
+
+```markdown
+`functions/src/routes/cosmos-update.ts` の `cosmos-bulk-update` ルートの実装において、気になる点はあるか？
+```
+
+こちらも他の実装と同じような部分で、現状は害なしとの判断。
+
+```markdown
+`functions/src/routes/cosmos-delete.ts` の `cosmos-delete` ルートの実装において、気になる点はあるか？
+```
+
+204 No Content がいいとか。直しておく。
+
+```markdown
+`functions/src/routes/cosmos-delete.ts` の `cosmos-bulk-delete` ルートの実装において、気になる点はあるか？
+```
+
+気になる点はなしとのこと。
