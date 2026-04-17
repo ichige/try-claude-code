@@ -7,7 +7,7 @@ const validEtag = '"abc123"'
 const validCreatedAt = '2024-01-01T00:00:00.000Z'
 const isoPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z$/
 
-const validItem = { id: validId, pk: 'pk-consignors', _etag: validEtag, createdAt: validCreatedAt }
+const validItem = { id: validId, pk: 'pk-consignors', _etag: validEtag, createdAt: validCreatedAt, isDeleted: false, deletedAt: null }
 
 describe('bulkReplaceItemsParamsSchema', () => {
   it('有効なコンテナ名を受け入れる', () => {
@@ -84,6 +84,28 @@ describe('bulkReplaceItemSchema', () => {
     it('createdAt に ISO 日時以外の文字列を拒否する', () => {
       expect(bulkReplaceItemSchema.safeParse({ ...validItem, createdAt: 'not-a-date' }).success).toBe(false)
     })
+
+    it('isDeleted 未指定を拒否する', () => {
+      const { isDeleted: _, ...rest } = validItem
+      expect(bulkReplaceItemSchema.safeParse(rest).success).toBe(false)
+    })
+
+    it('deletedAt 未指定を拒否する', () => {
+      const { deletedAt: _, ...rest } = validItem
+      expect(bulkReplaceItemSchema.safeParse(rest).success).toBe(false)
+    })
+
+    it('deletedAt に null を受け入れる', () => {
+      expect(bulkReplaceItemSchema.safeParse({ ...validItem, deletedAt: null }).success).toBe(true)
+    })
+
+    it('deletedAt に ISO 日時文字列を受け入れる', () => {
+      expect(bulkReplaceItemSchema.safeParse({ ...validItem, isDeleted: true, deletedAt: validCreatedAt }).success).toBe(true)
+    })
+
+    it('deletedAt に ISO 日時以外の文字列を拒否する', () => {
+      expect(bulkReplaceItemSchema.safeParse({ ...validItem, deletedAt: 'not-a-date' }).success).toBe(false)
+    })
   })
 })
 
@@ -91,7 +113,7 @@ describe('bulkReplaceItemsBodySchema', () => {
   it('アイテム配列を受け入れる', () => {
     const result = bulkReplaceItemsBodySchema.safeParse([
       validItem,
-      { id: 'a42bf96f-1a69-4530-9575-d1e5181f8c86', pk: 'pk-consignors', _etag: '"def456"', createdAt: validCreatedAt },
+      { id: 'a42bf96f-1a69-4530-9575-d1e5181f8c86', pk: 'pk-consignors', _etag: '"def456"', createdAt: validCreatedAt, isDeleted: false, deletedAt: null },
     ])
     expect(result.success).toBe(true)
   })

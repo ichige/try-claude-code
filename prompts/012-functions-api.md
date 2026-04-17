@@ -526,6 +526,6 @@ id は不要らしい。
 - 今更ながら functions に Linter を整備しわすれたので、追加してほしい。
 - `schemas/cosmos-update/replace-item.ts` で、`createdAt` を必須にしてほしい。
 - `cratedAt` の型は、日付型にもできるのか？例) 2026-04-17T04:46:53.198Z
-- 同様に、`isDeleted` と `deletedAt` も必須にするが、`deletedAt` は null 許容にしたい。
+- 同様に、`replace-item.ts` で `isDeleted` と `deletedAt` も必須にするが、`deletedAt` は null 許容にしたい。
 
 ```

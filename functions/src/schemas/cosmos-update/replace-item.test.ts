@@ -49,7 +49,7 @@ describe('replaceItemParamsSchema', () => {
 })
 
 describe('replaceItemBodySchema', () => {
-  const validBody = { id: validId, pk: 'pk-consignors', _etag: validEtag, createdAt: validCreatedAt }
+  const validBody = { id: validId, pk: 'pk-consignors', _etag: validEtag, createdAt: validCreatedAt, isDeleted: false, deletedAt: null }
 
   describe('必須フィールドのバリデーション', () => {
     it('id / pk / _etag / createdAt がすべて揃った場合は受け入れる', () => {
@@ -78,6 +78,32 @@ describe('replaceItemBodySchema', () => {
 
     it('createdAt に ISO 日時以外の文字列を拒否する', () => {
       expect(replaceItemBodySchema.safeParse({ ...validBody, createdAt: 'not-a-date' }).success).toBe(false)
+    })
+
+    it('isDeleted 未指定を拒否する', () => {
+      const { isDeleted: _, ...rest } = validBody
+      expect(replaceItemBodySchema.safeParse(rest).success).toBe(false)
+    })
+
+    it('isDeleted に boolean 以外を拒否する', () => {
+      expect(replaceItemBodySchema.safeParse({ ...validBody, isDeleted: 'true' }).success).toBe(false)
+    })
+
+    it('deletedAt 未指定を拒否する', () => {
+      const { deletedAt: _, ...rest } = validBody
+      expect(replaceItemBodySchema.safeParse(rest).success).toBe(false)
+    })
+
+    it('deletedAt に null を受け入れる', () => {
+      expect(replaceItemBodySchema.safeParse({ ...validBody, deletedAt: null }).success).toBe(true)
+    })
+
+    it('deletedAt に ISO 日時文字列を受け入れる', () => {
+      expect(replaceItemBodySchema.safeParse({ ...validBody, isDeleted: true, deletedAt: validCreatedAt }).success).toBe(true)
+    })
+
+    it('deletedAt に ISO 日時以外の文字列を拒否する', () => {
+      expect(replaceItemBodySchema.safeParse({ ...validBody, deletedAt: 'not-a-date' }).success).toBe(false)
     })
   })
 

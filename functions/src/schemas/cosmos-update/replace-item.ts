@@ -20,6 +20,8 @@ export const replaceItemSchema = z
     pk: z.string(),
     _etag: z.string(),
     createdAt: z.iso.datetime(),
+    isDeleted: z.boolean(),
+    deletedAt: z.iso.datetime().nullable(),
   })
   .catchall(z.unknown())
   .transform(({ updatedAt: _, ...rest }) => ({
