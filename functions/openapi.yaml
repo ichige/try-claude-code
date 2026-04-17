@@ -34,7 +34,7 @@ components:
     pk:
       name: pk
       in: path
-      required: false
+      required: true
       schema:
         type: string
       description: "省略時はコンテナ名から導出（例: Consignors → pk-consignors）"
@@ -332,7 +332,6 @@ paths:
               type: array
               items:
                 type: object
-                required: [id, pk]
                 properties:
                   id:
                     type: string
@@ -373,7 +372,6 @@ paths:
           application/json:
             schema:
               type: object
-              required: [id, pk, _etag, createdAt, isDeleted, deletedAt]
               properties:
                 id:
                   type: string
@@ -438,7 +436,6 @@ paths:
               type: array
               items:
                 type: object
-                required: [id, pk, _etag, createdAt, isDeleted, deletedAt]
                 properties:
                   id:
                     type: string
@@ -491,7 +488,6 @@ paths:
           application/json:
             schema:
               type: object
-              required: [_etag]
               properties:
                 _etag:
                   type: string
@@ -544,7 +540,6 @@ paths:
               type: array
               items:
                 type: object
-                required: [id, pk, _etag]
                 properties:
                   id:
                     type: string
