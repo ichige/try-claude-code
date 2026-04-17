@@ -443,3 +443,27 @@ body は create-item を参考にしてください。
 ```
 
 計40分くらいで実装完了。
+
+### bulkReplaceItems
+
+```markdown
+`functions/src/routes/cosmos-update.ts` の bulkReplaceItems を実装してください。
+- 全体的な設計イメージは `actions/bulk-create-items.ts` を参考にしてください。
+- schema は `schemas/replace-item.ts` の配列版になります。
+    - `schemas/bulk-create-items.ts` と同様に、共通化できそうであれば実施してください。
+- レスポンスも同様に `toBulkResponse` ミドルウェアを利用してください。
+    - `toBulkResponse` 側では型による対応が必要なはずです。
+```
+
+だいぶ精度があがった感がある。  
+サンプルコードが増えたせいかな？
+
+```markdown
+- 例のごとく追加した `schemas` にテストコードを作ってください。
+    - 変更が入った `actions/middleware` のテストコードも必要であれば修正してください。
+- `http-tests` に bulkReplaceItems のリクエストを追加してください。
+```
+
+今回はわりとあっさり完成した。  
+所要時間は30分程度ではあるが、人間側にはリフレッシュが必要である。  
+
