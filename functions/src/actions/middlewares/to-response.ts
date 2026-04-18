@@ -1,6 +1,7 @@
 import type { Resource } from '@azure/cosmos'
 import type { HttpRequest, HttpResponseInit } from '@azure/functions'
 import type { AsyncMiddleware, CosmosItem } from '../../shared'
+import type { Passable } from '../../lib/passable'
 
 /**
  * Cosmos DB のシステムプロパティを除外する。
@@ -39,4 +40,30 @@ export const toResponses: AsyncMiddleware<HttpRequest, HttpResponseInit, (Cosmos
   async (req, next) => {
     const items = (await next(req)).map(stripSystemProps)
     return { status: 200, jsonBody: { items } }
+  }
+
+/**
+ * next が返した CosmosItem を passable.response にセットするミドルウェア。
+ * @param passable - パッサブルオブジェクト
+ * @param next - 次のミドルウェアまたは destination
+ * @returns passable
+ */
+export const toResponse2: AsyncMiddleware<Passable, Passable, CosmosItem & Resource> =
+  async (passable, next) => {
+    const item = stripSystemProps(await next(passable))
+    passable.response = { status: 200, jsonBody: { item } }
+    return passable
+  }
+
+/**
+ * next が返した CosmosItem 配列を passable.response にセットするミドルウェア。
+ * @param passable - パッサブルオブジェクト
+ * @param next - 次のミドルウェアまたは destination
+ * @returns passable
+ */
+export const toResponses2: AsyncMiddleware<Passable, Passable, (CosmosItem & Resource)[]> =
+  async (passable, next) => {
+    const items = (await next(passable)).map(stripSystemProps)
+    passable.response = { status: 200, jsonBody: { items } }
+    return passable
   }

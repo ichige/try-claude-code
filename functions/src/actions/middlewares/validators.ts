@@ -39,9 +39,9 @@ export const validateQuery2 = <T extends Record<string, string>>(schema: ZodType
  * @param schema - 検証に使用する Zod スキーマ
  * @returns ミドルウェア関数
  */
-export const validateBody2 = <T extends Record<string, unknown>>(schema: ZodType<T>) =>
+export const validateBody2 = <T>(schema: ZodType<T>) =>
   async (passable: Passable, next: NextFunction<Passable, Passable>): Promise<Passable> => {
     const result = schema.safeParse(await passable.request.json())
     if (!result.success) throw new ValidationError(result.error)
-    return next(passable.mergeBody(result.data))
+    return next(passable.setBody(result.data))
   }

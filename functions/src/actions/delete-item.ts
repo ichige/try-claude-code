@@ -1,11 +1,11 @@
 import { ErrorResponse } from '@azure/cosmos'
 import type { HttpRequest, HttpResponseInit, InvocationContext } from '@azure/functions'
-import type { z } from 'zod'
 import { NotFoundError } from '../errors'
 import { getDatabase } from '../lib/cosmos'
+import { Passable } from '../lib/passable'
 import { deleteItemParamsSchema } from '../schemas'
 import { Pipeline } from '../shared'
-import { type EnrichedRequest, validateParams } from './middlewares'
+import { validateParams2 } from './middlewares'
 
 /**
  * アイテム物理削除。
@@ -20,18 +20,19 @@ export async function deleteItem(
   const { container, id } = request.params
   context.log(`delete item: container=${container}, id=${id}`)
 
-  return Pipeline.send(request)
-    .pipe(validateParams, deleteItemParamsSchema)
-    .then(async (req) => {
-      const { container, id, pk } = (req as EnrichedRequest<z.infer<typeof deleteItemParamsSchema>>).safeData
+  const passable = await Pipeline.send(new Passable(request))
+    .pipe(validateParams2(deleteItemParamsSchema))
+    .then(async (p) => {
+      const { container, id, pk } = p.params
       try {
         await getDatabase().container(container).item(id, pk).delete()
       } catch (e) {
-        if (e instanceof ErrorResponse && Number(e.code) === 404) {
-          throw new NotFoundError()
-        }
+        if (e instanceof ErrorResponse && Number(e.code) === 404) throw new NotFoundError()
         throw e
       }
-      return { status: 204 }
+      p.response = { status: 204 }
+      return p
     })
+
+  return passable.response
 }

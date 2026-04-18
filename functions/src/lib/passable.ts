@@ -5,18 +5,16 @@ import type { HttpRequest, HttpResponseInit } from '@azure/functions'
  * HTTP リクエストと Zod 検証済みのデータをまとめて保持する。
  * @typeParam P - Zod 検証済みの path パラメータの型
  * @typeParam Q - Zod 検証済みの query パラメータの型
- * @typeParam B - Zod 検証済みの body の型
  */
 export class Passable<
   P extends Record<string, string> = Record<string, string>,
   Q extends Record<string, string> = Record<string, string>,
-  B extends Record<string, unknown> = Record<string, unknown>,
 > {
   request: HttpRequest
   response: HttpResponseInit
   params: P
   query: Q
-  body: B
+  body: unknown
 
   /**
    * @param request - Azure Functions の HTTP リクエスト
@@ -29,7 +27,7 @@ export class Passable<
     }
     this.params = {} as P
     this.query = {} as Q
-    this.body = {} as B
+    this.body = {}
   }
 
   /**
@@ -53,12 +51,22 @@ export class Passable<
   }
 
   /**
-   * body をマージする。
+   * body をマージする。body がオブジェクトの場合に使用する。
    * @param data - マージするデータ
    * @returns this
    */
   mergeBody(data: Record<string, unknown>): this {
-    Object.assign(this.body, data)
+    Object.assign(this.body as Record<string, unknown>, data)
+    return this
+  }
+
+  /**
+   * body をセットする。オブジェクト・配列など任意の値に使用する。
+   * @param data - セットするデータ
+   * @returns this
+   */
+  setBody(data: unknown): this {
+    this.body = data
     return this
   }
 
@@ -83,12 +91,12 @@ export class Passable<
   }
 
   /**
-   * body をフィールド指定で取得する。
+   * body をフィールド指定で取得する。body がオブジェクトの場合に使用する。
    * @param key - 取得するフィールド名
    * @param defaultValue - フィールドが存在しない場合のデフォルト値
    * @returns フィールドの値
    */
-  getBody<V = unknown>(key: keyof B & string, defaultValue?: V): V | undefined {
-    return (this.body[key] as V | undefined) ?? defaultValue
+  getBody<V = unknown>(key: string, defaultValue?: V): V | undefined {
+    return ((this.body as Record<string, unknown>)[key] as V | undefined) ?? defaultValue
   }
 }

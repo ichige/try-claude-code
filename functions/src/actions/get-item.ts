@@ -6,7 +6,7 @@ import { Passable } from '../lib/passable'
 import { getItemParamsSchema } from '../schemas'
 import { Pipeline } from '../shared'
 import type { CosmosItem } from '../shared'
-import { validateParams2 } from './middlewares'
+import { toResponse2, validateParams2 } from './middlewares'
 
 /**
  * アイテム1件取得。
@@ -23,6 +23,7 @@ export async function getItem(
 
   const passable = await Pipeline.send(new Passable(request))
     .pipe(validateParams2(getItemParamsSchema))
+    .pipe(toResponse2)
     .then(async (p) => {
       const { container, id, pk } = p.params
       const { resource } = await getDatabase()
@@ -30,9 +31,7 @@ export async function getItem(
         .item(id, pk)
         .read<CosmosItem & Resource>()
       if (!resource) throw new NotFoundError()
-      const { _rid, _ts, _self, _attachments, ...item } = resource
-      p.response = { status: 200, jsonBody: { item } }
-      return p
+      return resource
     })
 
   return passable.response

@@ -69,4 +69,15 @@ Passable パターンを適用した validate-query が出来た。
 
 何故か全ルート適用したが、問題はなかったようである。
 
+```markdown
+同じく `functions/src/routes/cosmos-delete.ts` のルートも、Passable と新規validate関数を適用してみて。
+```
 
+今度はいまいちや。  
+`toResponse` も型を付けなおす必要があったようである。
+
+```markdown
+- `actions/middlewares/validate-body.ts` と `validateBody2` が同じであれば、配列だろうが検証可能なはずだろ？
+- 同様にレスポンスは `toResponses` が利用できるはずで、必要なら `toResponses2` を定義してくれ。
+- `actions/list-items.ts` と `actions/get-item.ts` にも toResponse2 を適用してくれ。
+```

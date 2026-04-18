@@ -5,7 +5,7 @@ import { Passable } from '../lib/passable'
 import { listItemsParamsSchema } from '../schemas'
 import { Pipeline } from '../shared'
 import type { CosmosItem } from '../shared'
-import { validateParams2 } from './middlewares'
+import { toResponses2, validateParams2 } from './middlewares'
 
 /**
  * アイテム一覧取得。
@@ -22,15 +22,14 @@ export async function listItems(
 
   const passable = await Pipeline.send(new Passable(request))
     .pipe(validateParams2(listItemsParamsSchema))
+    .pipe(toResponses2)
     .then(async (p) => {
       const { container, pk } = p.params
       const { resources } = await getDatabase()
         .container(container)
         .items.readAll<CosmosItem & Resource>({ partitionKey: pk })
         .fetchAll()
-      const items = (resources ?? []).map(({ _rid, _ts, _self, _attachments, ...item }) => item)
-      p.response = { status: 200, jsonBody: { items } }
-      return p
+      return resources ?? []
     })
 
   return passable.response
