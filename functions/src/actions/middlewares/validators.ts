@@ -14,7 +14,7 @@ export type SchemaOrFactory<T> = ZodType<T> | ((req: HttpRequest) => ZodType<T>)
  * @param schema - 検証に使用する Zod スキーマ
  * @returns ミドルウェア関数
  */
-export const validateParams2 = <T extends Record<string, string | undefined>>(schema: ZodType<T>) =>
+export const validateParams = <T extends Record<string, string | undefined>>(schema: ZodType<T>) =>
   async (passable: Passable, next: NextFunction<Passable, Passable>): Promise<Passable> => {
     const result = schema.safeParse(passable.request.params)
     if (!result.success) throw new ValidationError(result.error)

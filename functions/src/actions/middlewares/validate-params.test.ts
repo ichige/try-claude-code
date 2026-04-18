@@ -1,27 +1,32 @@
 import { describe, expect, it, vi } from 'vitest'
 import { z } from 'zod'
 import { ValidationError } from '../../errors'
-import { validateParams } from './validate-params'
+import { Passable } from '../../lib/passable'
+import { validateParams } from './validators'
 
-const createReq = (params: Record<string, string>, query: Record<string, string> = {}) =>
-  ({
-    params,
-    query: new URLSearchParams(query),
-  }) as any
+const createPassable = (params: Record<string, string>) =>
+  new Passable({ params, query: new URLSearchParams() } as any)
 
 const schema = z.object({ name: z.string().min(1) })
 
 describe('validateParams', () => {
-  it('検証成功時は safeData を付与して next へ渡す', async () => {
-    const req = createReq({ name: 'test' })
-    const next = vi.fn(async (r: any) => r)
-    await validateParams(req, next, schema)
-    expect(next).toHaveBeenCalledWith(expect.objectContaining({ safeData: { name: 'test' } }))
+  it('検証成功時は params にマージして next へ渡す', async () => {
+    const passable = createPassable({ name: 'test' })
+    const next = vi.fn(async (p: Passable) => p)
+    await validateParams(schema)(passable, next)
+    expect(next).toHaveBeenCalledWith(expect.objectContaining({ params: { name: 'test' } }))
   })
 
   it('検証失敗時は ValidationError をスローする', async () => {
-    const req = createReq({ name: '' })
-    await expect(validateParams(req, async (r) => r, schema)).rejects.toBeInstanceOf(ValidationError)
+    const passable = createPassable({ name: '' })
+    await expect(validateParams(schema)(passable, async (p) => p)).rejects.toBeInstanceOf(ValidationError)
   })
 
+  it('オプショナルフィールドが省略された場合も検証が通る', async () => {
+    const optionalSchema = z.object({ name: z.string(), pk: z.string().optional() })
+    const passable = createPassable({ name: 'test' })
+    const next = vi.fn(async (p: Passable) => p)
+    await validateParams(optionalSchema)(passable, next)
+    expect(next).toHaveBeenCalledWith(expect.objectContaining({ params: { name: 'test' } }))
+  })
 })

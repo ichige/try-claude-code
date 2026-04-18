@@ -6,7 +6,7 @@ import { Passable } from '../lib/passable'
 import { getItemParamsSchema } from '../schemas'
 import { Pipeline } from '../shared'
 import type { CosmosItem } from '../shared'
-import { toResponse2, validateParams2 } from './middlewares'
+import { toResponse2, validateParams } from './middlewares'
 
 /**
  * アイテム1件取得。
@@ -22,7 +22,7 @@ export async function getItem(
   context.log(`get item: container=${container}, id=${id}`)
 
   const passable = await Pipeline.send(new Passable(request))
-    .pipe(validateParams2(getItemParamsSchema))
+    .pipe(validateParams(getItemParamsSchema))
     .pipe(toResponse2)
     .then(async (p) => {
       const { container, id, pk } = p.params

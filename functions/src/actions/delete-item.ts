@@ -5,7 +5,7 @@ import { getDatabase } from '../lib/cosmos'
 import { Passable } from '../lib/passable'
 import { deleteItemParamsSchema } from '../schemas'
 import { Pipeline } from '../shared'
-import { validateParams2 } from './middlewares'
+import { validateParams } from './middlewares'
 
 /**
  * アイテム物理削除。
@@ -21,7 +21,7 @@ export async function deleteItem(
   context.log(`delete item: container=${container}, id=${id}`)
 
   const passable = await Pipeline.send(new Passable(request))
-    .pipe(validateParams2(deleteItemParamsSchema))
+    .pipe(validateParams(deleteItemParamsSchema))
     .then(async (p) => {
       const { container, id, pk } = p.params
       try {

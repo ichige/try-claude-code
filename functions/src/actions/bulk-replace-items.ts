@@ -4,7 +4,7 @@ import { getDatabase } from '../lib/cosmos'
 import { Passable } from '../lib/passable'
 import { bulkReplaceItemsBodySchema, bulkReplaceItemsParamsSchema } from '../schemas'
 import { Pipeline } from '../shared'
-import { toBulkResponse2, validateBody, validateParams2 } from './middlewares'
+import { toBulkResponse2, validateBody, validateParams } from './middlewares'
 
 /**
  * アイテムバルク全置換。
@@ -20,7 +20,7 @@ export async function bulkReplaceItems(
   context.log(`bulk replace items: container=${container}`)
 
   const passable = await Pipeline.send(new Passable(request))
-    .pipe(validateParams2(bulkReplaceItemsParamsSchema))
+    .pipe(validateParams(bulkReplaceItemsParamsSchema))
     .pipe(validateBody(bulkReplaceItemsBodySchema))
     .pipe(toBulkResponse2)
     .then(async (p) => {
