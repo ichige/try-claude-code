@@ -1,7 +1,11 @@
+import type { HttpRequest } from '@azure/functions'
 import type { ZodType } from 'zod'
 import { ValidationError } from '../../errors'
 import type { NextFunction } from '../../shared'
 import type { Passable } from '../../lib/passable'
+
+/** Zod スキーマ、または HttpRequest からスキーマを生成するファクトリ関数 */
+export type SchemaOrFactory<T> = ZodType<T> | ((req: HttpRequest) => ZodType<T>)
 
 /**
  * path パラメータを Zod スキーマで検証するミドルウェアを生成する。
@@ -39,9 +43,10 @@ export const validateQuery2 = <T extends Record<string, string>>(schema: ZodType
  * @param schema - 検証に使用する Zod スキーマ
  * @returns ミドルウェア関数
  */
-export const validateBody2 = <T>(schema: ZodType<T>) =>
+export const validateBody2 = <T>(schema: SchemaOrFactory<T>) =>
   async (passable: Passable, next: NextFunction<Passable, Passable>): Promise<Passable> => {
-    const result = schema.safeParse(await passable.request.json())
+    const resolved = typeof schema === 'function' ? schema(passable.request) : schema
+    const result = resolved.safeParse(await passable.request.json())
     if (!result.success) throw new ValidationError(result.error)
     return next(passable.setBody(result.data))
   }

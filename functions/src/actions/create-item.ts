@@ -1,11 +1,11 @@
 import type { Resource } from '@azure/cosmos'
 import type { HttpRequest, HttpResponseInit, InvocationContext } from '@azure/functions'
-import type { z } from 'zod'
 import { getDatabase } from '../lib/cosmos'
+import { Passable } from '../lib/passable'
 import { createItemBodySchema, createItemParamsSchema } from '../schemas'
 import { Pipeline } from '../shared'
 import type { CosmosItem } from '../shared'
-import { type EnrichedRequest, type EnrichedRequestBody, toResponse, validateBody, validateParams } from './middlewares'
+import { toResponse2, validateBody2, validateParams2 } from './middlewares'
 
 /**
  * アイテム作成。
@@ -20,17 +20,17 @@ export async function createItem(
   const container = request.params.container
   context.log(`create item: container=${container}`)
 
-  return Pipeline.send(request)
-    .pipe(validateParams, createItemParamsSchema)
-    .pipe(validateBody, createItemBodySchema)
-    .pipe(toResponse)
-    .then(async (req) => {
-      const { container } = (req as EnrichedRequest<z.infer<typeof createItemParamsSchema>>).safeData
-      const body = (req as EnrichedRequestBody<z.infer<ReturnType<typeof createItemBodySchema>>>).safeBody
+  const passable = await Pipeline.send(new Passable(request))
+    .pipe(validateParams2(createItemParamsSchema))
+    .pipe(validateBody2(createItemBodySchema))
+    .pipe(toResponse2)
+    .then(async (p) => {
+      const { container } = p.params
       const { resource } = await getDatabase()
         .container(container)
-        .items
-        .create<CosmosItem & Resource>(body as unknown as CosmosItem & Resource)
+        .items.create<CosmosItem & Resource>(p.body as CosmosItem & Resource)
       return resource!
     })
+
+  return passable.response
 }

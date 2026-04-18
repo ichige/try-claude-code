@@ -81,3 +81,9 @@ Passable パターンを適用した validate-query が出来た。
 - 同様にレスポンスは `toResponses` が利用できるはずで、必要なら `toResponses2` を定義してくれ。
 - `actions/list-items.ts` と `actions/get-item.ts` にも toResponse2 を適用してくれ。
 ```
+
+直ったので次へすすむ。
+
+```markdown
+`routes/cosmos-create.ts` も同様に Passable パターンを適用してください。
+```

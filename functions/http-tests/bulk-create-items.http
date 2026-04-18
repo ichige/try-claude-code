@@ -3,8 +3,8 @@ POST http://localhost:7071/api/bulk-create/Consignors
 Content-Type: application/json
 
 [
-  { "code": "test-0031", "name": "荷主A", "invoiceNumber": "T10001", "paymentRate": 80, "note": "備考A" },
-  { "code": "test-0032", "name": "荷主B", "invoiceNumber": "T10002", "paymentRate": 90, "note": "備考B" }
+  { "code": "test-0041", "name": "荷主A1", "invoiceNumber": "T10001", "paymentRate": 80, "note": "備考A" },
+  { "code": "test-0042", "name": "荷主B1", "invoiceNumber": "T10002", "paymentRate": 90, "note": "備考B" }
 ]
 
 ###
