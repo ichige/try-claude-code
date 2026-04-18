@@ -1,17 +1,20 @@
 # 正常置換
-POST http://localhost:7071/api/replace-item/Consignors/6e0b379b-5998-4e91-ba20-443e861b5b8a
+POST http://localhost:7071/api/replace-item/Consignors/415f1e43-9937-4075-8973-d856621b09f6
 Content-Type: application/json
 Accept: application/json
 
 {
-  "id": "6e0b379b-5998-4e91-ba20-443e861b5b8a",
+  "id": "415f1e43-9937-4075-8973-d856621b09f6",
   "pk": "pk-consignors",
-  "_etag": "\"a202c11d-0000-2400-0000-69e176890000\"",
-  "code": "test-0022",
-  "name": "お名前です（更新２）",
+  "_etag": "\"af02b199-0000-2400-0000-69e33f2b0000\"",
+  "code": "test-1010",
+  "name": "お名前です（更新3）",
   "invoiceNumber": "T30303",
   "paymentRate": 85,
-  "note": "備考欄（更新）"
+  "note": "備考欄（更新）",
+  "createdAt": "2026-04-18T08:22:04.535Z",
+  "isDeleted": false,
+  "deletedAt": null
 }
 
 ###

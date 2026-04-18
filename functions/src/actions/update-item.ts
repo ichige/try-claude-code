@@ -1,13 +1,13 @@
 import { ErrorResponse, PatchOperationType } from '@azure/cosmos'
 import type { Resource } from '@azure/cosmos'
 import type { HttpRequest, HttpResponseInit, InvocationContext } from '@azure/functions'
-import type { z } from 'zod'
 import { NotFoundError, PreconditionFailedError } from '../errors'
 import { getDatabase } from '../lib/cosmos'
+import { Passable } from '../lib/passable'
 import { updateItemBodySchema, updateItemParamsSchema } from '../schemas'
 import { Pipeline } from '../shared'
 import type { CosmosItem } from '../shared'
-import { type EnrichedRequest, type EnrichedRequestBody, toResponse, validateBody, validateParams } from './middlewares'
+import { toResponse2, validateBody2, validateParams2 } from './middlewares'
 
 /**
  * アイテム部分更新。
@@ -23,13 +23,13 @@ export async function updateItem(
   const { container, id } = request.params
   context.log(`update item: container=${container}, id=${id}`)
 
-  return Pipeline.send(request)
-    .pipe(validateParams, updateItemParamsSchema)
-    .pipe(validateBody, updateItemBodySchema)
-    .pipe(toResponse)
-    .then(async (req) => {
-      const { container, id, pk } = (req as EnrichedRequest<z.infer<typeof updateItemParamsSchema>>).safeData
-      const { _etag, ...fields } = (req as EnrichedRequestBody<z.infer<typeof updateItemBodySchema>>).safeBody
+  const passable = await Pipeline.send(new Passable(request))
+    .pipe(validateParams2(updateItemParamsSchema))
+    .pipe(validateBody2(updateItemBodySchema))
+    .pipe(toResponse2)
+    .then(async (p) => {
+      const { container, id, pk } = p.params
+      const { _etag, ...fields } = p.body as Record<string, unknown>
       const operations = Object.entries(fields).map(([key, value]) => ({
         op: PatchOperationType.set,
         path: `/${key}`,
@@ -52,4 +52,6 @@ export async function updateItem(
         throw e
       }
     })
+
+  return passable.response
 }

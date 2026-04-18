@@ -1,10 +1,10 @@
 import type { OperationInput } from '@azure/cosmos'
 import type { HttpRequest, HttpResponseInit, InvocationContext } from '@azure/functions'
-import type { z } from 'zod'
 import { getDatabase } from '../lib/cosmos'
+import { Passable } from '../lib/passable'
 import { bulkReplaceItemsBodySchema, bulkReplaceItemsParamsSchema } from '../schemas'
 import { Pipeline } from '../shared'
-import { type EnrichedRequest, type EnrichedRequestBody, toBulkResponse, validateBody, validateParams } from './middlewares'
+import { toBulkResponse2, validateBody2, validateParams2 } from './middlewares'
 
 /**
  * アイテムバルク全置換。
@@ -19,13 +19,16 @@ export async function bulkReplaceItems(
   const { container } = request.params
   context.log(`bulk replace items: container=${container}`)
 
-  return Pipeline.send(request)
-    .pipe(validateParams, bulkReplaceItemsParamsSchema)
-    .pipe(validateBody, bulkReplaceItemsBodySchema)
-    .pipe(toBulkResponse)
-    .then(async (req) => {
-      const { container } = (req as EnrichedRequest<z.infer<typeof bulkReplaceItemsParamsSchema>>).safeData
-      const operations = (req as EnrichedRequestBody<OperationInput[]>).safeBody
-      return getDatabase().container(container).items.executeBulkOperations(operations)
+  const passable = await Pipeline.send(new Passable(request))
+    .pipe(validateParams2(bulkReplaceItemsParamsSchema))
+    .pipe(validateBody2(bulkReplaceItemsBodySchema))
+    .pipe(toBulkResponse2)
+    .then(async (p) => {
+      const { container } = p.params
+      return getDatabase()
+        .container(container)
+        .items.executeBulkOperations(p.body as OperationInput[])
     })
+
+  return passable.response
 }

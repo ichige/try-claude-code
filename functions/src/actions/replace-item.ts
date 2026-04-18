@@ -1,13 +1,13 @@
 import { ErrorResponse } from '@azure/cosmos'
 import type { Resource } from '@azure/cosmos'
 import type { HttpRequest, HttpResponseInit, InvocationContext } from '@azure/functions'
-import type { z } from 'zod'
 import { NotFoundError, PreconditionFailedError } from '../errors'
 import { getDatabase } from '../lib/cosmos'
+import { Passable } from '../lib/passable'
 import { replaceItemBodySchema, replaceItemParamsSchema } from '../schemas'
 import { Pipeline } from '../shared'
 import type { CosmosItem } from '../shared'
-import { type EnrichedRequest, type EnrichedRequestBody, toResponse, validateBody, validateParams } from './middlewares'
+import { toResponse2, validateBody2, validateParams2 } from './middlewares'
 
 /**
  * アイテム全置換。
@@ -23,22 +23,21 @@ export async function replaceItem(
   const { container, id } = request.params
   context.log(`replace item: container=${container}, id=${id}`)
 
-  return Pipeline.send(request)
-    .pipe(validateParams, replaceItemParamsSchema)
-    .pipe(validateBody, replaceItemBodySchema)
-    .pipe(toResponse)
-    .then(async (req) => {
-      const { container, id, pk } = (req as EnrichedRequest<z.infer<typeof replaceItemParamsSchema>>).safeData
-      const { _etag, ...body } = (req as EnrichedRequestBody<z.infer<typeof replaceItemBodySchema>>).safeBody
+  const passable = await Pipeline.send(new Passable(request))
+    .pipe(validateParams2(replaceItemParamsSchema))
+    .pipe(validateBody2(replaceItemBodySchema))
+    .pipe(toResponse2)
+    .then(async (p) => {
+      const { container, id, pk } = p.params
+      const { _etag, ...body } = p.body as Record<string, unknown>
       try {
         const { resource } = await getDatabase()
           .container(container)
           .item(id, pk)
           .replace<CosmosItem & Resource>(
             body as unknown as CosmosItem & Resource,
-            { accessCondition: { type: 'IfMatch', condition: _etag } },
+            { accessCondition: { type: 'IfMatch', condition: String(_etag) } },
           )
-        // 型としては undefined があるものの、更新失敗時は例外が投げられるので理論的にはない。
         return resource!
       } catch (e) {
         if (e instanceof ErrorResponse) {
@@ -48,4 +47,6 @@ export async function replaceItem(
         throw e
       }
     })
+
+  return passable.response
 }

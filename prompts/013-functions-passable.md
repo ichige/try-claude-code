@@ -87,3 +87,12 @@ Passable パターンを適用した validate-query が出来た。
 ```markdown
 `routes/cosmos-create.ts` も同様に Passable パターンを適用してください。
 ```
+
+今度は完璧やった。
+
+```markdown
+`routes/cosmos-update.ts` のルートも同様に Passable パターンを適用してください。
+```
+
+今回も完璧やった。
+
