@@ -1,10 +1,12 @@
-import {
-  app,
-  type HttpRequest,
-  type HttpResponseInit,
-  type InvocationContext,
-} from '@azure/functions'
-import { hello, Pipeline } from '../shared'
+import { app, type HttpRequest, type HttpResponseInit, type InvocationContext } from '@azure/functions'
+import { z } from 'zod'
+import { Passable } from '../lib/passable'
+import { validateQuery } from '../actions/middlewares'
+import { Pipeline } from '../shared'
+
+const querySchema = z.object({
+  name: z.string().default('World'),
+})
 
 /**
  * Hello World エンドポイント。
@@ -18,14 +20,15 @@ async function helloWorld(
 ): Promise<HttpResponseInit> {
   context.log('hello-world function processed a request.')
 
-  const name = request.query.get('name') ?? 'World'
+  const passable = await Pipeline.send(new Passable(request))
+    .pipe(validateQuery(querySchema))
+    .then(async (p) => {
+      const name = p.getQuery('name', 'World')!
+      p.response = { status: 200, jsonBody: { message: `Hello, ${name}!` } }
+      return p
+    })
 
-  const message = await Pipeline.send(hello(name)).then(async (msg) => `${msg} (via Pipeline)`)
-
-  return {
-    status: 200,
-    jsonBody: { message },
-  }
+  return passable.response
 }
 
 app.http('hello-world', {

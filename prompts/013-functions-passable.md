@@ -41,3 +41,12 @@ APIエンドポイントのベースが出来たものの、Pipeline の Passabl
 
 Passable パターンを適用した validate-query が出来た。  
 現時点では型の強制キャストは入っていない。
+
+```markdown
+まずは `functions/src/routes/hello-world.ts` に適用してみよう。
+- schema は同じファイルに定義してOK
+- 同様にactions まで作る必要もなし。いわゆるサンプルらしいサンプルへ仕上げる。
+- おいおい、`Hello, ${name}!` を組み立てる処理を then に入れるべきだろ？学んでくれよ。
+```
+
+なぜか手を抜く時があるな。
