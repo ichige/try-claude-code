@@ -1,11 +1,11 @@
 import type { Resource } from '@azure/cosmos'
 import type { HttpRequest, HttpResponseInit, InvocationContext } from '@azure/functions'
-import type { z } from 'zod'
 import { getDatabase } from '../lib/cosmos'
+import { Passable } from '../lib/passable'
 import { listItemsParamsSchema } from '../schemas'
 import { Pipeline } from '../shared'
 import type { CosmosItem } from '../shared'
-import { type EnrichedRequest, toResponses, validateParams } from './middlewares'
+import { toResponses, validateParams } from './middlewares'
 
 /**
  * アイテム一覧取得。
@@ -20,15 +20,17 @@ export async function listItems(
   const { container } = request.params
   context.log(`list items: container=${container}`)
 
-  return Pipeline.send(request)
-    .pipe(validateParams, listItemsParamsSchema)
+  const passable = await Pipeline.send(new Passable(request))
+    .pipe(validateParams(listItemsParamsSchema))
     .pipe(toResponses)
-    .then(async (req) => {
-      const { container, pk } = (req as EnrichedRequest<z.infer<typeof listItemsParamsSchema>>).safeData
+    .then(async (p) => {
+      const { container, pk } = p.params
       const { resources } = await getDatabase()
         .container(container)
         .items.readAll<CosmosItem & Resource>({ partitionKey: pk })
         .fetchAll()
       return resources ?? []
     })
+
+  return passable.response
 }

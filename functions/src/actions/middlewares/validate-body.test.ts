@@ -1,44 +1,44 @@
 import { describe, expect, it, vi } from 'vitest'
 import { z } from 'zod'
 import { ValidationError } from '../../errors'
-import { validateBody } from './validate-body'
+import { Passable } from '../../lib/passable'
+import { validateBody } from './validators'
+
+const createPassable = (body: unknown) =>
+  new Passable({ json: async () => body, query: new URLSearchParams() } as any)
 
 const schema = z.object({ name: z.string().min(1) })
 
-const createReq = (body: unknown) =>
-  ({
-    json: async () => body,
-  }) as any
-
 describe('validateBody', () => {
-  it('検証成功時は safeBody を付与して next へ渡す', async () => {
-    const req = createReq({ name: 'test' })
-    const next = vi.fn(async (r: any) => r)
-    await validateBody(req, next, schema)
-    expect(next).toHaveBeenCalledWith(expect.objectContaining({ safeBody: { name: 'test' } }))
+  it('検証成功時は body にセットして next へ渡す', async () => {
+    const passable = createPassable({ name: 'test' })
+    const next = vi.fn(async (p: Passable) => p)
+    await validateBody(schema)(passable, next)
+    expect(next).toHaveBeenCalledWith(expect.objectContaining({ body: { name: 'test' } }))
   })
 
   it('検証失敗時は ValidationError をスローする', async () => {
-    const req = createReq({ name: '' })
-    await expect(validateBody(req, async (r) => r, schema)).rejects.toBeInstanceOf(ValidationError)
+    const passable = createPassable({ name: '' })
+    await expect(validateBody(schema)(passable, async (p) => p)).rejects.toBeInstanceOf(ValidationError)
   })
 
-  it('safeData（path params）を上書きしない', async () => {
-    const req = { ...createReq({ name: 'test' }), safeData: { container: 'Consignors' } }
-    const next = vi.fn(async (r: any) => r)
-    await validateBody(req, next, schema)
-    expect(next).toHaveBeenCalledWith(expect.objectContaining({ safeData: { container: 'Consignors' } }))
+  it('配列スキーマも検証できる', async () => {
+    const arraySchema = z.array(z.string())
+    const passable = createPassable(['a', 'b'])
+    const next = vi.fn(async (p: Passable) => p)
+    await validateBody(arraySchema)(passable, next)
+    expect(next).toHaveBeenCalledWith(expect.objectContaining({ body: ['a', 'b'] }))
   })
 
-  it('ファクトリ関数を渡した場合はリクエストからスキーマを生成して検証する', async () => {
-    const req = createReq({ name: 'test' })
-    const next = vi.fn(async (r: any) => r)
-    await validateBody(req, next, () => schema)
-    expect(next).toHaveBeenCalledWith(expect.objectContaining({ safeBody: { name: 'test' } }))
+  it('ファクトリ関数を渡した場合は request からスキーマを生成して検証する', async () => {
+    const passable = createPassable({ name: 'test' })
+    const next = vi.fn(async (p: Passable) => p)
+    await validateBody(() => schema)(passable, next)
+    expect(next).toHaveBeenCalledWith(expect.objectContaining({ body: { name: 'test' } }))
   })
 
   it('ファクトリ関数が返すスキーマで検証失敗した場合は ValidationError をスローする', async () => {
-    const req = createReq({ name: '' })
-    await expect(validateBody(req, async (r) => r, () => schema)).rejects.toBeInstanceOf(ValidationError)
+    const passable = createPassable({ name: '' })
+    await expect(validateBody(() => schema)(passable, async (p) => p)).rejects.toBeInstanceOf(ValidationError)
   })
 })

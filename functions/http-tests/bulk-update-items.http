@@ -4,17 +4,17 @@ Content-Type: application/json
 
 [
   {
-    "id": "92b5c8cd-9d8d-4c8b-8c60-f1047c821d16",
+    "id": "52635a15-5796-4d21-9394-5e35c07a5c3b",
     "pk": "pk-consignors",
-    "_etag": "\"a20268e5-0000-2400-0000-69e18c0b0000\"",
-    "paymentRate": 95,
-    "note": "バルク部分更新テスト"
+    "_etag": "\"af02b7a6-0000-2400-0000-69e341910000\"",
+    "paymentRate": 33,
+    "note": "バルク部分更新テスト2"
   },
   {
-    "id": "a0b6c9be-9223-487e-b972-7e0f948bf760",
+    "id": "b4483824-a145-4f99-8914-b2206f77c962",
     "pk": "pk-consignors",
-    "_etag": "\"a20269e5-0000-2400-0000-69e18c0b0000\"",
-    "paymentRate": 85
+    "_etag": "\"af02b8a6-0000-2400-0000-69e341910000\"",
+    "paymentRate": 77
   }
 ]
 

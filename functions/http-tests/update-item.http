@@ -1,12 +1,12 @@
 # 正常部分更新（特定フィールドのみ）
-PATCH http://localhost:7071/api/update-item/Consignors/6e0b379b-5998-4e91-ba20-443e861b5b8a
+PATCH http://localhost:7071/api/update-item/Consignors/415f1e43-9937-4075-8973-d856621b09f6
 Content-Type: application/json
 Accept: application/json
 
 {
-  "_etag": "\"a2021134-0000-2400-0000-69e179fc0000\"",
-  "paymentRate": 90,
-  "note": "備考欄（部分更新）"
+  "_etag": "\"af0264a2-0000-2400-0000-69e340af0000\"",
+  "paymentRate": 95,
+  "note": "備考欄（部分更新です）"
 }
 
 ###

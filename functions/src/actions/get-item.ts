@@ -1,12 +1,12 @@
 import type { Resource } from '@azure/cosmos'
 import type { HttpRequest, HttpResponseInit, InvocationContext } from '@azure/functions'
-import type { z } from 'zod'
 import { NotFoundError } from '../errors'
 import { getDatabase } from '../lib/cosmos'
+import { Passable } from '../lib/passable'
 import { getItemParamsSchema } from '../schemas'
 import { Pipeline } from '../shared'
 import type { CosmosItem } from '../shared'
-import { type EnrichedRequest, toResponse, validateParams } from './middlewares'
+import { toResponse, validateParams } from './middlewares'
 
 /**
  * アイテム1件取得。
@@ -21,11 +21,11 @@ export async function getItem(
   const { container, id } = request.params
   context.log(`get item: container=${container}, id=${id}`)
 
-  return Pipeline.send(request)
-    .pipe(validateParams, getItemParamsSchema)
+  const passable = await Pipeline.send(new Passable(request))
+    .pipe(validateParams(getItemParamsSchema))
     .pipe(toResponse)
-    .then(async (req) => {
-      const { container, id, pk } = (req as EnrichedRequest<z.infer<typeof getItemParamsSchema>>).safeData
+    .then(async (p) => {
+      const { container, id, pk } = p.params
       const { resource } = await getDatabase()
         .container(container)
         .item(id, pk)
@@ -33,4 +33,6 @@ export async function getItem(
       if (!resource) throw new NotFoundError()
       return resource
     })
+
+  return passable.response
 }

@@ -1,6 +1,6 @@
 import type { Resource } from '@azure/cosmos'
-import type { HttpRequest, HttpResponseInit } from '@azure/functions'
 import type { AsyncMiddleware, CosmosItem } from '../../shared'
+import type { Passable } from '../../lib/passable'
 
 /**
  * Cosmos DB のシステムプロパティを除外する。
@@ -16,27 +16,27 @@ function stripSystemProps({ _rid, _ts, _self, _attachments, ...item }: CosmosIte
 }
 
 /**
- * next が返した CosmosItem を 200 レスポンスに変換するミドルウェア。
- * Cosmos DB のシステムプロパティ (_rid, _ts, _self, _attachments) を除外し、_etag のみ残す。
- * @param req - HTTP リクエスト
+ * next が返した CosmosItem を passable.response にセットするミドルウェア。
+ * @param passable - パッサブルオブジェクト
  * @param next - 次のミドルウェアまたは destination
- * @returns 200 レスポンス
+ * @returns passable
  */
-export const toResponse: AsyncMiddleware<HttpRequest, HttpResponseInit, CosmosItem & Resource> =
-  async (req, next) => {
-    const item = stripSystemProps(await next(req))
-    return { status: 200, jsonBody: { item } }
+export const toResponse: AsyncMiddleware<Passable, Passable, CosmosItem & Resource> =
+  async (passable, next) => {
+    const item = stripSystemProps(await next(passable))
+    passable.response = { status: 200, jsonBody: { item } }
+    return passable
   }
 
 /**
- * next が返した CosmosItem の配列を 200 レスポンスに変換するミドルウェア。
- * 各アイテムから Cosmos DB のシステムプロパティを除外する。
- * @param req - HTTP リクエスト
+ * next が返した CosmosItem 配列を passable.response にセットするミドルウェア。
+ * @param passable - パッサブルオブジェクト
  * @param next - 次のミドルウェアまたは destination
- * @returns 200 レスポンス
+ * @returns passable
  */
-export const toResponses: AsyncMiddleware<HttpRequest, HttpResponseInit, (CosmosItem & Resource)[]> =
-  async (req, next) => {
-    const items = (await next(req)).map(stripSystemProps)
-    return { status: 200, jsonBody: { items } }
+export const toResponses: AsyncMiddleware<Passable, Passable, (CosmosItem & Resource)[]> =
+  async (passable, next) => {
+    const items = (await next(passable)).map(stripSystemProps)
+    passable.response = { status: 200, jsonBody: { items } }
+    return passable
   }

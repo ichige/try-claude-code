@@ -1,10 +1,10 @@
 import type { OperationInput } from '@azure/cosmos'
 import type { HttpRequest, HttpResponseInit, InvocationContext } from '@azure/functions'
-import type { z } from 'zod'
 import { getDatabase } from '../lib/cosmos'
+import { Passable } from '../lib/passable'
 import { bulkDeleteItemsBodySchema, bulkDeleteItemsParamsSchema } from '../schemas'
 import { Pipeline } from '../shared'
-import { type EnrichedRequest, type EnrichedRequestBody, toBulkResponse, validateBody, validateParams } from './middlewares'
+import { toBulkResponse, validateBody, validateParams } from './middlewares'
 
 /**
  * アイテムバルク物理削除。
@@ -19,13 +19,16 @@ export async function bulkDeleteItems(
   const { container } = request.params
   context.log(`bulk delete items: container=${container}`)
 
-  return Pipeline.send(request)
-    .pipe(validateParams, bulkDeleteItemsParamsSchema)
-    .pipe(validateBody, bulkDeleteItemsBodySchema)
+  const passable = await Pipeline.send(new Passable(request))
+    .pipe(validateParams(bulkDeleteItemsParamsSchema))
+    .pipe(validateBody(bulkDeleteItemsBodySchema))
     .pipe(toBulkResponse)
-    .then(async (req) => {
-      const { container } = (req as EnrichedRequest<z.infer<typeof bulkDeleteItemsParamsSchema>>).safeData
-      const operations = (req as EnrichedRequestBody<OperationInput[]>).safeBody
-      return getDatabase().container(container).items.executeBulkOperations(operations)
+    .then(async (p) => {
+      const { container } = p.params
+      return getDatabase()
+        .container(container)
+        .items.executeBulkOperations(p.body as OperationInput[])
     })
+
+  return passable.response
 }
