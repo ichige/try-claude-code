@@ -95,4 +95,9 @@ Passable パターンを適用した validate-query が出来た。
 ```
 
 今回も完璧やった。
+あとはゴミ掃除。
 
+```markdown
+次は `actions/middlewares/validate-body.ts` を削除し、validateBody2 を validateBody 名前を変更してください。
+- `actions/middlewares/validate-body.test.ts` のテストも新型に合わせてみてください。
+```

@@ -4,7 +4,7 @@ import { getDatabase } from '../lib/cosmos'
 import { Passable } from '../lib/passable'
 import { bulkDeleteItemsBodySchema, bulkDeleteItemsParamsSchema } from '../schemas'
 import { Pipeline } from '../shared'
-import { toBulkResponse2, validateBody2, validateParams2 } from './middlewares'
+import { toBulkResponse2, validateBody, validateParams2 } from './middlewares'
 
 /**
  * アイテムバルク物理削除。
@@ -21,7 +21,7 @@ export async function bulkDeleteItems(
 
   const passable = await Pipeline.send(new Passable(request))
     .pipe(validateParams2(bulkDeleteItemsParamsSchema))
-    .pipe(validateBody2(bulkDeleteItemsBodySchema))
+    .pipe(validateBody(bulkDeleteItemsBodySchema))
     .pipe(toBulkResponse2)
     .then(async (p) => {
       const { container } = p.params

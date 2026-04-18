@@ -7,7 +7,7 @@ import { Passable } from '../lib/passable'
 import { replaceItemBodySchema, replaceItemParamsSchema } from '../schemas'
 import { Pipeline } from '../shared'
 import type { CosmosItem } from '../shared'
-import { toResponse2, validateBody2, validateParams2 } from './middlewares'
+import { toResponse2, validateBody, validateParams2 } from './middlewares'
 
 /**
  * アイテム全置換。
@@ -25,7 +25,7 @@ export async function replaceItem(
 
   const passable = await Pipeline.send(new Passable(request))
     .pipe(validateParams2(replaceItemParamsSchema))
-    .pipe(validateBody2(replaceItemBodySchema))
+    .pipe(validateBody(replaceItemBodySchema))
     .pipe(toResponse2)
     .then(async (p) => {
       const { container, id, pk } = p.params

@@ -4,7 +4,7 @@ import { getDatabase } from '../lib/cosmos'
 import { Passable } from '../lib/passable'
 import { bulkUpdateItemsBodySchema, bulkUpdateItemsParamsSchema } from '../schemas'
 import { Pipeline } from '../shared'
-import { toBulkResponse2, validateBody2, validateParams2 } from './middlewares'
+import { toBulkResponse2, validateBody, validateParams2 } from './middlewares'
 
 /**
  * アイテムバルク部分更新。
@@ -21,7 +21,7 @@ export async function bulkUpdateItems(
 
   const passable = await Pipeline.send(new Passable(request))
     .pipe(validateParams2(bulkUpdateItemsParamsSchema))
-    .pipe(validateBody2(bulkUpdateItemsBodySchema))
+    .pipe(validateBody(bulkUpdateItemsBodySchema))
     .pipe(toBulkResponse2)
     .then(async (p) => {
       const { container } = p.params
