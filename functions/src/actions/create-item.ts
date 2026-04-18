@@ -5,7 +5,7 @@ import { Passable } from '../lib/passable'
 import { createItemBodySchema, createItemParamsSchema } from '../schemas'
 import { Pipeline } from '../shared'
 import type { CosmosItem } from '../shared'
-import { toResponse2, validateBody, validateParams } from './middlewares'
+import { toResponse, validateBody, validateParams } from './middlewares'
 
 /**
  * アイテム作成。
@@ -23,7 +23,7 @@ export async function createItem(
   const passable = await Pipeline.send(new Passable(request))
     .pipe(validateParams(createItemParamsSchema))
     .pipe(validateBody(createItemBodySchema))
-    .pipe(toResponse2)
+    .pipe(toResponse)
     .then(async (p) => {
       const { container } = p.params
       const { resource } = await getDatabase()

@@ -105,4 +105,10 @@ Passable パターンを適用した validate-query が出来た。
 - validateQuery2 は validateQuery にリネームして、各actionの方も適用してください。
 `actions/middlewares/to-bulk-response.ts` の toBulkResponse を削除して、toBulkResponse2 を toBulkResponse へ名前を変更してください。
 - `actions/middlewares/to-bulk-response.test.ts` のテストも新型に合わせてみてください。
+`actions/middlewares/to-response.ts` の toResponse と toResponses を削除して、toResponse2 と toResponses2 をリネームしてください。
+- `actions/middlewares/to-response.test.ts` のテストも新型に合わせてみてください。
 ```
+
+うむ。これで完了のはずや。  
+計3hほどかな。
+
