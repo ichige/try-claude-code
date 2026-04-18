@@ -1,6 +1,5 @@
 import { BulkOperationType } from '@azure/cosmos'
 import type { BulkOperationResult, CreateOperationInput, DeleteOperationInput, PatchOperationInput, ReplaceOperationInput } from '@azure/cosmos'
-import type { HttpRequest, HttpResponseInit } from '@azure/functions'
 import type { AsyncMiddleware } from '../../shared'
 import type { Passable } from '../../lib/passable'
 
@@ -42,36 +41,12 @@ function resolveSuccessCode(operationInput: BulkOperationResult['operationInput'
 }
 
 /**
- * next が返したバルク操作結果をレスポンスに変換するミドルウェア。
- * operationInput の operationType に応じて id と成功判定を解決する。
- * HTTP ステータスは先頭オペレーションの成功ステータスコードに準拠し、
- * Delete（204）の場合は 200 を返す。
- * @param req - HTTP リクエスト
- * @param next - 次のミドルウェアまたは destination
- * @returns レスポンス
- */
-export const toBulkResponse: AsyncMiddleware<HttpRequest, HttpResponseInit, BulkOperationResult[]> =
-  async (req, next) => {
-    const bulkResults = await next(req)
-    return {
-      status: 200,
-      jsonBody: {
-        results: bulkResults.map((r) => ({
-          id: resolveId(r.operationInput),
-          success: r.response?.statusCode === resolveSuccessCode(r.operationInput),
-          statusCode: r.response?.statusCode ?? r.error?.code,
-        })),
-      },
-    }
-  }
-
-/**
  * next が返したバルク操作結果を passable.response にセットするミドルウェア。
  * @param passable - パッサブルオブジェクト
  * @param next - 次のミドルウェアまたは destination
  * @returns passable
  */
-export const toBulkResponse2: AsyncMiddleware<Passable, Passable, BulkOperationResult[]> =
+export const toBulkResponse: AsyncMiddleware<Passable, Passable, BulkOperationResult[]> =
   async (passable, next) => {
     const bulkResults = await next(passable)
     passable.response = {
