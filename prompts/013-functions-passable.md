@@ -102,4 +102,5 @@ Passable パターンを適用した validate-query が出来た。
 - `actions/middlewares/validate-body.test.ts` のテストも新型に合わせてみてください。
 同じく `actions/middlewares/validate-params.ts` を削除し、validateBody2 を validateBody 名前を変更してください。
 - 同様に `actions/middlewares/validate-params.test.ts` のテストも新型に合わせてみてください。
+- validateQuery2 は validateQuery にリネームして、各actionの方も適用してください。
 ```

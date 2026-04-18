@@ -1,7 +1,7 @@
 import { app, type HttpRequest, type HttpResponseInit, type InvocationContext } from '@azure/functions'
 import { z } from 'zod'
 import { Passable } from '../lib/passable'
-import { validateQuery2 } from '../actions/middlewares'
+import { validateQuery } from '../actions/middlewares'
 import { Pipeline } from '../shared'
 
 const querySchema = z.object({
@@ -21,7 +21,7 @@ async function helloWorld(
   context.log('hello-world function processed a request.')
 
   const passable = await Pipeline.send(new Passable(request))
-    .pipe(validateQuery2(querySchema))
+    .pipe(validateQuery(querySchema))
     .then(async (p) => {
       const name = p.getQuery('name', 'World')!
       p.response = { status: 200, jsonBody: { message: `Hello, ${name}!` } }

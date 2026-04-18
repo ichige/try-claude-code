@@ -28,7 +28,7 @@ export const validateParams = <T extends Record<string, string | undefined>>(sch
  * @param schema - 検証に使用する Zod スキーマ
  * @returns ミドルウェア関数
  */
-export const validateQuery2 = <T extends Record<string, string>>(schema: ZodType<T>) =>
+export const validateQuery = <T extends Record<string, string>>(schema: ZodType<T>) =>
   async (passable: Passable, next: NextFunction<Passable, Passable>): Promise<Passable> => {
     const query = Object.fromEntries(passable.request.query.entries())
     const result = schema.safeParse(query)
