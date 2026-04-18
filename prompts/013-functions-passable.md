@@ -60,3 +60,13 @@ Passable パターンを適用した validate-query が出来た。
 - validators は普通に関数別に export して。 * でいいでしょ？
 - 昔の関数はあとで削除予定なんで、とりあえず新規の関数は末尾に2でも付けておいて。
 ```
+
+準備は出来たので、新パターンを各ルートへ適用していく。
+
+```markdown
+`functions/src/routes/cosmos-get.ts` の `cosmos-get` ルートで、Passable と新規validate関数を適用してみて。
+```
+
+何故か全ルート適用したが、問題はなかったようである。
+
+
