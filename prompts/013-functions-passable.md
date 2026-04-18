@@ -49,4 +49,14 @@ Passable パターンを適用した validate-query が出来た。
 - おいおい、`Hello, ${name}!` を組み立てる処理を then に入れるべきだろ？学んでくれよ。
 ```
 
-なぜか手を抜く時があるな。
+なぜか手を抜く時があるな。  
+とりあえず動いたので、次へすすめる。
+
+```markdown
+`actions\middlewares\validate-query.ts` のファイル名を `validators.ts` へ変更して、prams 版と body 版を統合する。
+- 既存のファイル `validate-body.ts` などはそのまま放置しておく。
+- `validate-body.ts` の Factory 版を `validators.ts` へ追加。
+- 同じく `validate-params` の Factory 版を `validators.ts` へ追加する。
+- validators は普通に関数別に export して。 * でいいでしょ？
+- 昔の関数はあとで削除予定なんで、とりあえず新規の関数は末尾に2でも付けておいて。
+```
