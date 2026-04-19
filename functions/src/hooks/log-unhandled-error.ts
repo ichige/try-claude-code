@@ -1,5 +1,5 @@
 import type { PostInvocationContext } from '@azure/functions'
-import type { AsyncMiddleware } from '../shared'
+import type { AsyncMiddleware } from '../shared/index.node'
 
 /**
  * 未ハンドルのエラーをログに記録し、500 レスポンスを設定するフックミドルウェア。

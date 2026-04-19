@@ -3,7 +3,7 @@ import type { HttpRequest, HttpResponseInit, InvocationContext } from '@azure/fu
 import { getDatabase } from '../lib/cosmos'
 import { Passable } from '../lib/passable'
 import { bulkDeleteItemsBodySchema, bulkDeleteItemsParamsSchema } from '../schemas'
-import { Pipeline } from '../shared'
+import { Pipeline } from '../shared/index.node'
 import { toBulkResponse, validateBody, validateParams } from './middlewares'
 
 /**

@@ -4,7 +4,7 @@ import { NotFoundError } from '../errors'
 import { getDatabase } from '../lib/cosmos'
 import { Passable } from '../lib/passable'
 import { deleteItemParamsSchema } from '../schemas'
-import { Pipeline } from '../shared'
+import { Pipeline } from '../shared/index.node'
 import { validateParams } from './middlewares'
 
 /**

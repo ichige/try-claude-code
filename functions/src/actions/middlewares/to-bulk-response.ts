@@ -1,6 +1,6 @@
 import { BulkOperationType } from '@azure/cosmos'
 import type { BulkOperationResult, CreateOperationInput, DeleteOperationInput, PatchOperationInput, ReplaceOperationInput } from '@azure/cosmos'
-import type { AsyncMiddleware } from '../../shared'
+import type { AsyncMiddleware } from '../../shared/index.node'
 import type { Passable } from '../../lib/passable'
 
 /**

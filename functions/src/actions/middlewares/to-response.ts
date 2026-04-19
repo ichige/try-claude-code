@@ -1,5 +1,5 @@
 import type { Resource } from '@azure/cosmos'
-import type { AsyncMiddleware, CosmosItem } from '../../shared'
+import type { AsyncMiddleware, CosmosItem } from '../../shared/index.node'
 import type { Passable } from '../../lib/passable'
 
 /**
