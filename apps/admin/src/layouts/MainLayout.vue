@@ -21,6 +21,20 @@
     <q-page-container>
       <router-view />
     </q-page-container>
+
+    <q-dialog v-model="dialogFormStore.isOpen">
+      <q-card>
+        <q-card-section>
+          <div class="text-h6">確認</div>
+        </q-card-section>
+        <q-card-section>
+          この操作を実行してもよろしいですか？
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn flat label="閉じる" color="primary" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-layout>
 </template>
 
@@ -28,6 +42,9 @@
 import { ref } from 'vue'
 import EssentialLink, { type EssentialLinkProps } from 'components/EssentialLink.vue'
 import AccountSetting from 'components/layouts/AccountSetting.vue'
+import { useDialogFormStore } from 'stores/dialog-form'
+
+const dialogFormStore = useDialogFormStore()
 
 const linksList: EssentialLinkProps[] = [
   {
