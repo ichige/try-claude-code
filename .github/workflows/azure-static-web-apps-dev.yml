@@ -37,7 +37,7 @@ jobs:
         run: |
           cat << EOF > ./apps/admin/.env.production
           VITE_MSAL_CLIENT_ID=${{ vars.VITE_MSAL_CLIENT_ID }}
-          VITE_MSAL_TENANT_ID=${{ vars.VITE_MSAL_TENANT_ID }}
+          VITE_MSAL_AUTHORITY=${{ vars.VITE_MSAL_AUTHORITY }}
           VITE_MSAL_REDIRECT_URI=${{ vars.VITE_MSAL_REDIRECT_URI }}
           VITE_APPLICATIONINSIGHTS_CONNECTION_STRING=${{ vars.VITE_APPLICATIONINSIGHTS_CONNECTION_STRING }}
           EOF
@@ -67,4 +67,4 @@ jobs:
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_YELLOW_CLIFF_06E496100 }}
           action: "close"
-          app_location: "./apps/admin"
+          app_location: "./apps/admin/dist/spa"
