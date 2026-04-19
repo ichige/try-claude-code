@@ -47,6 +47,8 @@ export default defineConfig((ctx) => {
           // tsconfig.json の拡張
           tsConfig.compilerOptions ??= {}
           tsConfig.compilerOptions.paths ??= {}
+          tsConfig.compilerOptions.paths['composables'] = ['../src/composables']
+          tsConfig.compilerOptions.paths['composables/*'] = ['../src/composables/*']
           tsConfig.compilerOptions.paths['@shisamo/shared'] = ['../../../packages/shared/src/*']
           tsConfig.compilerOptions.paths['@/*'] = ['../src/*']
           tsConfig.include ??= []
