@@ -76,6 +76,13 @@ export default defineConfig((ctx) => {
           ...viteConf.resolve.alias,
           '@shisamo/shared': fileURLToPath(new URL('../../packages/shared/src', import.meta.url)),
         }
+
+        viteConf.build ??= {}
+        viteConf.build.rollupOptions ??= {}
+        viteConf.build.rollupOptions.input = {
+          main: fileURLToPath(new URL('./index.html', import.meta.url)),
+          redirect: fileURLToPath(new URL('./redirect.html', import.meta.url)),
+        }
       },
       // viteVuePluginOptions: {},
 

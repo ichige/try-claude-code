@@ -5,6 +5,7 @@
   "description": "",
   "scripts": {
     "dev:admin": "turbo dev --filter=@shisamo/admin",
+    "build:admin": "turbo build --filter=@shisamo/admin",
     "dev:api": "turbo dev --filter=@shisamo/api",
     "build:api": "turbo build --filter=@shisamo/api",
     "lint:admin": "turbo lint --filter=@shisamo/admin",
