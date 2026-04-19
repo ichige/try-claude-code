@@ -54,3 +54,12 @@ post install で `packages/shared` はシンボリックリンクにて `functio
 Functions でも1関数1ファイルになるので、理論的に軽量化されることになる。
 
 ベース作成まで半日くらいはかかってしまったけど、やはりインフラが絡んでくるとAIだけでの解決は難しい。
+
+## Github Actions CI/CD
+
+開発を進めていくと、`packages/shared` の依存ライブラリがブラウザ専用であるためか、Github 上のビルドが受け付けないとかいう厳しい判定をするようになった。  
+ローカルからのデプロイだとまったく問題ないのだが…。厳しいな。
+
+```markdown
+`packages/shared/src/pipeline` と `packages/shared/src/types` だけを export するエントリポイントを用意して、functions の import を書き換えてみてくれ。
+```

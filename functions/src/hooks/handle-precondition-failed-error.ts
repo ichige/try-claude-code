@@ -1,6 +1,6 @@
 import type { PostInvocationContext } from '@azure/functions'
 import { PreconditionFailedError } from '../errors'
-import type { AsyncMiddleware } from '../shared'
+import type { AsyncMiddleware } from '../shared/index.node'
 
 /**
  * PreconditionFailedError を 412 レスポンスに変換するフックミドルウェア。

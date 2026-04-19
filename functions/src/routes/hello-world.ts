@@ -2,7 +2,7 @@ import { app, type HttpRequest, type HttpResponseInit, type InvocationContext } 
 import { z } from 'zod'
 import { Passable } from '../lib/passable'
 import { validateQuery } from '../actions/middlewares'
-import { Pipeline } from '../shared'
+import { Pipeline } from '../shared/index.node'
 
 const querySchema = z.object({
   name: z.string().default('World'),

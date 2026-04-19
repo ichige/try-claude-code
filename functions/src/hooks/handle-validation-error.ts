@@ -1,6 +1,6 @@
 import type { PostInvocationContext } from '@azure/functions'
 import { ValidationError } from '../errors'
-import type { AsyncMiddleware } from '../shared'
+import type { AsyncMiddleware } from '../shared/index.node'
 
 /**
  * ValidationError を 400 レスポンスに変換するフックミドルウェア。

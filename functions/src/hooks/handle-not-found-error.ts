@@ -1,6 +1,6 @@
 import type { PostInvocationContext } from '@azure/functions'
 import { NotFoundError } from '../errors'
-import type { AsyncMiddleware } from '../shared'
+import type { AsyncMiddleware } from '../shared/index.node'
 
 /**
  * NotFoundError を 404 レスポンスに変換するフックミドルウェア。

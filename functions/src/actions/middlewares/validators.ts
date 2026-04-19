@@ -1,7 +1,7 @@
 import type { HttpRequest } from '@azure/functions'
 import type { ZodType } from 'zod'
 import { ValidationError } from '../../errors'
-import type { NextFunction } from '../../shared'
+import type { NextFunction } from '../../shared/index.node'
 import type { Passable } from '../../lib/passable'
 
 /** Zod スキーマ、または HttpRequest からスキーマを生成するファクトリ関数 */

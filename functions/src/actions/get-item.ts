@@ -4,8 +4,8 @@ import { NotFoundError } from '../errors'
 import { getDatabase } from '../lib/cosmos'
 import { Passable } from '../lib/passable'
 import { getItemParamsSchema } from '../schemas'
-import { Pipeline } from '../shared'
-import type { CosmosItem } from '../shared'
+import { Pipeline } from '../shared/index.node'
+import type { CosmosItem } from '../shared/index.node'
 import { toResponse, validateParams } from './middlewares'
 
 /**

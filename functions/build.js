@@ -13,5 +13,5 @@ await esbuild.build({
   splitting: true,
   platform: 'node',
   format: 'esm',
-  external: ['@azure/functions', '@azure/cosmos', '@azure/identity', '@microsoft/applicationinsights-web', '@azure/msal-browser'],
+  external: ['@azure/functions', '@azure/cosmos', '@azure/identity'],
 });

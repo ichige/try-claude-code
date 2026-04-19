@@ -1,3 +1,5 @@
+export { broadcastResponseToMainFrame } from '@azure/msal-browser/redirect-bridge'
+
 import type { AccountInfo, Configuration, PopupRequest, SilentRequest } from '@azure/msal-browser'
 import { PublicClientApplication } from '@azure/msal-browser'
 

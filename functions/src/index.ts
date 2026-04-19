@@ -1,6 +1,6 @@
 import { app } from '@azure/functions'
 import { handleNotFoundError, handlePreconditionFailedError, handleValidationError, logUnhandledError } from './hooks'
-import { Pipeline } from './shared'
+import { Pipeline } from './shared/index.node'
 
 app.setup({
   enableHttpStream: true,
