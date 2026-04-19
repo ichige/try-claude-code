@@ -18,6 +18,25 @@ az login
 func azure functionapp publish shisamo-api
 ```
 
+### 環境変数の設定
+
+環境変数は Azure Function に設定するため、CLI で行うことにする。  
+※ ポータルで設定してもOK。
+
+```bash
+# 作業ディレクトリへ
+cd functions
+# ログインする
+az login
+# CLI実行する
+az functionapp config appsettings set \
+  --name shisamo-api \
+  --resource-group shisamo-local_group \
+  --settings \
+    COSMOS_ENDPOINT="https://shisamo-local.documents.azure.com:443/" \
+    COSMOS_DATABASE="shisamo-db"
+```
+
 ## ローカルサーバの起動
 
 ```bash
