@@ -18,6 +18,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: true
+
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -28,6 +29,9 @@ jobs:
         with:
           node-version: '24' # ログにある v24.13.0 に合わせる
           cache: 'pnpm'
+
+      - name: Install Quasar CLI
+        run: pnpm add -g @quasar/cli
 
       - name: Install dependencies and Build
         run: |
