@@ -6,12 +6,14 @@ on:
       - main
     paths:
       - 'apps/admin/**'
+      - 'packages/shared/**'
   pull_request:
     types: [opened, synchronize, reopened]
     branches:
       - main
     paths:
       - 'apps/admin/**'
+      - 'packages/shared/**'
 
 jobs:
   build_and_deploy_job:
