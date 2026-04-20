@@ -7,7 +7,7 @@
       :meta="meta"
     ></example-component>
     <q-btn label="hello" @click="hello('btn')" />
-    <q-btn label="Open Dialog" @click="dialogFormStore.open()" />
+    <OpenDialogFormButton />
   </q-page>
 </template>
 
@@ -16,9 +16,9 @@ import { ref } from 'vue'
 import type { Todo, Meta } from 'components/models'
 import ExampleComponent from 'components/ExampleComponent.vue'
 import { hello } from '@shisamo/shared'
-import { useDialogFormStore } from 'stores/dialog-form'
+import { useDialogFormButton } from 'composables/dialog-form'
 
-const dialogFormStore = useDialogFormStore()
+const { OpenDialogFormButton } = useDialogFormButton()
 
 const todos = ref<Todo[]>([
   {

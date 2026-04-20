@@ -76,6 +76,7 @@ export default defineConfig((ctx) => {
         viteConf.resolve ??= {}
         viteConf.resolve.alias = {
           ...viteConf.resolve.alias,
+          composables: fileURLToPath(new URL('./src/composables', import.meta.url)),
           '@shisamo/shared': fileURLToPath(new URL('../../packages/shared/src', import.meta.url)),
         }
 

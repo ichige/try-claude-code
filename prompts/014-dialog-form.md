@@ -40,3 +40,28 @@ Open ボタンを作成する。
 `pages/IndexPage.vue` に追加した Dialog を Open するボタンを作成してください。
 - `hello` ボタンの隣で良いです。
 ```
+
+### Open ボタンを汎用化する
+
+ボタン押下で何かしらの Dialog が開くという動作は常に一緒なので、理論上1つのボタンを再利用できるはずである。  
+ラベルなどのデザインはプロパティとして渡すことができるわけだが、これも設定文字だけで解決したいところである。  
+そのあたりも考慮して、composable 経由で、ボタンコンポーネントを返すという流れにしておく。
+
+```markdown
+`pages/IndexPage.vue` に追加した Open Dialog ボタンを components へ外だししてください。
+- `components/actions/xxxXxx.vue` といったアクションボタン的な命名にして。
+```
+
+これを composable 経由でボタンコンポーネントを返します。  
+つまり composable でボタンをビルドするイメージです。
+
+```markdown
+作成した OpenDialogFormButton を composable 経由で `pages/IndexPage.vue` へ渡すようにしてください。
+- Factory 型の関数のイメージで、引数を受け取ってボタンの名前を変更するなどを composable で実装するイメージです。
+- 現時点では引数なしの、単純な実装で良いです。
+- [plugin:vite:import-analysis] Failed to resolve import "composables/useDialogFormButton" from "src/pages/IndexPage.vue". Does the file exist? というエラーが出ています。
+- useDialogFormButton.ts はコンポーネントではないので、ファイル名はケバブケースで良いです。ファイル名には use 接頭句も不要かと。
+```
+
+これで基本的な構成ができた。  
+あとは composable の引数だけで、ボタンから Dialog の中身まで動的に組み立てたいわけである。
