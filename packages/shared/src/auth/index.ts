@@ -3,7 +3,7 @@ export { broadcastResponseToMainFrame } from '@azure/msal-browser/redirect-bridg
 import type { AccountInfo, Configuration, PopupRequest, SilentRequest } from '@azure/msal-browser'
 import { PublicClientApplication } from '@azure/msal-browser'
 
-export type { PopupRequest, SilentRequest }
+export type { AccountInfo, PopupRequest, SilentRequest }
 
 import type { AsyncMiddleware } from '../pipeline'
 import { Pipeline } from '../pipeline'
@@ -16,23 +16,6 @@ import { Pipeline } from '../pipeline'
 export type MSAuthConfig = Configuration
 
 /**
- * 正規化されたアカウント情報
- */
-export interface AuthAccount {
-  homeAccountId: string
-  username: string
-  name: string | undefined
-}
-
-function toAuthAccount(account: AccountInfo): AuthAccount {
-  return {
-    homeAccountId: account.homeAccountId,
-    username: account.username,
-    name: account.name,
-  }
-}
-
-/**
  * PublicClientApplication を初期化するミドルウェア
  * initialize() は冪等なので複数回呼び出しても問題ありません。
  */
@@ -42,23 +25,23 @@ const initializeMiddleware: AsyncMiddleware<PublicClientApplication, any> = asyn
   next,
 ) => {
   await client.initialize()
-  return next(client) as Promise<AuthAccount>
+  return next(client) as Promise<AccountInfo>
 }
 
 /**
  * ssoSilent でサイレントログインを試みるミドルウェア
- * 成功時は AuthAccount を返して終了します。
+ * 成功時は AccountInfo を返して終了します。
  * 失敗した場合は理由を問わず next(loginPopup)へ委譲します。
  */
 const ssoSilentMiddleware: AsyncMiddleware<
   PublicClientApplication,
-  AuthAccount,
-  AuthAccount,
+  AccountInfo,
+  AccountInfo,
   PopupRequest
 > = async (client, next, request) => {
   try {
     const result = await client.ssoSilent(request)
-    return toAuthAccount(result.account)
+    return result.account
   } catch {
     return next(client)
   }
@@ -89,13 +72,13 @@ export class MSAuth {
    * ログインを実行する
    * ssoSilent → loginPopup の順でログインを試みます。
    */
-  async login(request: PopupRequest): Promise<AuthAccount> {
+  async login(request: PopupRequest): Promise<AccountInfo> {
     return Pipeline.send(this.client)
       .pipe(initializeMiddleware)
       .pipe(ssoSilentMiddleware, request)
       .then(async (client) => {
         const result = await client.loginPopup(request)
-        return toAuthAccount(result.account)
+        return result.account
       })
   }
 

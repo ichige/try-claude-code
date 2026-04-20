@@ -1,12 +1,12 @@
 import { defineStore, acceptHMRUpdate } from 'pinia'
 import { ref, computed } from 'vue'
-import { type AuthAccount, type PopupRequest, type SilentRequest } from '@shisamo/shared'
+import { type AccountInfo, type PopupRequest, type SilentRequest } from '@shisamo/shared'
 import { auth } from 'src/boot/auth'
 
 export const useAuthStore = defineStore(
   'auth',
   () => {
-    const account = ref<AuthAccount | null>(null)
+    const account = ref<AccountInfo | null>(null)
 
     /**
      * MSAL の login_hint に使用するメールアドレス。

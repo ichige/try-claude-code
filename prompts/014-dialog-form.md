@@ -126,3 +126,35 @@ Open ボタンを作成する。
 わりとあっさり出来た。  
 細かいデザインは自分で調整するしかない。  
 ※ 指示にするのが面倒すぎてかえってコストが高い。
+
+### データの登録
+
+それっぽいデータが出来たので、functions api を利用して、データの登録を試みる。
+
+```markdown
+`DialogForm.vue` から実際にDBに登録してみようと思う。
+`functions/src/routes/cosmos-create.ts` の cosmos-create ルートを使う想定だ。  
+- 今回は fetch を使ってPOSTしてみる。
+- API の host 名は環境変数から参照するようにしてほしい。
+- 基本的に pk を渡すことは想定してないので、引数はコンテナ名と送信するデータ(フォームの入力)だけで良い。
+- 今回に関しては、`Consignors` コンテナを対象にする。
+- APIの実行機能は Pinia Store の actions として実装してほしい。
+```
+
+実装自体はうまくいったけど、いろいろ権限が足りてない。  
+この際なので、Functions に Entra ID による Easy Auth を設定したので、アクセストークンをリクエストに設定してみる。
+
+```markdown
+useConsignorsStore create で useAuthStore からアクセストークンを取得し、Authorization Bearer トークンとして渡すように変更してほしい。
+```
+
+エラーが出たけど、また無茶な修正を始めた。
+
+```markdown
+`packages/shared/src/auth/index.ts` の実装はもとに戻してくれ。エラーも出てるし。
+`shared/src/auth/index.ts` の logion では AuthAccount という型に変更しているが、そのまま AccountInfo を返すように修正してくれ。
+- 当然だが `apps/admin/src/stores/auth.ts` も修正が必要だ。
+  acquireToken で account を渡すように修正してくれ。
+型があってないようだぜ？
+  ERROR(vue-tsc)  Argument of type '{ scopes: string[]; account: { homeAccountId: string; environment: string; tenantId: string; username: string; localAccountId: string; loginHint?: string; name?: string; idToken?: string; ... 4 more ...; dataBoundary?: DataBoundary; } | undefined; }' is not assignable to parameter of type 'SilentRequest' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+```

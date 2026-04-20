@@ -41,7 +41,7 @@
               </q-input>
             </div>
             <div class="col-6">
-              <q-input v-model="form.paymentRate" label="支払比率" outlined dense>
+              <q-input v-model="form.paymentRate" label="支払比率" type="number" input-class="text-right" outlined dense>
                 <template v-slot:prepend>
                   <q-icon name="sym_o_percent" size="xs" />
                 </template>
@@ -132,8 +132,8 @@
           </div>
           <q-separator class="q-mt-md" />
           <q-card-actions align="right" class="q-mt-md">
-            <q-btn label="キャンセル" color="grey" size="md" dense v-close-popup />
-            <q-btn type="submit" label="登録" color="positive" size="md" dense/>
+            <q-btn label="キャンセル" color="grey" size="md" dense unelevated v-close-popup />
+            <q-btn type="submit" label="登録" color="positive" size="md" unelevated dense/>
           </q-card-actions>
 
         </q-form>
@@ -146,8 +146,10 @@
 <script setup lang="ts">
 import { reactive } from 'vue'
 import { useDialogFormStore } from 'stores/dialog-form'
+import { useConsignorsStore } from 'stores/consignors'
 
 const dialogFormStore = useDialogFormStore()
+const consignorsStore = useConsignorsStore()
 
 const form = reactive({
   companyName: '',
@@ -164,8 +166,8 @@ const form = reactive({
   notes: '',
 })
 
-function onSubmit(): void {
-  console.log('submit:', form)
+async function onSubmit(): Promise<void> {
+  await consignorsStore.create(form)
   dialogFormStore.close()
 }
 </script>
