@@ -59,7 +59,7 @@ export const useAuthStore = defineStore(
      * @returns アクセストークン文字列
      */
     async function acquireToken(request: SilentRequest): Promise<string> {
-      return auth.acquireToken(request)
+      return auth.acquireToken({ ...request, ...(account.value ? { account: account.value } : {}) })
     }
 
     return { account, loginHint, isLoggedIn, name, email, login, logout, acquireToken }

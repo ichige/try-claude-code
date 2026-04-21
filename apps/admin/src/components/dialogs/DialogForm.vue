@@ -146,10 +146,10 @@
 <script setup lang="ts">
 import { reactive } from 'vue'
 import { useDialogFormStore } from 'stores/dialog-form'
-import { useConsignorsStore } from 'stores/consignors'
+import { useMastersStore } from 'stores/masters'
 
 const dialogFormStore = useDialogFormStore()
-const consignorsStore = useConsignorsStore()
+const mastersStore = useMastersStore()
 
 const form = reactive({
   companyName: '',
@@ -167,7 +167,7 @@ const form = reactive({
 })
 
 async function onSubmit(): Promise<void> {
-  await consignorsStore.create(form)
+  await mastersStore.create('Consignors', form)
   dialogFormStore.close()
 }
 </script>
