@@ -20,7 +20,7 @@
 
           <div class="row q-col-gutter-md">
             <div class="col-6">
-              <q-input v-model="form.companyName" label="会社名" outlined dense>
+              <q-input v-model="form.companyName" label="会社名" outlined dense :rules="[rules.companyName]">
                 <template v-slot:prepend>
                   <q-icon name="sym_o_domain" size="xs" />
                 </template>
@@ -41,7 +41,7 @@
               </q-input>
             </div>
             <div class="col-6">
-              <q-input v-model="form.paymentRate" label="支払比率" type="number" input-class="text-right" outlined dense>
+              <q-input v-model="form.paymentRate" label="支払比率" type="number" input-class="text-right" outlined dense :rules="[rules.paymentRate]">
                 <template v-slot:prepend>
                   <q-icon name="sym_o_percent" size="xs" />
                 </template>
@@ -145,17 +145,45 @@
 
 <script setup lang="ts">
 import { reactive } from 'vue'
+import { z } from 'zod'
 import { useDialogFormStore } from 'stores/dialog-form'
 import { useMastersStore } from 'stores/masters'
 
 const dialogFormStore = useDialogFormStore()
 const mastersStore = useMastersStore()
 
+const consignorSchema = z.object({
+  companyName: z.string().min(1, '会社名は必須です'),
+  companyCode: z.string().default(''),
+  invoiceNumber: z.string().default(''),
+  paymentRate: z.coerce.number({ error: '数値を入力してください' }),
+  postalCode: z.string().default(''),
+  prefecture: z.string().default(''),
+  cityStreet: z.string().default(''),
+  building: z.string().default(''),
+  phone: z.string().default(''),
+  email: z.string().default(''),
+  website: z.string().default(''),
+  notes: z.string().default(''),
+})
+
+function zodRule(schema: z.ZodType) {
+  return (v: unknown) => {
+    const result = schema.safeParse(v)
+    return result.success || result.error.issues[0]?.message || true
+  }
+}
+
+const rules = {
+  companyName: zodRule(consignorSchema.shape.companyName),
+  paymentRate: zodRule(consignorSchema.shape.paymentRate),
+}
+
 const form = reactive({
   companyName: '',
   companyCode: '',
   invoiceNumber: '',
-  paymentRate: '',
+  paymentRate: 85,
   postalCode: '',
   prefecture: '',
   cityStreet: '',
@@ -167,7 +195,9 @@ const form = reactive({
 })
 
 async function onSubmit(): Promise<void> {
-  await mastersStore.create('Consignors', form)
+  const parsed = consignorSchema.safeParse(form)
+  if (!parsed.success) return
+  await mastersStore.create('Consignors', parsed.data)
   dialogFormStore.close()
 }
 </script>
