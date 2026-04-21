@@ -47,6 +47,10 @@ export default defineConfig((ctx) => {
           // tsconfig.json の拡張
           tsConfig.compilerOptions ??= {}
           tsConfig.compilerOptions.paths ??= {}
+          tsConfig.compilerOptions.paths['composables'] = ['../src/composables']
+          tsConfig.compilerOptions.paths['composables/*'] = ['../src/composables/*']
+          tsConfig.compilerOptions.paths['configs'] = ['../src/configs']
+          tsConfig.compilerOptions.paths['configs/*'] = ['../src/configs/*']
           tsConfig.compilerOptions.paths['@shisamo/shared'] = ['../../../packages/shared/src/*']
           tsConfig.compilerOptions.paths['@/*'] = ['../src/*']
           tsConfig.include ??= []
@@ -74,6 +78,8 @@ export default defineConfig((ctx) => {
         viteConf.resolve ??= {}
         viteConf.resolve.alias = {
           ...viteConf.resolve.alias,
+          composables: fileURLToPath(new URL('./src/composables', import.meta.url)),
+          configs: fileURLToPath(new URL('./src/configs', import.meta.url)),
           '@shisamo/shared': fileURLToPath(new URL('../../packages/shared/src', import.meta.url)),
         }
 

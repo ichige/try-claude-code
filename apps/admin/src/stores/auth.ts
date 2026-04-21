@@ -1,12 +1,12 @@
 import { defineStore, acceptHMRUpdate } from 'pinia'
 import { ref, computed } from 'vue'
-import { type AuthAccount, type PopupRequest, type SilentRequest } from '@shisamo/shared'
+import { type AccountInfo, type PopupRequest, type SilentRequest } from '@shisamo/shared'
 import { auth } from 'src/boot/auth'
 
 export const useAuthStore = defineStore(
   'auth',
   () => {
-    const account = ref<AuthAccount | null>(null)
+    const account = ref<AccountInfo | null>(null)
 
     /**
      * MSAL の login_hint に使用するメールアドレス。
@@ -59,7 +59,7 @@ export const useAuthStore = defineStore(
      * @returns アクセストークン文字列
      */
     async function acquireToken(request: SilentRequest): Promise<string> {
-      return auth.acquireToken(request)
+      return auth.acquireToken({ ...request, ...(account.value ? { account: account.value } : {}) })
     }
 
     return { account, loginHint, isLoggedIn, name, email, login, logout, acquireToken }

@@ -21,6 +21,8 @@
     <q-page-container>
       <router-view />
     </q-page-container>
+
+    <DialogForm />
   </q-layout>
 </template>
 
@@ -28,6 +30,7 @@
 import { ref } from 'vue'
 import EssentialLink, { type EssentialLinkProps } from 'components/EssentialLink.vue'
 import AccountSetting from 'components/layouts/AccountSetting.vue'
+import DialogForm from 'components/dialogs/DialogForm.vue'
 
 const linksList: EssentialLinkProps[] = [
   {
