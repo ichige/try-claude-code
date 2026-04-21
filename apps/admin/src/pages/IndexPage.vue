@@ -13,7 +13,7 @@ import { useDialogFormButton, initDialogForm } from 'composables/dialog-form'
 const { OpenDialogFormButton } = useDialogFormButton()
 
 onMounted(async () => {
-  await initDialogForm()
+  await initDialogForm('Consignors', 'create')
 })
 
 </script>

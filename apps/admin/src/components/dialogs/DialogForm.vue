@@ -145,27 +145,14 @@
 
 <script setup lang="ts">
 import { reactive } from 'vue'
-import { z } from 'zod'
+import type { z } from 'zod'
 import { useDialogFormStore } from 'stores/dialog-form'
 import { useMastersStore } from 'stores/masters'
+import { useDialogFormConfig } from 'composables/dialog-form'
 
 const dialogFormStore = useDialogFormStore()
 const mastersStore = useMastersStore()
-
-const consignorSchema = z.object({
-  companyName: z.string().min(1, '会社名は必須です'),
-  companyCode: z.string().default(''),
-  invoiceNumber: z.string().default(''),
-  paymentRate: z.coerce.number({ error: '数値を入力してください' }),
-  postalCode: z.string().default(''),
-  prefecture: z.string().default(''),
-  cityStreet: z.string().default(''),
-  building: z.string().default(''),
-  phone: z.string().default(''),
-  email: z.string().default(''),
-  website: z.string().default(''),
-  notes: z.string().default(''),
-})
+const { containerConfig } = useDialogFormConfig()
 
 function zodRule(schema: z.ZodType) {
   return (v: unknown) => {
@@ -175,27 +162,14 @@ function zodRule(schema: z.ZodType) {
 }
 
 const rules = {
-  companyName: zodRule(consignorSchema.shape.companyName),
-  paymentRate: zodRule(consignorSchema.shape.paymentRate),
+  companyName: zodRule(containerConfig.value!.schema.shape['companyName'] as z.ZodType),
+  paymentRate: zodRule(containerConfig.value!.schema.shape['paymentRate'] as z.ZodType),
 }
 
-const form = reactive({
-  companyName: '',
-  companyCode: '',
-  invoiceNumber: '',
-  paymentRate: 85,
-  postalCode: '',
-  prefecture: '',
-  cityStreet: '',
-  building: '',
-  phone: '',
-  email: '',
-  website: '',
-  notes: '',
-})
+const form = reactive({ ...containerConfig.value!.initialForm })
 
 async function onSubmit(): Promise<void> {
-  const parsed = consignorSchema.safeParse(form)
+  const parsed = containerConfig.value!.schema.safeParse(form)
   if (!parsed.success) return
   await mastersStore.create('Consignors', parsed.data)
   dialogFormStore.close()
