@@ -10,7 +10,7 @@ export const useMastersStore = defineStore('masters', () => {
    * @param data - フォームの入力値
    */
   async function create(container: ContainerName, data: Record<string, unknown>): Promise<void> {
-    await api.post(`/api/create-item/${container}`, data)
+    await api.post(`/api/create-item2/${container}`, data)
   }
 
   return { create }

@@ -259,3 +259,14 @@ do it
 いやむしろ buildItems の構成をフラットにせずに、sections の構成に合わせても良い気がするけど、どうなのかな？
 ```
 
+完成まであと少し。
+
+```markdown
+`apps/admin/src/components/dialogs/DialogForm.vue` だが、onSubmit で API実行が成功した場合、
+reactive な form 変数も初期化したい。
+初期化は共通化しておくと良いのでは？
+この onSubmit の最中だけど、Quasar の Loading プラグインで、「更新中...」というメッセージを表示して欲しい。
+```
+
+動きとしてはそれっぽくなった。  
+次は更新パターンだが、その前にテーブルを作成したいなと。
