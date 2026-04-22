@@ -1,5 +1,5 @@
 import { ref, reactive, h, defineComponent } from 'vue'
-import { QBtn } from 'quasar'
+import { QBtn, Loading } from 'quasar'
 import type { z } from 'zod'
 import type { ContainerName } from 'stores/masters'
 import type { Operation } from 'configs/dialog-form/operations'
@@ -20,6 +20,12 @@ const currentContainer = ref<ContainerName | null>(null)
 const form = reactive<Record<string, string | number>>({})
 const sections = ref<DialogFormSection[]>([])
 
+function resetForm(): void {
+  if (!containerConfig.value) return
+  Object.keys(form).forEach((k) => delete form[k])
+  Object.assign(form, containerConfig.value.initialForm)
+}
+
 /**
  * Dialog フォームの設定をコンテナ名と操作名をもとに動的 import で読み込む。
  * @param container - 操作対象のコンテナ名
@@ -35,8 +41,7 @@ export async function initDialogForm(container: ContainerName, operation: Operat
   }
   currentContainer.value = container
   operationConfig.value = operationConfigs[operation]
-  Object.keys(form).forEach((k) => delete form[k])
-  Object.assign(form, containerConfig.value.initialForm)
+  resetForm()
   sections.value = containerConfig.value.buildItems(form)
 }
 
@@ -66,8 +71,15 @@ export function useDialogFormConfig() {
     if (!containerConfig.value || !currentContainer.value) return
     const parsed = containerConfig.value.schema.safeParse({ ...form })
     if (!parsed.success) return
-    await mastersStore.create(currentContainer.value, parsed.data)
-    dialogFormStore.close()
+    Loading.show({ message: '更新中...' })
+    try {
+      await mastersStore.create(currentContainer.value, parsed.data)
+      resetForm()
+      dialogFormStore.close()
+    } finally {
+      dialogFormStore.close()
+      Loading.hide()
+    }
   }
 
   return { sections, onSubmit }
