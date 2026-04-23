@@ -15,6 +15,5 @@ api.interceptors.request.use(async (config) => {
   return config
 })
 
-api.interceptors.response.use((response) => response.data)
 
 export default defineBoot(() => {})

@@ -7,6 +7,7 @@ import {
 } from 'vue-router'
 import routes from './routes'
 import authGuard from './auth-guard'
+import prefetchGuard from './prefetch-guard'
 
 export default defineRouter(() => {
   const createHistory = process.env.SERVER
@@ -26,6 +27,7 @@ export default defineRouter(() => {
   })
 
   Router.beforeEach(authGuard)
+  Router.beforeEach(prefetchGuard)
 
   return Router
 })

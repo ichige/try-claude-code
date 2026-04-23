@@ -8,7 +8,7 @@ export const schema = z.object({
   companyName: z.string().min(1, '会社名は必須です'),
   companyCode: z.string().default(''),
   invoiceNumber: z.string().default(''),
-  paymentRate: z.coerce.number({ error: '数値を入力してください' }),
+  lineConnected: z.boolean().default(false),
   postalCode: z.string().default(''),
   prefecture: z.string().default(''),
   cityStreet: z.string().default(''),
@@ -23,7 +23,7 @@ export const initialForm: Record<string, string | number | boolean> = {
   companyName: '',
   companyCode: '',
   invoiceNumber: '',
-  paymentRate: 85,
+  lineConnected: false,
   postalCode: '',
   prefecture: '',
   cityStreet: '',
@@ -39,11 +39,11 @@ export const initialForm: Record<string, string | number | boolean> = {
  * @param form - リアクティブなフォームオブジェクト
  */
 export function buildItems(form: Record<string, string | number | boolean>): DialogFormSection[] {
-  const upd = (key: string) => (v: string | number | null) => { form[key] = v ?? '' }
+  const upd = (key: string) => (v: string | number | boolean | null) => { form[key] = v ?? '' }
 
   return [
     {
-      header: { icon: 'sym_o_domain', label: '基本情報' },
+      header: { icon: 'sym_o_local_shipping', label: '基本情報' },
       fields: [
         {
           col: 'col-6',
@@ -66,14 +66,6 @@ export function buildItems(form: Record<string, string | number | boolean>): Dia
             modelValue: form['invoiceNumber'], 'onUpdate:modelValue': upd('invoiceNumber'),
             label: 'インボイス番号', outlined: true, dense: true,
           }, { prepend: () => h(QIcon, { name: 'sym_o_tag', size: 'xs' }) }),
-        },
-        {
-          col: 'col-6',
-          component: () => h(QInput, {
-            modelValue: form['paymentRate'], 'onUpdate:modelValue': upd('paymentRate'),
-            label: '支払比率', type: 'number', inputClass: 'text-right', outlined: true, dense: true,
-            rules: [zodRule(schema.shape['paymentRate'] as z.ZodType)],
-          }, { prepend: () => h(QIcon, { name: 'sym_o_percent', size: 'xs' }) }),
         },
       ],
     },
