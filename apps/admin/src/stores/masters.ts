@@ -1,9 +1,20 @@
 import { defineStore, acceptHMRUpdate } from 'pinia'
 import { api } from 'src/boot/axios'
+import type { CosmosItem } from '@shisamo/shared'
 
 export type ContainerName = 'Consignees' | 'Carriers' | 'Forwarders' | 'Consignors'
 
 export const useMastersStore = defineStore('masters', () => {
+  /**
+   * 指定したコンテナのアイテム一覧を取得する。
+   * @param container - 取得対象のコンテナ名
+   * @returns アイテムの配列
+   */
+  async function list<T extends CosmosItem>(container: ContainerName): Promise<T[]> {
+    const { data } = await api.get<{ items: T[] }>(`/api/item-list/${container}`)
+    return data.items
+  }
+
   /**
    * 指定したコンテナにアイテムを登録する。
    * @param container - 登録先のコンテナ名
@@ -13,7 +24,7 @@ export const useMastersStore = defineStore('masters', () => {
     await api.post(`/api/create-item2/${container}`, data)
   }
 
-  return { create }
+  return { list, create }
 })
 
 if (import.meta.hot) {
