@@ -133,4 +133,23 @@ axios の interceptors で data を返すことで、むしろ型が崩れてる
 
 フェッチは確認できたので、いよいよテーブルに反映する。
 
+```markdown
+それでは先ほど作成した ContainerTable.vue に、useConsignorsStore の items を参照するようにして、ダミーデータを削除してください。
+ContainerTable 側で computed にするより、useConsignorsStore 側で getters で提供した方が良いのでは？
+とりあえず問題なさそうや。useConsignorsStoreのstateやgettersに適当なコメント付けておいて。
+ブロック型のコメントにしようぜ。
+```
 
+次はテーブルの汎用化。
+
+```markdown
+ContainerTable.vue の rows や columns って、composable に外だし出来ると思うんだよね。
+composable/containers-table みたいな形で切り出してみて。
+作ってもらった container-table.ts だけど、composables/dialog-form.ts と同じように、configs を使った動的 import が可能な気がするんだ。
+少なくとも columns は可能かと思うので、確認してみてくれ。
+pages/IndexPage.vue の onMounted で実装しているように、ContainerTable.vue で実装できそうでしょ？
+useContainerTable でも、initContainerTable で受け取った container で別のストアに分岐はできるよね？
+では、そのように修正しておいて。
+```
+
+だいたい構成的には良さそうではある。

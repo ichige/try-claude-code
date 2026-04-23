@@ -1,12 +1,20 @@
 import { defineStore, acceptHMRUpdate } from 'pinia'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import type { ConsignorsItem } from '@shisamo/shared'
 import { useMastersStore } from 'stores/masters'
 
 export const useConsignorsStore = defineStore('masters/consignors', () => {
   const masters = useMastersStore()
 
+  /**
+   * id をキーとした Consignors アイテムの Map。
+   */
   const items = ref(new Map<string, ConsignorsItem>())
+
+  /**
+   * items を配列に変換したリスト。
+   */
+  const list = computed(() => Array.from(items.value.values()))
 
   /**
    * Consignors コンテナのアイテム一覧を取得し、Map に格納する。
@@ -25,7 +33,7 @@ export const useConsignorsStore = defineStore('masters/consignors', () => {
     return items.value.get(id)
   }
 
-  return { items, fetchAll, getById }
+  return { items, list, fetchAll, getById }
 })
 
 if (import.meta.hot) {
