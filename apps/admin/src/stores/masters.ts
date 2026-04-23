@@ -1,10 +1,14 @@
 import { defineStore, acceptHMRUpdate } from 'pinia'
+import { ref } from 'vue'
 import { api } from 'src/boot/axios'
 import type { CosmosItem } from '@shisamo/shared'
+import { useConsignorsStore } from 'stores/masters/consignors'
 
 export type ContainerName = 'Consignees' | 'Carriers' | 'Forwarders' | 'Consignors'
 
 export const useMastersStore = defineStore('masters', () => {
+  const loaded = ref(false)
+
   /**
    * 指定したコンテナのアイテム一覧を取得する。
    * @param container - 取得対象のコンテナ名
@@ -24,7 +28,15 @@ export const useMastersStore = defineStore('masters', () => {
     await api.post(`/api/create-item2/${container}`, data)
   }
 
-  return { list, create }
+  /**
+   * 全マスタストアのデータを一括取得する。
+   */
+  async function prefetch(): Promise<void> {
+    await useConsignorsStore().fetchAll()
+    loaded.value = true
+  }
+
+  return { loaded, list, create, prefetch }
 })
 
 if (import.meta.hot) {
