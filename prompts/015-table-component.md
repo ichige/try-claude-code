@@ -40,3 +40,19 @@ list 関数の構成はいいけど、APIの戻り型をよく確認してみて
 - ContainerTable では URLパスである Consignors を表示するだけで良い。
 - 現時点では画面遷移の確認だけとする。
 ```
+
+微妙に意図が伝わってないな。
+
+```markdown
+MastersContainerPage.vue で実装している処理は、MastersPage.vue に router-view で設定できるのではないか？
+```
+
+これでルーティングの構成はOKだろう。  
+リンクをサイドメニューに設定しておこう。
+
+```markdown
+components/EssentialLink.vue を components/layouts 配下に移動してくれ。
+layouts/MainLayout.vue で先ほど作った /masters へのリンクを設定してほしい。
+現時点でlinksListに入っているデータはすべて削除して、/masters だけのリンクでOKだ。
+アイコンはgoogle material symbols から適切なものを設定しておいて。
+```
