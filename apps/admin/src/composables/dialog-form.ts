@@ -1,29 +1,27 @@
-import { ref, reactive, h, defineComponent } from 'vue'
+import { ref, shallowRef, reactive, h, defineComponent } from 'vue'
 import { QBtn, Loading } from 'quasar'
 import type { z } from 'zod'
-import type { ContainerName } from 'stores/masters'
+import type { ContainerName, MasterStore } from 'stores/masters'
 import type { Operation } from 'configs/dialog-form/operations'
 import type { DialogFormSection } from 'configs/dialog-form/types'
 import { operationConfigs } from 'configs/dialog-form/operations'
 import { useDialogFormStore } from 'stores/dialog-form'
-import { useMastersStore } from 'stores/masters'
 
 interface ContainerConfig {
   schema: z.ZodObject<z.ZodRawShape>
-  initialForm: Record<string, string | number>
-  buildItems: (form: Record<string, string | number>) => DialogFormSection[]
+  initialForm: Record<string, string | number | boolean>
+  buildItems: (form: Record<string, string | number | boolean>) => DialogFormSection[]
 }
 
 const containerConfig = ref<ContainerConfig | null>(null)
 const operationConfig = ref<(typeof operationConfigs)[Operation] | null>(null)
-const currentContainer = ref<ContainerName | null>(null)
-const form = reactive<Record<string, string | number>>({})
+const currentStore = shallowRef<MasterStore | null>(null)
+const form = reactive<Record<string, string | number | boolean>>({})
 const sections = ref<DialogFormSection[]>([])
 
-function resetForm(): void {
-  if (!containerConfig.value) return
+function resetForm(config: ContainerConfig): void {
   Object.keys(form).forEach((k) => delete form[k])
-  Object.assign(form, containerConfig.value.initialForm)
+  Object.assign(form, config.initialForm)
 }
 
 /**
@@ -32,17 +30,27 @@ function resetForm(): void {
  * @param operation - 操作種別
  */
 export async function initDialogForm(container: ContainerName, operation: Operation): Promise<void> {
+  let config: ContainerConfig
   switch (container) {
-    case 'Consignors':
-      containerConfig.value = await import('configs/dialog-form/consignors')
+    case 'Consignors': {
+      const { useConsignorsStore } = await import('stores/masters/consignors')
+      config = await import('configs/dialog-form/consignors')
+      currentStore.value = useConsignorsStore()
       break
+    }
+    case 'Carriers': {
+      const { useCarriersStore } = await import('stores/masters/carriers')
+      config = await import('configs/dialog-form/carriers')
+      currentStore.value = useCarriersStore()
+      break
+    }
     default:
       throw new Error(`No config for container: ${container}`)
   }
-  currentContainer.value = container
+  containerConfig.value = config
   operationConfig.value = operationConfigs[operation]
-  resetForm()
-  sections.value = containerConfig.value.buildItems(form)
+  resetForm(config)
+  sections.value = config.buildItems(form)
 }
 
 /**
@@ -64,17 +72,16 @@ export function useDialogFormButton() {
  * @returns sections・onSubmit
  */
 export function useDialogFormConfig() {
-  const mastersStore = useMastersStore()
   const dialogFormStore = useDialogFormStore()
 
   async function onSubmit(): Promise<void> {
-    if (!containerConfig.value || !currentContainer.value) return
+    if (!containerConfig.value || !currentStore.value) return
     const parsed = containerConfig.value.schema.safeParse({ ...form })
     if (!parsed.success) return
     Loading.show({ message: '更新中...' })
     try {
-      await mastersStore.create(currentContainer.value, parsed.data)
-      resetForm()
+      await currentStore.value.create(parsed.data)
+      resetForm(containerConfig.value)
       dialogFormStore.close()
     } finally {
       dialogFormStore.close()

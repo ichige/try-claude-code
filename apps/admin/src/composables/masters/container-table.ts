@@ -1,10 +1,10 @@
-import { ref, computed, shallowRef, type Ref } from 'vue'
+import { ref, computed } from 'vue'
 import type { QTableProps } from 'quasar'
 import type { CosmosItem } from '@shisamo/shared'
 import type { ContainerName } from 'stores/masters'
 
-const _rows = shallowRef<Ref<CosmosItem[]>>(ref([]))
-const rows = computed(() => _rows.value.value)
+const _getRows = ref<() => CosmosItem[]>(() => [])
+const rows = computed(() => _getRows.value())
 const columns = ref<QTableProps['columns']>([])
 
 /**
@@ -15,8 +15,16 @@ export async function initContainerTable(container: ContainerName): Promise<void
   switch (container) {
     case 'Consignors': {
       const { useConsignorsStore } = await import('stores/masters/consignors')
-      _rows.value = useConsignorsStore().list
+      const store = useConsignorsStore()
+      _getRows.value = () => store.list
       columns.value = (await import('configs/container-table/consignors')).columns
+      break
+    }
+    case 'Carriers': {
+      const { useCarriersStore } = await import('stores/masters/carriers')
+      const store = useCarriersStore()
+      _getRows.value = () => store.list
+      columns.value = (await import('configs/container-table/carriers')).columns
       break
     }
     default:

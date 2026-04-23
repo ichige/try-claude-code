@@ -1,15 +1,15 @@
 import { defineStore, acceptHMRUpdate } from 'pinia'
 import { ref, computed } from 'vue'
-import type { ConsignorsItem } from '@shisamo/shared'
+import type { CarriersItem } from '@shisamo/shared'
 import { useMastersStore, type MasterStore } from 'stores/masters'
 
-export const useConsignorsStore = defineStore('masters/consignors', () => {
+export const useCarriersStore = defineStore('masters/carriers', () => {
   const masters = useMastersStore()
 
   /**
-   * id をキーとした Consignors アイテムの Map。
+   * id をキーとした Carriers アイテムの Map。
    */
-  const items = ref(new Map<string, ConsignorsItem>())
+  const items = ref(new Map<string, CarriersItem>())
 
   /**
    * items を配列に変換したリスト。
@@ -17,19 +17,19 @@ export const useConsignorsStore = defineStore('masters/consignors', () => {
   const list = computed(() => Array.from(items.value.values()))
 
   /**
-   * Consignors コンテナのアイテム一覧を取得し、Map に格納する。
+   * Carriers コンテナのアイテム一覧を取得し、Map に格納する。
    */
   async function fetchAll(): Promise<void> {
-    const list = await masters.list<ConsignorsItem>('Consignors')
+    const list = await masters.list<CarriersItem>('Carriers')
     items.value = new Map(list.map((item) => [item.id, item]))
   }
 
   /**
-   * Consignors コンテナにアイテムを登録し、items に追加する。
+   * Carriers コンテナにアイテムを登録し、items に追加する。
    * @param data - フォームの入力値
    */
   async function create(data: Record<string, unknown>): Promise<void> {
-    const item = await masters.create<ConsignorsItem>('Consignors', data)
+    const item = await masters.create<CarriersItem>('Carriers', data)
     items.value.set(item.id, item)
   }
 
@@ -38,7 +38,7 @@ export const useConsignorsStore = defineStore('masters/consignors', () => {
    * @param id - アイテムの ID
    * @returns 該当アイテム。存在しない場合は undefined
    */
-  function getById(id: string): ConsignorsItem | undefined {
+  function getById(id: string): CarriersItem | undefined {
     return items.value.get(id)
   }
 
@@ -47,5 +47,5 @@ export const useConsignorsStore = defineStore('masters/consignors', () => {
 })
 
 if (import.meta.hot) {
-  import.meta.hot.accept(acceptHMRUpdate(useConsignorsStore, import.meta.hot))
+  import.meta.hot.accept(acceptHMRUpdate(useCarriersStore, import.meta.hot))
 }
