@@ -8,7 +8,7 @@ const logger = getLogger('authGuard')
 
 type Ctx = { state: string }
 
-const authGuard: NavigationGuard = async (to, from, next) => {
+const authGuard: NavigationGuard = async (to) => {
   const authStore = useAuthStore()
 
   try {
@@ -43,10 +43,9 @@ const authGuard: NavigationGuard = async (to, from, next) => {
         ctx.state = 'ok'
         return ctx
       })
-    next()
   } catch (e) {
     logger.error(e instanceof Error ? e : new Error(String(e)))
-    next({ name: 'fallback' })
+    return { name: 'fallback' }
   }
 }
 
