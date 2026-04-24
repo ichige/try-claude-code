@@ -66,7 +66,7 @@ function populateForm(row: CosmosItem): void {
 export async function initDialogForm(container: ContainerName): Promise<void> {
   // 設定ファイルが存在しない場合は落ちるけど、さすがにテストくらいはやってくれ。
   // ※ runtime での import なので、相対パス指定が好ましい。
-  const config = await import(`../configs/dialog-form/${container.toLowerCase()}`) as ContainerConfig
+  const config = await import(`../configs/dialog-form/${container.toLowerCase()}.ts`) as ContainerConfig
   containerConfig.value = config
   currentStore.value = config.useStore()
   resetForm(config)

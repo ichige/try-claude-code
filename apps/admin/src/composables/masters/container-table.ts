@@ -34,7 +34,7 @@ const columns = ref<QTableProps['columns']>([])
  * @param container - 表示対象のコンテナ名
  */
 export async function initContainerTable(container: ContainerName): Promise<void> {
-  const config = await import(`../../configs/container-table/${container.toLowerCase()}`) as ContainerTableConfig
+  const config = await import(`../../configs/container-table/${container.toLowerCase()}.ts`) as ContainerTableConfig
   const store = config.useStore()
   _getRows.value = () => store.list
   columns.value = config.columns

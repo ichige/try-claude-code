@@ -1,1 +1,14 @@
 // app global css
+@use 'src/css/quasar.variables.scss' as *;
+* {
+  font-family: "Noto Sans JP", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/*
+ * QAvatar などの背景をグラデーションにする
+ */
+.primary-gradient {
+  background: linear-gradient(135deg, $primary, lighten($primary, 20%));
+}

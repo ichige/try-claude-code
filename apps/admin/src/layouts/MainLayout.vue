@@ -12,7 +12,20 @@
 
     <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
       <q-list>
-        <q-item-label header> Menu </q-item-label>
+        <q-item>
+          <q-item-section avatar>
+            <q-avatar class="primary-gradient"  text-color="white" rounded>S</q-avatar>
+          </q-item-section>
+          <q-item-section>
+            <q-item-label class="text-weight-bold">{{ $t('app.name') }}</q-item-label>
+            <q-item-label caption>{{ $t('app.caption' +
+              '') }}</q-item-label>
+          </q-item-section>
+
+
+        </q-item>
+
+        <q-separator />
 
         <EssentialLink v-for="link in linksList" :key="link.title" v-bind="link" />
       </q-list>
