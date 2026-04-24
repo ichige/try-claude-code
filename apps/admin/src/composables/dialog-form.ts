@@ -1,4 +1,4 @@
-import { ref, shallowRef, reactive, h, defineComponent } from 'vue'
+import { ref, shallowRef, reactive, computed, h, defineComponent } from 'vue'
 import { QBtn, Loading, Dialog } from 'quasar'
 import type { z } from 'zod'
 import type { CosmosItem } from '@shisamo/shared'
@@ -13,6 +13,8 @@ type FormValue = string | number | boolean | null
  * コンテナ(cosmos db)の設定
  */
 interface ContainerConfig {
+  /** ダイアログタイトルに使用するラベル（例: '荷主情報'） */
+  label: string
   /** zod 検証スキーマ */
   schema: z.ZodObject<z.ZodRawShape>
   /** 入力値の初期値 */
@@ -203,5 +205,10 @@ export function useDialogFormConfig() {
     if (containerConfig.value) resetForm(containerConfig.value)
   }
 
-  return { sections, onSubmit, onHide }
+  const title = computed(() => {
+    const label = containerConfig.value?.label ?? ''
+    return dialogFormStore.mode === 'create' ? `${label}登録` : `${label}更新`
+  })
+
+  return { sections, title, onSubmit, onHide }
 }

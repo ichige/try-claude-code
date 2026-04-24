@@ -6,6 +6,8 @@ import type { MasterStore } from 'stores/masters'
 import { useConsignorsStore } from 'stores/masters/consignors'
 import type { DialogFormSection } from './types'
 
+export const label = '荷主情報'
+
 /**
  * 入力値のスキーマ
  */

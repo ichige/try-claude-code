@@ -5,7 +5,7 @@
       <q-card-section class="bg-primary text-white">
         <div class="row items-center no-wrap">
           <q-avatar icon="sym_o_domain_add" class="q-mr-sm" rounded color="white" text-color="primary" size="md" />
-          <div class="text-h6">会社情報登録</div>
+          <div class="text-h6">{{ title }}</div>
         </div>
       </q-card-section>
 
@@ -43,5 +43,5 @@ import { useDialogFormStore } from 'stores/dialog-form'
 import { useDialogFormConfig } from 'composables/dialog-form'
 
 const dialogFormStore = useDialogFormStore()
-const { sections, onSubmit, onHide } = useDialogFormConfig()
+const { sections, title, onSubmit, onHide } = useDialogFormConfig()
 </script>
