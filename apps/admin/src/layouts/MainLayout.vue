@@ -1,11 +1,11 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
+    <q-header class="bg-transparent" elevated>
       <q-toolbar>
         <q-btn flat dense round icon="menu" aria-label="Menu" @click="uiStore.toggleSideMenu" />
+        <BreadcrumbNav />
 
-        <q-toolbar-title> Quasar App </q-toolbar-title>
-
+        <q-space />
         <AccountSetting />
       </q-toolbar>
     </q-header>
@@ -33,6 +33,7 @@
 
 <script setup lang="ts">
 import ProductLogo from 'components/layouts/ProductLogo.vue'
+import BreadcrumbNav from 'components/layouts/BreadcrumbNav.vue'
 import EssentialLink, { type EssentialLinkProps } from 'components/layouts/EssentialLink.vue'
 import AccountSetting from 'components/layouts/AccountSetting.vue'
 import DialogForm from 'components/dialogs/DialogForm.vue'
@@ -42,9 +43,15 @@ const uiStore = useUIStore()
 
 const linksList: EssentialLinkProps[] = [
   {
+    title: 'ダッシュボード',
+    icon: 'sym_o_dashboard',
+    link: '/',
+  },
+  {
     title: 'マスタ管理',
-    icon: 'table_view',
+    icon: 'sym_o_table',
     link: '/masters',
+    caption: '各種マスタの管理'
   },
 ]
 </script>

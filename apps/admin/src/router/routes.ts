@@ -5,12 +5,13 @@ const routes: RouteRecordRaw[] = [
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/IndexPage.vue') },
+      { path: '', name: 'dashboard', component: () => import('pages/IndexPage.vue') },
       {
         path: 'masters',
+        name: 'masters',
         component: () => import('pages/MastersPage.vue'),
         children: [
-          { path: ':container', component: () => import('components/masters/ContainerTable.vue') },
+          { path: ':container', name: 'masters-container', component: () => import('components/masters/ContainerTable.vue') },
         ],
       },
     ],
