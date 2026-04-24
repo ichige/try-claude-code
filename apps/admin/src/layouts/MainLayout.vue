@@ -2,7 +2,7 @@
   <q-layout view="lHh Lpr lFf">
     <q-header elevated>
       <q-toolbar>
-        <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
+        <q-btn flat dense round icon="menu" aria-label="Menu" @click="uiStore.toggleSideMenu" />
 
         <q-toolbar-title> Quasar App </q-toolbar-title>
 
@@ -10,23 +10,15 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
+    <q-drawer
+      v-model="uiStore.sideMenuOpen"
+      :mini="uiStore.sideMenuMini"
+      show-if-above
+      bordered
+    >
       <q-list>
-        <q-item>
-          <q-item-section avatar>
-            <q-avatar class="primary-gradient"  text-color="white" rounded>S</q-avatar>
-          </q-item-section>
-          <q-item-section>
-            <q-item-label class="text-weight-bold">{{ $t('app.name') }}</q-item-label>
-            <q-item-label caption>{{ $t('app.caption' +
-              '') }}</q-item-label>
-          </q-item-section>
-
-
-        </q-item>
-
+        <ProductLogo />
         <q-separator />
-
         <EssentialLink v-for="link in linksList" :key="link.title" v-bind="link" />
       </q-list>
     </q-drawer>
@@ -40,10 +32,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import ProductLogo from 'components/layouts/ProductLogo.vue'
 import EssentialLink, { type EssentialLinkProps } from 'components/layouts/EssentialLink.vue'
 import AccountSetting from 'components/layouts/AccountSetting.vue'
 import DialogForm from 'components/dialogs/DialogForm.vue'
+import { useUIStore } from 'stores/ui'
+
+const uiStore = useUIStore()
 
 const linksList: EssentialLinkProps[] = [
   {
@@ -52,10 +47,4 @@ const linksList: EssentialLinkProps[] = [
     link: '/masters',
   },
 ]
-
-const leftDrawerOpen = ref(false)
-
-function toggleLeftDrawer() {
-  leftDrawerOpen.value = !leftDrawerOpen.value
-}
 </script>
