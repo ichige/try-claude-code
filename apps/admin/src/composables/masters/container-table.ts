@@ -4,6 +4,15 @@ import type { QTableProps } from 'quasar'
 import type { CosmosItem } from '@shisamo/shared'
 import type { ContainerName } from 'stores/masters'
 
+interface ContainerTableStore {
+  list: CosmosItem[]
+}
+
+interface ContainerTableConfig {
+  columns: QTableProps['columns']
+  useStore: () => ContainerTableStore
+}
+
 /** 対象のレコード */
 const _getRows = ref<() => CosmosItem[]>(() => [])
 
@@ -25,24 +34,10 @@ const columns = ref<QTableProps['columns']>([])
  * @param container - 表示対象のコンテナ名
  */
 export async function initContainerTable(container: ContainerName): Promise<void> {
-  switch (container) {
-    case 'Consignors': {
-      const { useConsignorsStore } = await import('stores/masters/consignors')
-      const store = useConsignorsStore()
-      _getRows.value = () => store.list
-      columns.value = (await import('configs/container-table/consignors')).columns
-      break
-    }
-    case 'Carriers': {
-      const { useCarriersStore } = await import('stores/masters/carriers')
-      const store = useCarriersStore()
-      _getRows.value = () => store.list
-      columns.value = (await import('configs/container-table/carriers')).columns
-      break
-    }
-    default:
-      throw new Error(`No config for container: ${container}`)
-  }
+  const config = await import(`../../configs/container-table/${container.toLowerCase()}`) as ContainerTableConfig
+  const store = config.useStore()
+  _getRows.value = () => store.list
+  columns.value = config.columns
 }
 
 /**

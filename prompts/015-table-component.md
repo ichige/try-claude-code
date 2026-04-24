@@ -334,5 +334,8 @@ const { deleteRow } = useDialogFormDeleteButton()
 ### 最終調整
 
 ```markdown
-composables/masters/container-table.ts
+composables/masters/container-table.ts の initContainerTable だけど、
+composables/dialog-form.ts の initDialogForm と同じパターンが適用できると思うのだけど？
+_getRows.value = config.useList だけど、list　だけに限定しないで store を返すほうが良さそうだね。
+あとで store を参照する必要が出てきそうな予感がするんだ。
 ```
