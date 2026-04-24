@@ -282,4 +282,57 @@ initDialogForm だが、currentStore への store 代入を configs/dialog-form/
 configs/dialog-form/operations に関しては、対して効果なさそうなので、静的 import に戻そう。
 ```
 
+コードを見直して、フレームワークっぽい作りに変更。
 
+### 削除機能
+
+マスタデータは基本的に論理削除のみとしておく。
+
+```markdown
+ContainerTable.vue の削除ボタンの実装を進める。
+まずは削除機能を store に追加する。
+- stores/masters/factory.ts に共通削除メソッドを追加する。
+- 論理削除になるので対象APIは functions/src/routes/cosmos-update.ts の cosmos-update で isDeleted を更新する。
+- あくまで論理削除なので、items も削除ではなく更新扱いで良い。
+- のちほどisDeletedのフィルタリングなどの調整を行う予定。
+- deletedAt は API側で自動で付けてくれると思うのだが？
+```
+
+store が出来たので関数を用意する。
+
+```markdown
+ここまでくると、composables/dialog-form.ts から削除関数をexportするほうがスッキリしそうだな。
+```
+
+さすがに一発で実装できた。
+いくつか追加注文をする。
+
+```markdown
+useContainerTable で返す　rows で、isDeleted をフィルタリング出来ると思うけど、どうですかね？
+ContainerTable.vue の OpenDialogFormButton の隣くらいに、この削除フィルタのON/OFFスイッチを付けたいけど、出来る？
+スイッチごと render 関数で書いても良いかな。
+だいぶ良くなってきたけど、ContainerTable の
+const { rows, columns, ShowDeletedToggle } = useContainerTable()
+const { OpenDialogFormButton } = useDialogFormCreateButton()
+const { openUpdateDialog } = useDialogFormUpdateButton()
+const { deleteRow } = useDialogFormDeleteButton()
+はまとめてexport できるところもあるかな？
+```
+
+そういえば論理削除を戻せない。
+
+```markdown
+この論理削除状態を元に戻すボタンは作れるかね？
+ゴミ箱の反対のアイコンが不明だけど。
+あと、削除ボタンと復帰ボタン時に、Dialog プラグインで Confirm を出して、
+削除中は Loading コンポーネントを出しておいてほしい。出来そう？
+```
+
+ほぼほぼ完成した。
+マスタデータの追加は設定とstoreを準備するだけなので、このあとは高速で完成するだろう。
+
+### 最終調整
+
+```markdown
+composables/masters/container-table.ts
+```

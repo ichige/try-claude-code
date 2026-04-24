@@ -38,6 +38,32 @@ export function createMasterStore<T extends CosmosItem>(container: ContainerName
   }
 
   /**
+   * 論理削除（isDeleted: true に更新）。
+   * @param id - 削除対象のアイテム ID
+   * @param etag - 楽観的同時実行制御用 ETag
+   */
+  async function softDelete(id: string, etag: string): Promise<void> {
+    const item = await masters.patch<T>(container, id, {
+      _etag: etag,
+      isDeleted: true,
+    })
+    items.value.set(item.id, item)
+  }
+
+  /**
+   * 論理削除を解除（isDeleted: false に更新）。
+   * @param id - 復元対象のアイテム ID
+   * @param etag - 楽観的同時実行制御用 ETag
+   */
+  async function restore(id: string, etag: string): Promise<void> {
+    const item = await masters.patch<T>(container, id, {
+      _etag: etag,
+      isDeleted: false,
+    })
+    items.value.set(item.id, item)
+  }
+
+  /**
    * @param id - アイテムの ID
    * @returns 該当アイテム。存在しない場合は undefined
    */
@@ -45,5 +71,5 @@ export function createMasterStore<T extends CosmosItem>(container: ContainerName
     return items.value.get(id)
   }
 
-  return { items, list, fetchAll, create, update, getById }
+  return { items, list, fetchAll, create, update, delete: softDelete, restore, getById }
 }

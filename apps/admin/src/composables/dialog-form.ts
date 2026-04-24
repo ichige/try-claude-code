@@ -1,5 +1,5 @@
 import { ref, shallowRef, reactive, h, defineComponent } from 'vue'
-import { QBtn, Loading } from 'quasar'
+import { QBtn, Loading, Dialog } from 'quasar'
 import type { z } from 'zod'
 import type { CosmosItem } from '@shisamo/shared'
 import type { ContainerName, MasterStore } from 'stores/masters'
@@ -101,12 +101,80 @@ export function useDialogFormUpdateButton() {
 }
 
 /**
+ * 削除系ボタンでの Confirm Dialog
+ * @param message
+ */
+function confirm(message: string): Promise<boolean> {
+  return new Promise((resolve) => {
+    Dialog.create({
+      message,
+      ok: { label: 'はい', color: 'primary', unelevated: true },
+      cancel: { label: 'キャンセル', color: 'grey', unelevated: true },
+    }).onOk(() => resolve(true)).onCancel(() => resolve(false))
+  })
+}
+
+/**
+ * 論理削除を実行する関数を返す。
+ * @returns `deleteRow` - 対象行を受け取り論理削除する関数
+ */
+export function useDialogFormDeleteButton() {
+  async function deleteRow(row: CosmosItem): Promise<void> {
+    if (!currentStore.value) return
+    if (!await confirm('このレコードを削除しますか？')) return
+    Loading.show({ message: '削除中...' })
+    try {
+      await currentStore.value.delete(row.id, row._etag)
+    } finally {
+      Loading.hide()
+    }
+  }
+
+  return { deleteRow }
+}
+
+/**
+ * 論理削除を解除する関数を返す。
+ * @returns `restoreRow` - 対象行を受け取り論理削除を解除する関数
+ */
+export function useDialogFormRestoreButton() {
+  async function restoreRow(row: CosmosItem): Promise<void> {
+    if (!currentStore.value) return
+    if (!await confirm('このレコードを復帰しますか？')) return
+    Loading.show({ message: '復帰中...' })
+    try {
+      await currentStore.value.restore(row.id, row._etag)
+    } finally {
+      Loading.hide()
+    }
+  }
+
+  return { restoreRow }
+}
+
+/**
+ * テーブル行の CRUD 操作に必要な関数・コンポーネントをまとめて返す。
+ * @returns OpenDialogFormButton・openUpdateDialog・deleteRow
+ */
+export function useDialogFormActions() {
+  return {
+    ...useDialogFormCreateButton(),
+    ...useDialogFormUpdateButton(),
+    ...useDialogFormDeleteButton(),
+    ...useDialogFormRestoreButton(),
+  }
+}
+
+/**
  * Dialog フォームのセクション一覧・送信関数・非表示ハンドラを返す。
  * @returns sections・onSubmit・onHide
  */
 export function useDialogFormConfig() {
   const dialogFormStore = useDialogFormStore()
 
+  /**
+   * フォームのサブミット処理
+   */
   async function onSubmit(): Promise<void> {
     if (!containerConfig.value || !currentStore.value) return
     const parsed = containerConfig.value.schema.safeParse({ ...form })
@@ -128,6 +196,9 @@ export function useDialogFormConfig() {
     }
   }
 
+  /**
+   * フォームを閉じるイベントで初期化を実行
+   */
   function onHide(): void {
     if (containerConfig.value) resetForm(containerConfig.value)
   }
