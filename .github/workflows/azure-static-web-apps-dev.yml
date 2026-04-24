@@ -16,9 +16,37 @@ on:
       - 'packages/shared/**'
 
 jobs:
+  lint_job:
+    runs-on: ubuntu-latest
+    name: Lint and Type Check Job
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Lint
+        run: pnpm run lint:admin
+
+      - name: Type Check
+        run: pnpm exec vue-tsc --noEmit
+        working-directory: ./apps/admin
+
   build_and_deploy_job:
     runs-on: ubuntu-latest
     name: Build and Deploy Job
+    needs: lint_job
     steps:
       - uses: actions/checkout@v4
         with:
