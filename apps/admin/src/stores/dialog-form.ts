@@ -1,13 +1,18 @@
 import { defineStore, acceptHMRUpdate } from 'pinia'
 import { ref } from 'vue'
 
+export type DialogMode = 'create' | 'update'
+
 export const useDialogFormStore = defineStore('dialog-form', () => {
   const isOpen = ref(false)
+  const mode = ref<DialogMode>('create')
 
   /**
    * Dialog フォームを開く。
+   * @param dialogMode - 操作モード（デフォルト: 'create'）
    */
-  function open(): void {
+  function open(dialogMode: DialogMode = 'create'): void {
+    mode.value = dialogMode
     isOpen.value = true
   }
 
@@ -18,7 +23,7 @@ export const useDialogFormStore = defineStore('dialog-form', () => {
     isOpen.value = false
   }
 
-  return { isOpen, open, close }
+  return { isOpen, mode, open, close }
 })
 
 if (import.meta.hot) {

@@ -1,10 +1,14 @@
 import type { QTableProps } from 'quasar'
+import type { MasterStore } from 'stores/masters'
+import { useCarriersStore } from 'stores/masters/carriers'
+
+export const useStore = (): MasterStore => useCarriersStore()
 
 export const columns: QTableProps['columns'] = [
   { name: 'companyName', label: '会社名', field: 'companyName', align: 'left' },
   { name: 'companyCode', label: '管理コード', field: 'companyCode', align: 'left' },
   { name: 'invoiceNumber', label: 'インボイス番号', field: 'invoiceNumber', align: 'left' },
-  { name: 'lineConnected', label: 'LINE連携', field: 'lineConnected', align: 'center' },
+  { name: 'lineId', label: 'LINE ID', field: 'lineId', align: 'left' },
   { name: 'postalCode', label: '郵便番号', field: 'postalCode', align: 'left' },
   { name: 'prefecture', label: '都道府県', field: 'prefecture', align: 'left' },
   { name: 'cityStreet', label: '市区町村・番地', field: 'cityStreet', align: 'left' },
@@ -13,4 +17,5 @@ export const columns: QTableProps['columns'] = [
   { name: 'email', label: 'メールアドレス', field: 'email', align: 'left' },
   { name: 'website', label: 'Webサイト', field: 'website', align: 'left' },
   { name: 'notes', label: '備考', field: 'notes', align: 'left' },
+  { name: 'actions', label: '', field: 'actions', align: 'center', sortable: false },
 ]

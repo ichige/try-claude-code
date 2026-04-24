@@ -1,4 +1,8 @@
 import type { QTableProps } from 'quasar'
+import type { MasterStore } from 'stores/masters'
+import { useConsignorsStore } from 'stores/masters/consignors'
+
+export const useStore = (): MasterStore => useConsignorsStore()
 
 export const columns: QTableProps['columns'] = [
   { name: 'companyName', label: '会社名', field: 'companyName', align: 'left' },
@@ -13,4 +17,5 @@ export const columns: QTableProps['columns'] = [
   { name: 'email', label: 'メールアドレス', field: 'email', align: 'left' },
   { name: 'website', label: 'Webサイト', field: 'website', align: 'left' },
   { name: 'notes', label: '備考', field: 'notes', align: 'left' },
+  { name: 'actions', label: '', field: 'actions', align: 'center', sortable: false },
 ]

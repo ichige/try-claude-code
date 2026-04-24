@@ -2,13 +2,20 @@ import { h } from 'vue'
 import { QInput, QIcon } from 'quasar'
 import { z } from 'zod'
 import { zodRule } from 'src/utils/zod-rule'
+import type { MasterStore } from 'stores/masters'
+import { useCarriersStore } from 'stores/masters/carriers'
 import type { DialogFormSection } from './types'
 
+export const label = '運送会社情報'
+
+/**
+ * 入力値のスキーマ検証
+ */
 export const schema = z.object({
   companyName: z.string().min(1, '会社名は必須です'),
   companyCode: z.string().default(''),
   invoiceNumber: z.string().default(''),
-  lineConnected: z.boolean().default(false),
+  lineId: z.string().default(''),
   postalCode: z.string().default(''),
   prefecture: z.string().default(''),
   cityStreet: z.string().default(''),
@@ -19,11 +26,14 @@ export const schema = z.object({
   notes: z.string().default(''),
 })
 
+/**
+ * 入力値の初期値
+ */
 export const initialForm: Record<string, string | number | boolean> = {
   companyName: '',
   companyCode: '',
   invoiceNumber: '',
-  lineConnected: false,
+  lineId: '',
   postalCode: '',
   prefecture: '',
   cityStreet: '',
@@ -35,10 +45,15 @@ export const initialForm: Record<string, string | number | boolean> = {
 }
 
 /**
+ * この設定に依存する Store を返す
+ */
+export const useStore = (): MasterStore => useCarriersStore()
+
+/**
  * form を閉じ込めた render 関数を持つ DialogFormItem 配列を生成する。
  * @param form - リアクティブなフォームオブジェクト
  */
-export function buildItems(form: Record<string, string | number | boolean>): DialogFormSection[] {
+export function buildItems(form: Record<string, string | number | boolean | null>): DialogFormSection[] {
   const upd = (key: string) => (v: string | number | boolean | null) => { form[key] = v ?? '' }
 
   return [

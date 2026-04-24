@@ -201,3 +201,143 @@ useCarriersStore と useConsignorsStore だけで良いよ。
 というサイクルにしたいわけだ。
 では dialog-form でinitDialogFormでストアを切替つつ、submit で create を実行するようにしてみてくれ。
 ```
+
+### 編集ボタン
+
+Dialog を使った汎用登録フォームが動いたので、さらにこれを流用して編集ボタンを作成したい。
+
+```markdown
+apps/admin/src/components/masters/ContainerTable.vue でテーブルを表示しているが、
+行の末尾にフィールドを追加して、「編集」と「削除」ボタンを追加したいと思う。
+- configs/container-table/consignors.ts に actions 的な静的フィールドを追加する。
+- ContainerTable.vue で body スロットを使ってボタンを表示する。
+といった感じで可能な気がしているが、どうだろうか？
+では body-cell slot でボタンと追加してくれ。
+- 現時点では carriers はあえて actions を追加しないでおいて。
+- actions column は config に設定してみて。
+
+`#body-cell-actions="props"` でIDEが「slot nameを認識できません」と警告を出しているけど、これは対応できなそう？
+phpstorm が警告してるだけなんで、それを抑制するコメントがあったと思うのだが？
+```
+
+actions を設定していない表でも、特にエラーが出ることもないようである。  
+で、編集ボタンにデータ更新機能を追加する。
+
+```markdown
+「編集」ボタンは文字通り、そのレコードを更新する目的である。
+まずは対応する Store に更新メソッドを追加したい。
+- stores/masters.ts に update メソッドを追加する。
+    - functions/src/routes/cosmos-update.ts の cosmos-replace が対象のAPIになる。
+- stores/masters/consignors.ts に update メソッドを追加する。
+    - masters.ts の update メソッドを利用する。
+    - create メソッド同様に、戻り値を items に反映する。
+```
+
+このあたりは完璧だ。  
+続いて、汎用フォームを使って更新させる。
+
+```markdown
+設計ミスがあったようで、まずはそこを修正する。  
+- composables/dialog-form.ts の initDialogForm で operation という引数を取っているが、これを削除してほしい。
+- かわりに、operationConfig には configs/dialog-form/operations.ts 全体を動的 import して保持させるようにする。
+- useDialogFormButton は useDialogFormCreateButton に名前を変更して、create ボタンを生成させる。
+```
+
+いくつか型エラーが出たので修正させる。
+
+```markdown
+次は composables/dialog-form.ts に useDialogFormUpdateButton を作りたいわけだが、これは可能そうか？
+- QTable からレコードを受け取り、resetForm(型てきに合わなければ別の関数を作る)で form を更新すればなんとかなりそうな？
+- onSubmit の update 版を作って、components/dialogs/DialogForm.vue に 更新ボタンを作成する必要がある。
+    - ボタンは dialogFormStore の open メソッドの引数などで出しわけ出来そうな？
+ではその方向で修正してみてくれ。
+「会社情報登録」はとりあえず放置しよう。
+
+populateForm だが、deletedAt は null でも送信対象になるんで、修正してみてくれ。
+編集モードでDialogをキャンセルした場合に、resetForm をコールする必要があるね。
+
+とりあえず動くようになったので、configs/container-table/carriers.ts にも actions を追加しておいてくれ。
+```
+
+### 共通化
+
+マスタ系の Store はほぼ同じ構造になるはずなので、共通化できるはずである。
+
+```markdown
+stores/masters/carriers.ts と stores/masters/consignors.ts は、ほぼ同じ構造だけど、
+Class であれば共通化も簡単だが、何か共通化できるアイディアはあるか？
+基本的には各 Store は扱うデータの型の保証と、用途の違いで何かしら特化したメソッドを用意する可能性があることくらいだな。
+あと３個くらいは増えそう。
+
+試しに変更してみてくれ。
+```
+
+```markdown
+composables/dialog-form.ts は要件に合わせて、やや雑に組み立ててきたけど、現時点で何か改善すべきポイントはありそう？
+initDialogForm だが、currentStore への store 代入を configs/dialog-form/consignors 側に factory 書いて代入できるものかね？
+しかし事実上、dialog-form の config は、行きつくさきが 1つの Store になるのは自然な流れだと思わないなかな？
+ここまで修正すると、switch 文すら不要な気がしないかね？
+型的にはそうした方がいいけど、container 変数を小文字にして規則的に import するほうがスッキリするやろ？
+これはある意味フレームワークらしい実装と言えそうやな。型的には悪手だけど。
+configs/dialog-form/operations に関しては、対して効果なさそうなので、静的 import に戻そう。
+```
+
+コードを見直して、フレームワークっぽい作りに変更。
+
+### 削除機能
+
+マスタデータは基本的に論理削除のみとしておく。
+
+```markdown
+ContainerTable.vue の削除ボタンの実装を進める。
+まずは削除機能を store に追加する。
+- stores/masters/factory.ts に共通削除メソッドを追加する。
+- 論理削除になるので対象APIは functions/src/routes/cosmos-update.ts の cosmos-update で isDeleted を更新する。
+- あくまで論理削除なので、items も削除ではなく更新扱いで良い。
+- のちほどisDeletedのフィルタリングなどの調整を行う予定。
+- deletedAt は API側で自動で付けてくれると思うのだが？
+```
+
+store が出来たので関数を用意する。
+
+```markdown
+ここまでくると、composables/dialog-form.ts から削除関数をexportするほうがスッキリしそうだな。
+```
+
+さすがに一発で実装できた。
+いくつか追加注文をする。
+
+```markdown
+useContainerTable で返す　rows で、isDeleted をフィルタリング出来ると思うけど、どうですかね？
+ContainerTable.vue の OpenDialogFormButton の隣くらいに、この削除フィルタのON/OFFスイッチを付けたいけど、出来る？
+スイッチごと render 関数で書いても良いかな。
+だいぶ良くなってきたけど、ContainerTable の
+const { rows, columns, ShowDeletedToggle } = useContainerTable()
+const { OpenDialogFormButton } = useDialogFormCreateButton()
+const { openUpdateDialog } = useDialogFormUpdateButton()
+const { deleteRow } = useDialogFormDeleteButton()
+はまとめてexport できるところもあるかな？
+```
+
+そういえば論理削除を戻せない。
+
+```markdown
+この論理削除状態を元に戻すボタンは作れるかね？
+ゴミ箱の反対のアイコンが不明だけど。
+あと、削除ボタンと復帰ボタン時に、Dialog プラグインで Confirm を出して、
+削除中は Loading コンポーネントを出しておいてほしい。出来そう？
+```
+
+ほぼほぼ完成した。
+マスタデータの追加は設定とstoreを準備するだけなので、このあとは高速で完成するだろう。
+
+### 最終調整
+
+```markdown
+composables/masters/container-table.ts の initContainerTable だけど、
+composables/dialog-form.ts の initDialogForm と同じパターンが適用できると思うのだけど？
+_getRows.value = config.useList だけど、list　だけに限定しないで store を返すほうが良さそうだね。
+あとで store を参照する必要が出てきそうな予感がするんだ。
+
+prefetch-guard.ts だけど、ここでもロード中の時間がかかるので、Loading プラグインでメッセージを表示してほしい。
+```
