@@ -2,8 +2,13 @@ import { h } from 'vue'
 import { QInput, QIcon } from 'quasar'
 import { z } from 'zod'
 import { zodRule } from 'src/utils/zod-rule'
+import type { MasterStore } from 'stores/masters'
+import { useConsignorsStore } from 'stores/masters/consignors'
 import type { DialogFormSection } from './types'
 
+/**
+ * 入力値のスキーマ
+ */
 export const schema = z.object({
   companyName: z.string().min(1, '会社名は必須です'),
   companyCode: z.string().default(''),
@@ -19,6 +24,9 @@ export const schema = z.object({
   notes: z.string().default(''),
 })
 
+/**
+ * 入力値の初期値
+ */
 export const initialForm: Record<string, string | number | boolean> = {
   companyName: '',
   companyCode: '',
@@ -33,6 +41,11 @@ export const initialForm: Record<string, string | number | boolean> = {
   website: '',
   notes: '',
 }
+
+/**
+ * この設定に依存する Store を返す
+ */
+export const useStore = (): MasterStore => useConsignorsStore()
 
 /**
  * form を閉じ込めた render 関数を持つ DialogFormItem 配列を生成する。
