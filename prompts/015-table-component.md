@@ -259,4 +259,18 @@ populateForm だが、deletedAt は null でも送信対象になるんで、修
 とりあえず動くようになったので、configs/container-table/carriers.ts にも actions を追加しておいてくれ。
 ```
 
+### 共通化
+
+マスタ系の Store はほぼ同じ構造になるはずなので、共通化できるはずである。
+
+```markdown
+stores/masters/carriers.ts と stores/masters/consignors.ts は、ほぼ同じ構造だけど、
+Class であれば共通化も簡単だが、何か共通化できるアイディアはあるか？
+基本的には各 Store は扱うデータの型の保証と、用途の違いで何かしら特化したメソッドを用意する可能性があることくらいだな。
+あと３個くらいは増えそう。
+
+試しに変更してみてくれ。
+
+`const items = ref(new Map<string, T>()) as Ref<Map<string, T>>` これって `ref<Map<string, T>>` と定義できるのでは？
+```
 
