@@ -10,6 +10,7 @@ export type ContainerName = 'Consignees' | 'Carriers' | 'Forwarders' | 'Consigno
 export interface MasterStore {
   fetchAll(): Promise<void>
   create(data: Record<string, unknown>): Promise<void>
+  update(id: string, data: Record<string, unknown>): Promise<void>
 }
 
 export const useMastersStore = defineStore('masters', () => {
@@ -36,6 +37,17 @@ export const useMastersStore = defineStore('masters', () => {
   }
 
   /**
+   * 指定したコンテナのアイテムを全置換する。
+   * @param container - 更新対象のコンテナ名
+   * @param id - 更新対象のアイテム ID
+   * @param data - フォームの入力値（_etag を含む）
+   */
+  async function update<T extends CosmosItem>(container: ContainerName, id: string, data: Record<string, unknown>): Promise<T> {
+    const { data: result } = await api.post<{ item: T }>(`/api/replace-item/${container}/${id}`, data)
+    return result.item
+  }
+
+  /**
    * 全マスタストアのデータを一括取得する。
    */
   async function prefetch(): Promise<void> {
@@ -46,7 +58,7 @@ export const useMastersStore = defineStore('masters', () => {
     loaded.value = true
   }
 
-  return { loaded, list, create, prefetch }
+  return { loaded, list, create, update, prefetch }
 })
 
 if (import.meta.hot) {

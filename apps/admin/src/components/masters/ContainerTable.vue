@@ -3,6 +3,13 @@
     <template #top>
       <OpenDialogFormButton />
     </template>
+    <!--suppress VueUnrecognizedSlot slot名が解決出来ないけど、型としては正しい -->
+    <template #body-cell-actions="props">
+      <q-td :props="props">
+        <q-btn flat dense icon="edit" color="primary" @click="openUpdateDialog(props.row)" />
+        <q-btn flat dense icon="delete" color="negative" />
+      </q-td>
+    </template>
   </q-table>
 </template>
 
@@ -11,16 +18,17 @@ import { onMounted } from 'vue'
 import { useRoute, onBeforeRouteUpdate } from 'vue-router'
 import type { ContainerName } from 'stores/masters'
 import { useContainerTable, initContainerTable } from 'composables/masters/container-table'
-import { useDialogFormButton, initDialogForm } from 'composables/dialog-form'
+import { useDialogFormCreateButton, useDialogFormUpdateButton, initDialogForm } from 'composables/dialog-form'
 
 const route = useRoute()
 const { rows, columns } = useContainerTable()
-const { OpenDialogFormButton } = useDialogFormButton()
+const { OpenDialogFormButton } = useDialogFormCreateButton()
+const { openUpdateDialog } = useDialogFormUpdateButton()
 
 async function init(container: ContainerName): Promise<void> {
   await Promise.all([
     initContainerTable(container),
-    initDialogForm(container, 'create'),
+    initDialogForm(container),
   ])
 }
 

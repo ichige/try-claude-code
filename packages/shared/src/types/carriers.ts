@@ -10,8 +10,8 @@ export interface CarriersItem extends CosmosItem {
   companyCode: string
   /** インボイス番号 */
   invoiceNumber: string
-  /** LINEログイン連携フラグ */
-  lineConnected: boolean
+  /** LINE ID */
+  lineId: string
   /** 郵便番号 */
   postalCode: string
   /** 都道府県 */

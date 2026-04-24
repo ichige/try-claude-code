@@ -201,3 +201,62 @@ useCarriersStore と useConsignorsStore だけで良いよ。
 というサイクルにしたいわけだ。
 では dialog-form でinitDialogFormでストアを切替つつ、submit で create を実行するようにしてみてくれ。
 ```
+
+### 編集ボタン
+
+Dialog を使った汎用登録フォームが動いたので、さらにこれを流用して編集ボタンを作成したい。
+
+```markdown
+apps/admin/src/components/masters/ContainerTable.vue でテーブルを表示しているが、
+行の末尾にフィールドを追加して、「編集」と「削除」ボタンを追加したいと思う。
+- configs/container-table/consignors.ts に actions 的な静的フィールドを追加する。
+- ContainerTable.vue で body スロットを使ってボタンを表示する。
+といった感じで可能な気がしているが、どうだろうか？
+では body-cell slot でボタンと追加してくれ。
+- 現時点では carriers はあえて actions を追加しないでおいて。
+- actions column は config に設定してみて。
+
+`#body-cell-actions="props"` でIDEが「slot nameを認識できません」と警告を出しているけど、これは対応できなそう？
+phpstorm が警告してるだけなんで、それを抑制するコメントがあったと思うのだが？
+```
+
+actions を設定していない表でも、特にエラーが出ることもないようである。  
+で、編集ボタンにデータ更新機能を追加する。
+
+```markdown
+「編集」ボタンは文字通り、そのレコードを更新する目的である。
+まずは対応する Store に更新メソッドを追加したい。
+- stores/masters.ts に update メソッドを追加する。
+    - functions/src/routes/cosmos-update.ts の cosmos-replace が対象のAPIになる。
+- stores/masters/consignors.ts に update メソッドを追加する。
+    - masters.ts の update メソッドを利用する。
+    - create メソッド同様に、戻り値を items に反映する。
+```
+
+このあたりは完璧だ。  
+続いて、汎用フォームを使って更新させる。
+
+```markdown
+設計ミスがあったようで、まずはそこを修正する。  
+- composables/dialog-form.ts の initDialogForm で operation という引数を取っているが、これを削除してほしい。
+- かわりに、operationConfig には configs/dialog-form/operations.ts 全体を動的 import して保持させるようにする。
+- useDialogFormButton は useDialogFormCreateButton に名前を変更して、create ボタンを生成させる。
+```
+
+いくつか型エラーが出たので修正させる。
+
+```markdown
+次は composables/dialog-form.ts に useDialogFormUpdateButton を作りたいわけだが、これは可能そうか？
+- QTable からレコードを受け取り、resetForm(型てきに合わなければ別の関数を作る)で form を更新すればなんとかなりそうな？
+- onSubmit の update 版を作って、components/dialogs/DialogForm.vue に 更新ボタンを作成する必要がある。
+    - ボタンは dialogFormStore の open メソッドの引数などで出しわけ出来そうな？
+ではその方向で修正してみてくれ。
+「会社情報登録」はとりあえず放置しよう。
+
+populateForm だが、deletedAt は null でも送信対象になるんで、修正してみてくれ。
+編集モードでDialogをキャンセルした場合に、resetForm をコールする必要があるね。
+
+とりあえず動くようになったので、configs/container-table/carriers.ts にも actions を追加しておいてくれ。
+```
+
+

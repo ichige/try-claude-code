@@ -16,3 +16,5 @@ export const operationConfigs = {
     unelevated: true,
   },
 } as const satisfies Record<Operation, object>
+
+export type OperationConfigs = typeof operationConfigs

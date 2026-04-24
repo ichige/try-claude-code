@@ -8,7 +8,7 @@ export const schema = z.object({
   companyName: z.string().min(1, '会社名は必須です'),
   companyCode: z.string().default(''),
   invoiceNumber: z.string().default(''),
-  lineConnected: z.boolean().default(false),
+  lineId: z.string().default(''),
   postalCode: z.string().default(''),
   prefecture: z.string().default(''),
   cityStreet: z.string().default(''),
@@ -23,7 +23,7 @@ export const initialForm: Record<string, string | number | boolean> = {
   companyName: '',
   companyCode: '',
   invoiceNumber: '',
-  lineConnected: false,
+  lineId: false,
   postalCode: '',
   prefecture: '',
   cityStreet: '',
@@ -38,7 +38,7 @@ export const initialForm: Record<string, string | number | boolean> = {
  * form を閉じ込めた render 関数を持つ DialogFormItem 配列を生成する。
  * @param form - リアクティブなフォームオブジェクト
  */
-export function buildItems(form: Record<string, string | number | boolean>): DialogFormSection[] {
+export function buildItems(form: Record<string, string | number | boolean | null>): DialogFormSection[] {
   const upd = (key: string) => (v: string | number | boolean | null) => { form[key] = v ?? '' }
 
   return [

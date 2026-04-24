@@ -13,4 +13,5 @@ export const columns: QTableProps['columns'] = [
   { name: 'email', label: 'メールアドレス', field: 'email', align: 'left' },
   { name: 'website', label: 'Webサイト', field: 'website', align: 'left' },
   { name: 'notes', label: '備考', field: 'notes', align: 'left' },
+  { name: 'actions', label: '', field: 'actions', align: 'center', sortable: false },
 ]

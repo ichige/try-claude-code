@@ -34,6 +34,16 @@ export const useCarriersStore = defineStore('masters/carriers', () => {
   }
 
   /**
+   * Carriers コンテナのアイテムを全置換し、items を更新する。
+   * @param id - 更新対象のアイテム ID
+   * @param data - フォームの入力値（_etag を含む）
+   */
+  async function update(id: string, data: Record<string, unknown>): Promise<void> {
+    const item = await masters.update<CarriersItem>('Carriers', id, data)
+    items.value.set(item.id, item)
+  }
+
+  /**
    * 指定した ID のアイテムを返す。
    * @param id - アイテムの ID
    * @returns 該当アイテム。存在しない場合は undefined
@@ -42,7 +52,7 @@ export const useCarriersStore = defineStore('masters/carriers', () => {
     return items.value.get(id)
   }
 
-  const store = { items, list, fetchAll, create, getById }
+  const store = { items, list, fetchAll, create, update, getById }
   return store satisfies MasterStore
 })
 

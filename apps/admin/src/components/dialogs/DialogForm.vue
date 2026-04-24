@@ -1,5 +1,5 @@
 <template>
-  <q-dialog v-model="dialogFormStore.isOpen" persistent>
+  <q-dialog v-model="dialogFormStore.isOpen" persistent @hide="onHide">
     <q-card style="min-width: 720px">
 
       <q-card-section class="bg-primary text-white">
@@ -28,7 +28,7 @@
           <q-separator class="q-mt-md" />
           <q-card-actions align="right" class="q-mt-md">
             <q-btn label="キャンセル" color="grey" size="md" dense unelevated v-close-popup />
-            <q-btn type="submit" label="登録" color="positive" size="md" unelevated dense />
+            <q-btn type="submit" :label="dialogFormStore.mode === 'create' ? '登録' : '更新'" color="positive" size="md" unelevated dense />
           </q-card-actions>
 
         </q-form>
@@ -43,5 +43,5 @@ import { useDialogFormStore } from 'stores/dialog-form'
 import { useDialogFormConfig } from 'composables/dialog-form'
 
 const dialogFormStore = useDialogFormStore()
-const { sections, onSubmit } = useDialogFormConfig()
+const { sections, onSubmit, onHide } = useDialogFormConfig()
 </script>

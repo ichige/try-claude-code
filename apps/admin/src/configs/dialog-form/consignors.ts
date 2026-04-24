@@ -38,7 +38,7 @@ export const initialForm: Record<string, string | number | boolean> = {
  * form を閉じ込めた render 関数を持つ DialogFormItem 配列を生成する。
  * @param form - リアクティブなフォームオブジェクト
  */
-export function buildItems(form: Record<string, string | number | boolean>): DialogFormSection[] {
+export function buildItems(form: Record<string, string | number | boolean | null>): DialogFormSection[] {
   const upd = (key: string) => (v: string | number | null) => { form[key] = v ?? '' }
 
   return [
