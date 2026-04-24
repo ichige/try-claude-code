@@ -338,4 +338,6 @@ composables/masters/container-table.ts の initContainerTable だけど、
 composables/dialog-form.ts の initDialogForm と同じパターンが適用できると思うのだけど？
 _getRows.value = config.useList だけど、list　だけに限定しないで store を返すほうが良さそうだね。
 あとで store を参照する必要が出てきそうな予感がするんだ。
+
+prefetch-guard.ts だけど、ここでもロード中の時間がかかるので、Loading プラグインでメッセージを表示してほしい。
 ```

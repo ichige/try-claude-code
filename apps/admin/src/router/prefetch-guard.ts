@@ -1,4 +1,5 @@
 import type { NavigationGuard } from 'vue-router'
+import { Loading } from 'quasar'
 import { useMastersStore } from 'src/stores/masters'
 
 const prefetchGuard: NavigationGuard = async (to) => {
@@ -6,7 +7,12 @@ const prefetchGuard: NavigationGuard = async (to) => {
 
   const masters = useMastersStore()
   if (!masters.loaded) {
-    await masters.prefetch()
+    Loading.show({ message: 'データを読み込んでいます...' })
+    try {
+      await masters.prefetch()
+    } finally {
+      Loading.hide()
+    }
   }
 }
 
