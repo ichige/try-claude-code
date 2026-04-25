@@ -21,17 +21,16 @@ export const useBreadcrumbStore = defineStore('breadcrumb', () => {
     const [, ...pages] = matched.value  // skip layout (index 0)
 
     return pages.map(r => {
-      const hasParams = r.path.includes(':')
-      let pathKey = r.path.replace(/^\//, '').replace(/\//g, '.')
+      let routeKey = String(r.name!)
       for (const [k, v] of Object.entries(params.value)) {
-        pathKey = pathKey.replace(`:${k}`, String(v).toLowerCase())
+        if (r.path.includes(`:${k}`)) {
+          routeKey += `.${String(v).toLowerCase()}`
+        }
       }
       // 静的ルートの場合 _root 修飾子とする
-      const i18nKey = hasParams
-        ? `navi.${pathKey}`
-        : `navi.${pathKey ? `${pathKey}.` : ''}_root`
+      const i18nKey = `navi.${routeKey}`
       const to: RouteLocationRaw = { name: r.name!, params: params.value }
-      const icon = resolveIcon(pathKey)
+      const icon = resolveIcon(routeKey)
       return { i18nKey, icon, to }
     })
   })

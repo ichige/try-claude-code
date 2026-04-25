@@ -5,10 +5,10 @@ export default {
   },
   navi: {
     dashboard: 'ダッシュボード',
-    _root: 'ダッシュボード',
-    masters: {
-      _root: 'マスタ管理',
-      carriers: 'キャリア',
+    'masters': 'マスタ管理',
+    'masters-caption': '各種マスタの管理',
+    'masters-container': {
+      carriers: '配送業者',
       consignors: '取引先',
     },
   },

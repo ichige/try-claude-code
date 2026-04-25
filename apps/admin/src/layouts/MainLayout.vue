@@ -19,7 +19,7 @@
       <q-list>
         <ProductLogo />
         <q-separator />
-        <EssentialLink v-for="link in linksList" :key="link.title" v-bind="link" />
+        <EssentialLink />
       </q-list>
     </q-drawer>
 
@@ -34,24 +34,10 @@
 <script setup lang="ts">
 import ProductLogo from 'components/layouts/ProductLogo.vue'
 import BreadcrumbNav from 'components/layouts/BreadcrumbNav.vue'
-import EssentialLink, { type EssentialLinkProps } from 'components/layouts/EssentialLink.vue'
+import EssentialLink from 'components/layouts/EssentialLink.vue'
 import AccountSetting from 'components/layouts/AccountSetting.vue'
 import DialogForm from 'components/dialogs/DialogForm.vue'
 import { useUIStore } from 'stores/ui'
 
 const uiStore = useUIStore()
-
-const linksList: EssentialLinkProps[] = [
-  {
-    title: 'ダッシュボード',
-    icon: 'sym_o_dashboard',
-    link: '/',
-  },
-  {
-    title: 'マスタ管理',
-    icon: 'sym_o_table',
-    link: '/masters',
-    caption: '各種マスタの管理'
-  },
-]
 </script>
