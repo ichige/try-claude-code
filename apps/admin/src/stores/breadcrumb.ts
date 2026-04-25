@@ -3,34 +3,39 @@ import { ref, computed } from 'vue'
 import type { RouteLocationMatched, RouteParamsGeneric, RouteLocationRaw } from 'vue-router'
 
 export const useBreadcrumbStore = defineStore('breadcrumb', () => {
+  /**
+   * 現在のルート情報
+   */
   const matched = ref<RouteLocationMatched[]>([])
+  /**
+   * 現在のルートのパスパラメータ
+   */
   const params = ref<RouteParamsGeneric>({})
 
-  function set(newMatched: RouteLocationMatched[], newParams: RouteParamsGeneric): void {
-    matched.value = newMatched
-    params.value = newParams
-  }
 
+  /**
+   * パンくず生成データの作成
+   */
   const items = computed(() => {
     const [, ...pages] = matched.value  // skip layout (index 0)
 
     return pages.map(r => {
-      const paramMatch = r.path.match(/:(\w+)/)
-      const paramValue = paramMatch ? params.value[paramMatch[1]!] : undefined
-      const pathKey = r.path
-        .replace(/^\//, '')
-        .replace(/\//g, '.')
-        .replace(/:(\w+)/g, (_, k) => String(params.value[k] ?? '').toLowerCase())
-      const i18nKey =
-        paramValue !== undefined
-          ? `navi.${pathKey}`
-          : `navi.${pathKey ? `${pathKey}.` : ''}_root`
+      let pathKey = r.path.replace(/^\//, '').replace(/\//g, '.')
+      // path パラメータを置換
+      for (const [k, v] of Object.entries(params.value)) {
+        pathKey = pathKey.replace(`:${k}`, String(v).toLowerCase())
+      }
+      const hasParams = Object.keys(params.value).length > 0
+      // 静的ルートの場合 _root 修飾子とする
+      const i18nKey = hasParams
+        ? `navi.${pathKey}`
+        : `navi.${pathKey ? `${pathKey}.` : ''}_root`
       const to: RouteLocationRaw = { name: r.name!, params: params.value }
       return { i18nKey, to }
     })
   })
 
-  return { items, set, matched, params}
+  return { items, matched, params}
 })
 
 if (import.meta.hot) {
