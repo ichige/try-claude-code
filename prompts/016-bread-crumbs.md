@@ -112,3 +112,21 @@ icon の問題はわりと根深くて、まったく別の意味なんだけど
 ---
 実にシンプルだけど、イイものかもしれないな。
 ```
+
+Icon Resolver なんて、誰か作ったことがあるのだろか？  
+しかしわりと利用価値が高いかもしれない。
+
+```markdown
+では、とりいそぎ stores/breadcrumb.ts で icon を解決しつつ、BreadcrumbNav.vue で描画してみるとしよう。
+---
+しまった設計ミスやで。
+useBreadcrumbStore の items で
+`const hasParams = Object.keys(params.value).length > 0` 判断しているが、
+これはパラメータ付きの子階層のURLだと true になってしまうんやな。
+つまり path に `/:` がなければみたいな判断をするか、children を見るしかないぜ。
+---
+まぁ、よろしくない状態になったら、children を捜査するしかねーな。
+まぁ、今は放置しておこう。
+```
+
+うむ。なんとか出来たぞ。

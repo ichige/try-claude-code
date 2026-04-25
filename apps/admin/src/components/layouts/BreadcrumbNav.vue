@@ -4,6 +4,7 @@
       v-for="crumb in breadcrumbStore.items"
       :key="crumb.i18nKey"
       :label="$t(crumb.i18nKey)"
+      :icon="crumb.icon"
       :to="crumb.to"
     />
   </q-breadcrumbs>
