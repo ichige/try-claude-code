@@ -1,6 +1,7 @@
 import { ref, shallowRef, reactive, computed, h, defineComponent } from 'vue'
 import { QBtn, Loading, Dialog } from 'quasar'
 import type { z } from 'zod'
+import { useI18n } from 'vue-i18n'
 import type { CosmosItem } from '@shisamo/shared'
 import type { ContainerName, MasterStore } from 'stores/masters'
 import { operationConfigs } from 'configs/dialog-form/operations'
@@ -79,9 +80,13 @@ export async function initDialogForm(container: ContainerName): Promise<void> {
  */
 export function useDialogFormCreateButton() {
   const dialogFormStore = useDialogFormStore()
-
+  const t = useI18n().t
   const OpenDialogFormButton = defineComponent(() => {
-    return () => h(QBtn, { ...operationConfigs.create, onClick: () => dialogFormStore.open('create') })
+    return () => h(QBtn, {
+      ...operationConfigs.create,
+      label: t(operationConfigs.create.label),
+      onClick: () => dialogFormStore.open('create')
+    })
   })
 
   return { OpenDialogFormButton }

@@ -1,21 +1,26 @@
 import type { QTableProps } from 'quasar'
 import type { MasterStore } from 'stores/masters'
 import { useConsignorsStore } from 'stores/masters/consignors'
+import { resolveIcon } from 'src/composables/use-icon'
 
 export const useStore = (): MasterStore => useConsignorsStore()
+export const meta = {
+  titleKey: 'navi.masters-container.consignors',
+  icon: resolveIcon('masters-container.consignors'),
+}
 
 export const columns: QTableProps['columns'] = [
-  { name: 'companyName', label: '会社名', field: 'companyName', align: 'left' },
-  { name: 'companyCode', label: '管理コード', field: 'companyCode', align: 'left' },
-  { name: 'invoiceNumber', label: 'インボイス番号', field: 'invoiceNumber', align: 'left' },
-  { name: 'paymentRate', label: '支払比率', field: 'paymentRate', align: 'right' },
-  { name: 'postalCode', label: '郵便番号', field: 'postalCode', align: 'left' },
-  { name: 'prefecture', label: '都道府県', field: 'prefecture', align: 'left' },
-  { name: 'cityStreet', label: '市区町村・番地', field: 'cityStreet', align: 'left' },
-  { name: 'building', label: '建物名・部屋番号', field: 'building', align: 'left' },
-  { name: 'phone', label: '電話番号', field: 'phone', align: 'left' },
-  { name: 'email', label: 'メールアドレス', field: 'email', align: 'left' },
-  { name: 'website', label: 'Webサイト', field: 'website', align: 'left' },
-  { name: 'notes', label: '備考', field: 'notes', align: 'left' },
+  { name: 'companyName', label: 'containers.fields.companyName', field: 'companyName', align: 'left' },
+  { name: 'companyCode', label: 'containers.fields.companyCode', field: 'companyCode', align: 'left' },
+  { name: 'invoiceNumber', label: 'containers.fields.invoiceNumber', field: 'invoiceNumber', align: 'left' },
+  { name: 'paymentRate', label: 'containers.fields.paymentRate', field: 'paymentRate', align: 'right' },
+  { name: 'postalCode', label: 'containers.fields.postalCode', field: 'postalCode', align: 'left' },
+  { name: 'prefecture', label: 'containers.fields.prefecture', field: 'prefecture', align: 'left' },
+  { name: 'cityStreet', label: 'containers.fields.cityStreet', field: 'cityStreet', align: 'left' },
+  { name: 'building', label: 'containers.fields.building', field: 'building', align: 'left' },
+  { name: 'phone', label: 'containers.fields.phone', field: 'phone', align: 'left' },
+  { name: 'email', label: 'containers.fields.email', field: 'email', align: 'left' },
+  { name: 'website', label: 'containers.fields.website', field: 'website', align: 'left' },
+  { name: 'notes', label: 'containers.fields.notes', field: 'notes', align: 'left' },
   { name: 'actions', label: '', field: 'actions', align: 'center', sortable: false },
 ]
