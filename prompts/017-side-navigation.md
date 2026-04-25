@@ -31,5 +31,10 @@ EssentialLink.vue で $t で変換やな。
 QExpantionItem を使って勝手に作ってくれた。  
 なかなかやるな。
 
+```markdown
+続いて EssentialLink.vue だけど、QItem の manual-focus と focused を使って、
+現在いるルートと一致する item を focused にして欲しい。
+できそうか？
+```
 
-
+あっさり出来た。すばらしいな。

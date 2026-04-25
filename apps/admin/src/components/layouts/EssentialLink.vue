@@ -13,6 +13,8 @@
         :to="child.to"
         exact
         :inset-level="1"
+        manual-focus
+        :focused="isFocused(child.to)"
       >
         <q-item-section avatar>
           <q-icon :name="child.icon" />
@@ -28,6 +30,8 @@
       clickable
       :to="link.to"
       exact
+      manual-focus
+      :focused="link.to ? isFocused(link.to) : false"
     >
       <q-item-section avatar>
         <q-icon :name="link.icon" />
@@ -41,5 +45,25 @@
 </template>
 
 <script setup lang="ts">
+import { useRoute } from 'vue-router'
+import type { RouteLocationRaw } from 'vue-router'
 import navLinks from 'src/configs/nav'
+
+const route = useRoute()
+
+/**
+ * @param to - NavLink の to
+ * @returns 現在のルートと一致するか
+ */
+const isFocused = (to: RouteLocationRaw): boolean => {
+  if (typeof to === 'string') return route.path === to
+  if ('name' in to && to.name) {
+    if (route.name !== to.name) return false
+    if (to.params) {
+      return Object.entries(to.params).every(([k, v]) => route.params[k] === String(v))
+    }
+    return true
+  }
+  return false
+}
 </script>
