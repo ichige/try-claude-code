@@ -341,3 +341,24 @@ _getRows.value = config.useList だけど、list　だけに限定しないで s
 
 prefetch-guard.ts だけど、ここでもロード中の時間がかかるので、Loading プラグインでメッセージを表示してほしい。
 ```
+
+テーブル用のメタ情報も必要。
+
+```markdown
+components/masters/ContainerTable.vue だけど、「取引先マスタ」とか `$icon('masters-container.consignors')` という情報を、 
+configs/container-table/consignors.ts に設定して export して参照したいのだけど。
+可能ですかね？
+---
+titleKey や icon はまとめて meta とか props とか、そんな名前のRecordにして拡張できるようにしておいてほしい。
+---
+続いて、configs/container-table/consignors.ts フィールド名だけど、i18n ファイルの containers.fields に定義してもらっていいかな？
+configs/container-table/carriers.ts も同様に定義してもらって、フィールド名が同じものは同じ翻訳でOKです。
+---
+翻訳の t関数だけど、それって、内部的に lang が変わるとリアルタイムで変換してくれるのかね？
+とはいえ規模の大きいサイトだと、言語ごとの翻訳ファイルを積むのもそれなりにメモリを食うわけやろ？
+逆に言えば、configs/container-table/carriers.ts で変換してしまうと、lang が変わっても変わらないか？
+なるほどな。面倒臭いすね。
+そういう手も場合によっては有効だよな。
+でも、あとから対応してと言われると地獄やろ？
+今の日本は、中小企業でもそこまで対応しておくべき時代であはあるね。
+```

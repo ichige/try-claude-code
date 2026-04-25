@@ -1,20 +1,25 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
+    <q-header class="bg-transparent" elevated>
       <q-toolbar>
-        <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
+        <q-btn flat dense round icon="menu" aria-label="Menu" @click="uiStore.toggleSideMenu" />
+        <BreadcrumbNav />
 
-        <q-toolbar-title> Quasar App </q-toolbar-title>
-
+        <q-space />
         <AccountSetting />
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
+    <q-drawer
+      v-model="uiStore.sideMenuOpen"
+      :mini="uiStore.sideMenuMini"
+      show-if-above
+      bordered
+    >
       <q-list>
-        <q-item-label header> Menu </q-item-label>
-
-        <EssentialLink v-for="link in linksList" :key="link.title" v-bind="link" />
+        <ProductLogo />
+        <q-separator />
+        <EssentialLink />
       </q-list>
     </q-drawer>
 
@@ -27,22 +32,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import EssentialLink, { type EssentialLinkProps } from 'components/layouts/EssentialLink.vue'
+import ProductLogo from 'components/layouts/ProductLogo.vue'
+import BreadcrumbNav from 'components/layouts/BreadcrumbNav.vue'
+import EssentialLink from 'components/layouts/EssentialLink.vue'
 import AccountSetting from 'components/layouts/AccountSetting.vue'
 import DialogForm from 'components/dialogs/DialogForm.vue'
+import { useUIStore } from 'stores/ui'
 
-const linksList: EssentialLinkProps[] = [
-  {
-    title: 'マスタ管理',
-    icon: 'table_view',
-    link: '/masters',
-  },
-]
-
-const leftDrawerOpen = ref(false)
-
-function toggleLeftDrawer() {
-  leftDrawerOpen.value = !leftDrawerOpen.value
-}
+const uiStore = useUIStore()
 </script>

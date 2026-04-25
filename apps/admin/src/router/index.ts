@@ -8,6 +8,7 @@ import {
 import routes from './routes'
 import authGuard from './auth-guard'
 import prefetchGuard from './prefetch-guard'
+import breadcrumbGuard from './breadcrumb-guard'
 
 export default defineRouter(() => {
   const createHistory = process.env.SERVER
@@ -28,6 +29,7 @@ export default defineRouter(() => {
 
   Router.beforeEach(authGuard)
   Router.beforeEach(prefetchGuard)
+  Router.afterEach(breadcrumbGuard)
 
   return Router
 })

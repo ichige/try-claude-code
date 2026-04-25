@@ -2,17 +2,17 @@ export type Operation = 'create' | 'update'
 
 export const operationConfigs = {
   create: {
-    label: '登録',
+    label: 'labels.create',
     color: 'positive',
     icon: 'add',
-    size: 'md',
+    size: 'sm',
     unelevated: true,
   },
   update: {
-    label: '更新',
+    label: 'labels.update',
     color: 'warning',
     icon: 'edit',
-    size: 'md',
+    size: 'sm',
     unelevated: true,
   },
 } as const satisfies Record<Operation, object>

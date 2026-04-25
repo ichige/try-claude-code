@@ -1,4 +1,5 @@
 import { ref, computed, h, defineComponent } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { QToggle } from 'quasar'
 import type { QTableProps } from 'quasar'
 import type { CosmosItem } from '@shisamo/shared'
@@ -8,9 +9,15 @@ interface ContainerTableStore {
   list: CosmosItem[]
 }
 
+export interface ContainerTableMeta {
+  titleKey: string
+  icon: string
+}
+
 interface ContainerTableConfig {
   columns: QTableProps['columns']
   useStore: () => ContainerTableStore
+  meta: ContainerTableMeta
 }
 
 /** 対象のレコード */
@@ -26,18 +33,22 @@ const rows = computed(() =>
     : _getRows.value().filter((item) => !item.isDeleted),
 )
 
-/** テーブルスキーマ */
-const columns = ref<QTableProps['columns']>([])
+/** テーブルスキーマ（i18n キー） */
+const _columns = ref<QTableProps['columns']>([])
+
+/** テーブルヘッダー情報 */
+const meta = ref<ContainerTableMeta>({ titleKey: '', icon: '' })
 
 /**
  * コンテナ名をもとにテーブルの rows・columns を動的 import で読み込む。
  * @param container - 表示対象のコンテナ名
  */
 export async function initContainerTable(container: ContainerName): Promise<void> {
-  const config = await import(`../../configs/container-table/${container.toLowerCase()}`) as ContainerTableConfig
+  const config = await import(`../../configs/container-table/${container.toLowerCase()}.ts`) as ContainerTableConfig
   const store = config.useStore()
   _getRows.value = () => store.list
-  columns.value = config.columns
+  _columns.value = config.columns
+  meta.value = config.meta
 }
 
 /**
@@ -45,6 +56,12 @@ export async function initContainerTable(container: ContainerName): Promise<void
  * @returns rows・columns・ShowDeletedToggle
  */
 export function useContainerTable() {
+  const { t } = useI18n()
+
+  const columns = computed(() =>
+    _columns.value?.map(col => ({ ...col, label: col.label ? t(col.label) : '' }))
+  )
+
   const ShowDeletedToggle = defineComponent(() => {
     return () => h(QToggle, {
       modelValue: showDeleted.value,
@@ -55,5 +72,5 @@ export function useContainerTable() {
     })
   })
 
-  return { rows, columns, ShowDeletedToggle }
+  return { rows, columns, meta, ShowDeletedToggle }
 }
