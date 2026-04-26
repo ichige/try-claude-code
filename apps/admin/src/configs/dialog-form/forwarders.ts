@@ -4,6 +4,7 @@ import { z } from 'zod'
 import { zodRule } from 'src/utils/zod-rule'
 import type { MasterStore } from 'stores/masters'
 import { useForwardersStore } from 'stores/masters/forwarders'
+import { resolveIcon } from 'src/composables/use-icon'
 import { i18n } from 'src/boot/i18n'
 import type { DialogFormSection } from './types'
 
@@ -43,7 +44,7 @@ export function buildItems(form: Record<string, string | number | boolean | null
 
   return [
     {
-      header: { icon: 'sym_o_warehouse', label: '所在地' },
+      header: { icon: resolveIcon('address'), label: t('labels.address') },
       fields: [
         {
           col: 'col-6',
@@ -51,7 +52,7 @@ export function buildItems(form: Record<string, string | number | boolean | null
             modelValue: form['prefecture'], 'onUpdate:modelValue': upd('prefecture'),
             label: t('containers.fields.prefecture'), outlined: true, dense: true,
             rules: [zodRule(schema.shape['prefecture'] as z.ZodType, t('containers.fields.prefecture'))],
-          }, { prepend: () => h(QIcon, { name: 'sym_o_map', size: 'xs' }) }),
+          }, { prepend: () => h(QIcon, { name: resolveIcon('prefecture'), size: 'xs' }) }),
         },
         {
           col: 'col-6',
@@ -59,12 +60,12 @@ export function buildItems(form: Record<string, string | number | boolean | null
             modelValue: form['city'], 'onUpdate:modelValue': upd('city'),
             label: t('containers.fields.city'), outlined: true, dense: true,
             rules: [zodRule(schema.shape['city'] as z.ZodType, t('containers.fields.city'))],
-          }, { prepend: () => h(QIcon, { name: 'sym_o_location_on', size: 'xs' }) }),
+          }, { prepend: () => h(QIcon, { name: resolveIcon('city'), size: 'xs' }) }),
         },
       ],
     },
     {
-      header: { icon: 'sym_o_notes', label: 'その他' },
+      header: { icon: resolveIcon('other'), label: t('labels.other') },
       fields: [
         {
           col: 'col-12',
