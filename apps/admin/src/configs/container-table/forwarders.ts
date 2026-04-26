@@ -7,6 +7,7 @@ import { i18n } from 'src/boot/i18n'
 const { t } = i18n.global
 
 export const useStore = (): MasterStore => useForwardersStore()
+
 export const meta = {
   titleKey: 'navi.masters-container.forwarders',
   icon: resolveIcon('masters-container.forwarders'),

@@ -29,7 +29,10 @@ export const useBreadcrumbStore = defineStore('breadcrumb', () => {
       }
       // 静的ルートの場合 _root 修飾子とする
       const i18nKey = `navi.${routeKey}`
-      const to: RouteLocationRaw = { name: r.name!, params: params.value }
+      const routeParams = Object.fromEntries(
+        Object.entries(params.value).filter(([k]) => r.path.includes(`:${k}`))
+      )
+      const to: RouteLocationRaw = { name: r.name!, params: routeParams }
       const icon = resolveIcon(routeKey)
       return { i18nKey, icon, to }
     })

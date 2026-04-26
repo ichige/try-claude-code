@@ -13,6 +13,10 @@ export default {
       forwarders: '地点',
     },
   },
+  validation: {
+    required: '{field}は必須です',
+    numeric: '{field}は数値で入力してください',
+  },
   labels: {
     create: '登録',
     'dark-mode': 'ダークモード',

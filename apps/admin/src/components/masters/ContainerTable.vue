@@ -1,5 +1,6 @@
 <template>
   <q-table
+    v-if="meta.titleKey"
     :rows="rows"
     :columns="columns"
     row-key="id"

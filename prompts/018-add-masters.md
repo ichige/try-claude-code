@@ -41,3 +41,52 @@ dialog-form.ts で useI18n を使う理由もなくなったよね？
 どうも理解してないようだけど、そのタイミングで変換しないで、読込もとで変換すれば良いのでは？と言ってるわけですよ。
 container-table.ts でも同じことやってると思うんだ。
 ```
+
+バリデーションメッセージも対応しておこう。
+
+```markdown
+zod のバリデートエラーメッセージだけど、safeParse の戻り値を使って、メッセージを自前で組み立てる方法はあるのかね？
+いや、そういう組み立てではなく、文字列フォーマットの話だよ。
+数値みたいのはまだいいけど、「○○は必須です」といった場合やな。
+これって、○○が100種類あったらキツイやろ？
+---
+では、そのパターンを使って、configs/dialog-form/carriers.ts あたりに適用してみてくれ。
+utils/zod-rule.ts これを調整すればOKやろ。たぶん。
+i18nは、validation.required みたいなイメージでOKや。
+---
+今の方法だと、too_small ＝ 必須となるやろ？これは良くない。
+普通に zod の定義側で i18n で翻訳した定義を渡す
+→ zod が勝手に変換してくれる部分は任せる。
+→ field など、こちらの都合で変換したいものに限り、zodRule で対応する。
+→ つまり、エラーのコードなんか見ないで、常に変換するくらいの気持ちでOK。
+---
+まだ違うよね。
+`companyName: z.string().min(1, 'validation.required')` ここで t で変換する。
+そうすることで、数値なりを zod で勝手に書き換えてくれるでしょ？
+勝手というと微妙だけど、
+z.string().min(3, issue => `${issue.minimum}文字以上入力してください`)
+という書き方で変換されるのであれば、zodRule では `{field}` に対して t で変換したフィールド名を文字列置換する。
+```
+
+もうちょいやね。
+
+```markdown
+zodRule でこの変換パターンを追記していくと、ロジックがファットになるやろ？
+この一定の流れを、packages/shared/src/pipeline/index.ts Pipeline で制御できるのでは？
+---
+まぁ、だいぶ正解に近づいてきたけど、fieldReplace のようなミドルは外から渡す必要ないす。
+常設でOKす。
+---
+いや、だからさ、zodRule でミドルウェアを引数の取らなくて良いって言ってるんだけど？
+---
+ミドルウェアに目的をコメント追加しておいてね。
+ブロック型で書こうぜ。
+```
+
+残りの未対応を修正。
+
+```markdown
+configs/dialog-form/carriers.ts の label 変数も i18n に対応しておいて。
+configs/dialog-form/forwarders.ts も同様にお願いします。
+configs/dialog-form/consignors.ts も同様に、バリデートメッセージなどもお願いします。
+```
