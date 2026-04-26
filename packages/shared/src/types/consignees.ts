@@ -1,17 +1,15 @@
 import type { CosmosItem } from './cosmos'
 
 /**
- * Consignors(荷主・取引先) コンテナのアイテム。
+ * Consignees(配送先) コンテナのアイテム。
  */
-export interface ConsignorsItem extends CosmosItem {
+export interface ConsigneesItem extends CosmosItem {
   /** 会社名 */
   companyName: string
   /** 管理コード */
   companyCode: string
   /** インボイス番号 */
   invoiceNumber: string
-  /** 支払比率 */
-  paymentRate: number
   /** 郵便番号 */
   postalCode: string
   /** 都道府県 */

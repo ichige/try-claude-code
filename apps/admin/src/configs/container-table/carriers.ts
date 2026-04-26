@@ -20,7 +20,6 @@ export const columns: QTableProps['columns'] = [
   { name: 'building', label: 'containers.fields.building', field: 'building', align: 'left' },
   { name: 'phone', label: 'containers.fields.phone', field: 'phone', align: 'left' },
   { name: 'email', label: 'containers.fields.email', field: 'email', align: 'left' },
-  { name: 'website', label: 'containers.fields.website', field: 'website', align: 'left' },
   { name: 'notes', label: 'containers.fields.notes', field: 'notes', align: 'left' },
   { name: 'actions', label: '', field: 'actions', align: 'center', sortable: false },
 ]

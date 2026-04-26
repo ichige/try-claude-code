@@ -22,7 +22,6 @@ export const schema = z.object({
   building: z.string().default(''),
   phone: z.string().default(''),
   email: z.string().default(''),
-  website: z.string().default(''),
   notes: z.string().default(''),
 })
 
@@ -40,7 +39,6 @@ export const initialForm: Record<string, string | number | boolean> = {
   building: '',
   phone: '',
   email: '',
-  website: '',
   notes: '',
 }
 
@@ -133,13 +131,6 @@ export function buildItems(form: Record<string, string | number | boolean | null
             modelValue: form['email'], 'onUpdate:modelValue': upd('email'),
             label: 'メールアドレス', outlined: true, dense: true,
           }, { prepend: () => h(QIcon, { name: 'sym_o_email', size: 'xs' }) }),
-        },
-        {
-          col: 'col-12',
-          component: () => h(QInput, {
-            modelValue: form['website'], 'onUpdate:modelValue': upd('website'),
-            label: 'Webサイト', outlined: true, dense: true,
-          }, { prepend: () => h(QIcon, { name: 'sym_o_language', size: 'xs' }) }),
         },
       ],
     },
