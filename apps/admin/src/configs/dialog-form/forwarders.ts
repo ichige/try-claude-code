@@ -4,9 +4,12 @@ import { z } from 'zod'
 import { zodRule } from 'src/utils/zod-rule'
 import type { MasterStore } from 'stores/masters'
 import { useForwardersStore } from 'stores/masters/forwarders'
+import { i18n } from 'src/boot/i18n'
 import type { DialogFormSection } from './types'
 
-export const label = '積・卸地情報'
+const { t } = i18n.global
+
+export const label = '地点'
 
 /**
  * 入力値のスキーマ検証
@@ -46,7 +49,7 @@ export function buildItems(form: Record<string, string | number | boolean | null
           col: 'col-6',
           component: () => h(QInput, {
             modelValue: form['prefecture'], 'onUpdate:modelValue': upd('prefecture'),
-            label: '都道府県', outlined: true, dense: true,
+            label: t('containers.fields.prefecture'), outlined: true, dense: true,
             rules: [zodRule(schema.shape['prefecture'] as z.ZodType)],
           }, { prepend: () => h(QIcon, { name: 'sym_o_map', size: 'xs' }) }),
         },
@@ -54,7 +57,7 @@ export function buildItems(form: Record<string, string | number | boolean | null
           col: 'col-6',
           component: () => h(QInput, {
             modelValue: form['city'], 'onUpdate:modelValue': upd('city'),
-            label: '市区町村', outlined: true, dense: true,
+            label: t('containers.fields.city'), outlined: true, dense: true,
             rules: [zodRule(schema.shape['city'] as z.ZodType)],
           }, { prepend: () => h(QIcon, { name: 'sym_o_location_on', size: 'xs' }) }),
         },
@@ -67,7 +70,7 @@ export function buildItems(form: Record<string, string | number | boolean | null
           col: 'col-12',
           component: () => h(QInput, {
             modelValue: form['notes'], 'onUpdate:modelValue': upd('notes'),
-            label: '備考', type: 'textarea', outlined: true, dense: true, rows: '3',
+            label: t('containers.fields.notes'), type: 'textarea', outlined: true, dense: true, rows: '3',
           }),
         },
       ],

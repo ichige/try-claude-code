@@ -10,7 +10,7 @@ export default {
     'masters-container': {
       carriers: '配送業者',
       consignors: '取引先',
-      forwarders: '積・卸地',
+      forwarders: '地点',
     },
   },
   labels: {

@@ -6,7 +6,7 @@ import type { MasterStore } from 'stores/masters'
 import { useCarriersStore } from 'stores/masters/carriers'
 import type { DialogFormSection } from './types'
 
-export const label = '運送会社情報'
+export const label = '配送業者'
 
 /**
  * 入力値のスキーマ検証

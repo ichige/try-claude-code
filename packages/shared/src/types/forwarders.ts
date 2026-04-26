@@ -1,7 +1,7 @@
 import type { CosmosItem } from './cosmos'
 
 /**
- * Forwarders(積・卸地) コンテナのアイテム。
+ * Forwarders(地点) コンテナのアイテム。
  */
 export interface ForwardersItem extends CosmosItem {
   /** 都道府県 */

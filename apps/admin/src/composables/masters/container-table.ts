@@ -1,5 +1,4 @@
 import { ref, computed, h, defineComponent } from 'vue'
-import { useI18n } from 'vue-i18n'
 import { QToggle } from 'quasar'
 import type { QTableProps } from 'quasar'
 import type { CosmosItem } from '@shisamo/shared'
@@ -56,11 +55,7 @@ export async function initContainerTable(container: ContainerName): Promise<void
  * @returns rows・columns・ShowDeletedToggle
  */
 export function useContainerTable() {
-  const { t } = useI18n()
-
-  const columns = computed(() =>
-    _columns.value?.map(col => ({ ...col, label: col.label ? t(col.label) : '' }))
-  )
+  const columns = computed(() => _columns.value)
 
   const ShowDeletedToggle = defineComponent(() => {
     return () => h(QToggle, {
