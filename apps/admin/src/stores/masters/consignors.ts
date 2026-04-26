@@ -3,6 +3,9 @@ import type { ConsignorsItem } from '@shisamo/shared'
 import { type MasterStore } from 'stores/masters'
 import { createMasterStore } from './factory'
 
+/**
+ * 取引先マスタのストア
+ */
 export const useConsignorsStore = defineStore('masters/consignors', () => {
   const store = createMasterStore<ConsignorsItem>('Consignors')
   return store satisfies MasterStore

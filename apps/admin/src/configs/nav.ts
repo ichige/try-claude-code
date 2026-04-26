@@ -32,6 +32,12 @@ const navLinks: NavLink[] = [
         icon: resolveIcon('masters-container.consignors'),
         to: { name: 'masters-container', params: { container: 'consignors' } },
       },
+      // 配送先
+      {
+        titleKey: 'navi.masters-container.consignees',
+        icon: resolveIcon('masters-container.consignees'),
+        to: { name: 'masters-container', params: { container: 'consignees' } },
+      },
       // 配送業者
       {
         titleKey: 'navi.masters-container.carriers',

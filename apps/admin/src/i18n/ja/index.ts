@@ -9,6 +9,7 @@ export default {
     'masters-caption': '各種マスタの管理',
     'masters-container': {
       carriers: '配送業者',
+      consignees: '配送先',
       consignors: '取引先',
       forwarders: '地点',
     },
@@ -23,7 +24,11 @@ export default {
     logout: 'ログアウト',
     update: '編集',
     save: '保存',
-    search: '検索'
+    search: '検索',
+    basic: '基本情報',
+    address: '所在地',
+    contact: '連絡先',
+    other: 'その他',
   },
   containers: {
     fields: {

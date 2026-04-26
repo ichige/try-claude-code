@@ -2,6 +2,7 @@ import { defineStore, acceptHMRUpdate } from 'pinia'
 import { ref } from 'vue'
 import { api } from 'src/boot/axios'
 import type { CosmosItem } from '@shisamo/shared'
+import { useConsigneesStore } from 'stores/masters/consignees'
 import { useConsignorsStore } from 'stores/masters/consignors'
 import { useCarriersStore } from 'stores/masters/carriers'
 import { useForwardersStore } from 'stores/masters/forwarders'
@@ -66,6 +67,7 @@ export const useMastersStore = defineStore('masters', () => {
    */
   async function prefetch(): Promise<void> {
     await Promise.all([
+      useConsigneesStore().fetchAll(),
       useConsignorsStore().fetchAll(),
       useCarriersStore().fetchAll(),
       useForwardersStore().fetchAll(),

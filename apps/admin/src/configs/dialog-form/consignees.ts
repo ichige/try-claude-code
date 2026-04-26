@@ -3,29 +3,32 @@ import { QInput, QIcon } from 'quasar'
 import { z } from 'zod'
 import { zodRule } from 'src/utils/zod-rule'
 import type { MasterStore } from 'stores/masters'
-import { useCarriersStore } from 'stores/masters/carriers'
+import { useConsigneesStore } from 'stores/masters/consignees'
 import { resolveIcon } from 'src/composables/use-icon'
 import { i18n } from 'src/boot/i18n'
 import type { DialogFormSection } from './types'
 
 const { t } = i18n.global
 
-export const label = t('navi.masters-container.carriers')
+/**
+ * この設定に依存する Store を返す
+ */
+export const label = t('navi.masters-container.consignees')
 
 /**
- * 入力値のスキーマ検証
+ * 入力値のスキーマ
  */
 export const schema = z.object({
   companyName: z.string().min(1, t('validation.required')),
   companyCode: z.string().default(''),
   invoiceNumber: z.string().default(''),
-  lineId: z.string().default(''),
   postalCode: z.string().default(''),
   prefecture: z.string().default(''),
   cityStreet: z.string().default(''),
   building: z.string().default(''),
   phone: z.string().default(''),
   email: z.string().default(''),
+  website: z.string().default(''),
   notes: z.string().default(''),
 })
 
@@ -36,27 +39,27 @@ export const initialForm: Record<string, string | number | boolean> = {
   companyName: '',
   companyCode: '',
   invoiceNumber: '',
-  lineId: '',
   postalCode: '',
   prefecture: '',
   cityStreet: '',
   building: '',
   phone: '',
   email: '',
+  website: '',
   notes: '',
 }
 
 /**
  * この設定に依存する Store を返す
  */
-export const useStore = (): MasterStore => useCarriersStore()
+export const useStore = (): MasterStore => useConsigneesStore()
 
 /**
  * form を閉じ込めた render 関数を持つ DialogFormItem 配列を生成する。
  * @param form - リアクティブなフォームオブジェクト
  */
 export function buildItems(form: Record<string, string | number | boolean | null>): DialogFormSection[] {
-  const upd = (key: string) => (v: string | number | boolean | null) => { form[key] = v ?? '' }
+  const upd = (key: string) => (v: string | number | null) => { form[key] = v ?? '' }
 
   return [
     {
@@ -137,11 +140,11 @@ export function buildItems(form: Record<string, string | number | boolean | null
           }, { prepend: () => h(QIcon, { name: resolveIcon('email'), size: 'xs' }) }),
         },
         {
-          col: 'col-6',
+          col: 'col-12',
           component: () => h(QInput, {
-            modelValue: form['lineId'], 'onUpdate:modelValue': upd('lineId'),
-            label: t('containers.fields.lineId'), outlined: true, dense: true,
-          }, { prepend: () => h(QIcon, { name: resolveIcon('lineId'), size: 'xs' }) }),
+            modelValue: form['website'], 'onUpdate:modelValue': upd('website'),
+            label: t('containers.fields.website'), outlined: true, dense: true,
+          }, { prepend: () => h(QIcon, { name: resolveIcon('website'), size: 'xs' }) }),
         },
       ],
     },
