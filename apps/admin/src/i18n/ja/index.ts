@@ -17,7 +17,8 @@ export default {
     'dark-mode': 'ダークモード',
     logout: 'ログアウト',
     update: '編集',
-    save: '保存'
+    save: '保存',
+    search: '検索'
   },
   containers: {
     fields: {

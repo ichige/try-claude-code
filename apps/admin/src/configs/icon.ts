@@ -9,6 +9,7 @@ const iconMap: Record<string, string> = {
   delete: 'sym_o_delete',
   logout: 'sym_o_logout',
   restore: 'sym_o_restore_from_trash',
+  search: 'sym_o_search',
 }
 
 export default iconMap
