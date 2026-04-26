@@ -38,6 +38,12 @@ const navLinks: NavLink[] = [
         icon: resolveIcon('masters-container.carriers'),
         to: { name: 'masters-container', params: { container: 'carriers' } },
       },
+      // 積・卸地
+      {
+        titleKey: 'navi.masters-container.forwarders',
+        icon: resolveIcon('masters-container.forwarders'),
+        to: { name: 'masters-container', params: { container: 'forwarders' } },
+      },
     ],
   },
 ]

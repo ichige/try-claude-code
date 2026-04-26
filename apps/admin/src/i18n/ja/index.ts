@@ -10,6 +10,7 @@ export default {
     'masters-container': {
       carriers: '配送業者',
       consignors: '取引先',
+      forwarders: '積・卸地',
     },
   },
   labels: {
@@ -34,6 +35,7 @@ export default {
       phone: '電話番号',
       email: 'メールアドレス',
       website: 'Webサイト',
+      city: '市区町村',
       notes: '備考',
     }
   }
