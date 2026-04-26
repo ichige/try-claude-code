@@ -1,15 +1,30 @@
 <template>
-  <q-table :rows="rows" :columns="columns" row-key="id">
+  <q-table
+    v-if="meta.titleKey"
+    :rows="rows"
+    :columns="columns"
+    row-key="id"
+    :filter="filter"
+    table-header-class="bg-blue-grey-1 text-black"
+  >
     <template #top>
       <div class="full-width q-mb-sm text-weight-bold">
-        <q-avatar
-          class="secondary-gradient q-mr-sm"
-          :icon="meta.icon"
-          size="md"
-          text-color="white"
-          rounded
-        />
-        {{ $t(meta.titleKey) }}
+        <div class="row items-center">
+          <q-avatar
+            class="secondary-gradient q-mr-sm"
+            :icon="meta.icon"
+            size="md"
+            text-color="white"
+            rounded
+          />
+          {{ $t(meta.titleKey) }}
+          <q-space />
+          <q-input v-model="filter" :placeholder="$t('labels.search')" dense outlined clearable>
+            <template #prepend>
+              <q-icon :name="$icon('search')" />
+            </template>
+          </q-input>
+        </div>
         <q-separator class="q-mt-sm" />
       </div>
 
@@ -32,11 +47,13 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRoute, onBeforeRouteUpdate } from 'vue-router'
 import type { ContainerName } from 'stores/masters'
 import { useContainerTable, initContainerTable } from 'composables/masters/container-table'
 import { useDialogFormActions, initDialogForm } from 'composables/dialog-form'
+
+const filter = ref('')
 
 const route = useRoute()
 const { rows, columns, meta, ShowDeletedToggle } = useContainerTable()

@@ -4,6 +4,7 @@ import { api } from 'src/boot/axios'
 import type { CosmosItem } from '@shisamo/shared'
 import { useConsignorsStore } from 'stores/masters/consignors'
 import { useCarriersStore } from 'stores/masters/carriers'
+import { useForwardersStore } from 'stores/masters/forwarders'
 
 export type ContainerName = 'Consignees' | 'Carriers' | 'Forwarders' | 'Consignors'
 
@@ -67,6 +68,7 @@ export const useMastersStore = defineStore('masters', () => {
     await Promise.all([
       useConsignorsStore().fetchAll(),
       useCarriersStore().fetchAll(),
+      useForwardersStore().fetchAll(),
     ])
     loaded.value = true
   }

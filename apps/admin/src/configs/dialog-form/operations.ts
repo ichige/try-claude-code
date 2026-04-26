@@ -1,15 +1,17 @@
+import { i18n } from 'src/boot/i18n'
+
 export type Operation = 'create' | 'update'
 
 export const operationConfigs = {
   create: {
-    label: 'labels.create',
+    label: i18n.global.t('labels.create'),
     color: 'positive',
     icon: 'add',
     size: 'sm',
     unelevated: true,
   },
   update: {
-    label: 'labels.update',
+    label: i18n.global.t('labels.update'),
     color: 'warning',
     icon: 'edit',
     size: 'sm',

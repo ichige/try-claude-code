@@ -10,14 +10,20 @@ export default {
     'masters-container': {
       carriers: '配送業者',
       consignors: '取引先',
+      forwarders: '地点',
     },
+  },
+  validation: {
+    required: '{field}は必須です',
+    numeric: '{field}は数値で入力してください',
   },
   labels: {
     create: '登録',
     'dark-mode': 'ダークモード',
     logout: 'ログアウト',
     update: '編集',
-    save: '保存'
+    save: '保存',
+    search: '検索'
   },
   containers: {
     fields: {
@@ -33,6 +39,7 @@ export default {
       phone: '電話番号',
       email: 'メールアドレス',
       website: 'Webサイト',
+      city: '市区町村',
       notes: '備考',
     }
   }

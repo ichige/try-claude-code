@@ -1,7 +1,7 @@
 import type { CosmosItem } from './cosmos'
 
 /**
- * Carriers コンテナのアイテム。
+ * Carriers(配送業者・代理店) コンテナのアイテム。
  */
 export interface CarriersItem extends CosmosItem {
   /** 会社名 */
@@ -24,8 +24,6 @@ export interface CarriersItem extends CosmosItem {
   phone: string
   /** メールアドレス */
   email: string
-  /** Webサイト */
-  website: string
   /** 備考 */
   notes: string
 }
