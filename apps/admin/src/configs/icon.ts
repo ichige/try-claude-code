@@ -31,7 +31,12 @@ const iconMap: Record<string, string> = {
   search: 'sym_o_search',
   website: 'sym_o_language',
   'dark-mode': 'sym_o_dark_mode',
+  add: 'sym_o_add',
+  close: 'sym_o_close',
   'edit-note': 'sym_o_edit_note',
+  name: 'sym_o_label',
+  remove: 'sym_o_remove',
+  version: 'sym_o_tag',
   'task-alt': 'sym_o_task_alt',
   // 動的ルート解決用
   'masters-container.carriers': 'sym_o_local_shipping',
