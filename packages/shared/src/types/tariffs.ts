@@ -1,5 +1,8 @@
 import type { CosmosItem } from './cosmos'
 
+/**
+ * 運賃条件データ
+ */
 export interface TariffRange {
   /** 距離下限値 */
   minKm: number
@@ -17,5 +20,8 @@ export interface TariffRange {
  * Tariffs(運賃) コンテナのアイテム。
  */
 export interface TariffsItem extends CosmosItem {
+  /** 有効化フラグ。一度有効化したら変更できない。 */
+  enabled: boolean
+  /** 距離別運賃条件 */
   ranges: TariffRange[]
 }

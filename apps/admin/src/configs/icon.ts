@@ -31,6 +31,8 @@ const iconMap: Record<string, string> = {
   search: 'sym_o_search',
   website: 'sym_o_language',
   'dark-mode': 'sym_o_dark_mode',
+  'edit-note': 'sym_o_edit_note',
+  'task-alt': 'sym_o_task_alt',
   // 動的ルート解決用
   'masters-container.carriers': 'sym_o_local_shipping',
   'masters-container.consignees': 'sym_o_store',

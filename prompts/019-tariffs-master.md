@@ -23,6 +23,23 @@ packages/shared/src/types/tariffs.ts を見てくれ。
 UIはウィザード形式にするので、QStepper による画面遷移を行う。  
 
 ```markdown
-
+続いて作成した TariffsPage.vue に QStepper を導入する。
+- STEP1: 運賃表のバージョンと距離範囲を設定する。
+    - TariffRange のレコード数とバージョン(TariffsItem の id になる)を決めるステップ
+- STEP2: 作成したレンジの各数値を入力する。
+- STEP3: 確認画面(保存するか入力に戻るか)
+こんなイメージで画面遷移だけ準備してみてくれ。中身は「STEP1」とか「STEP2」とかでOK。
 ```
 
+それっぽいのが出来たけど、仰々しい実装もあるので修正させる。
+
+```markdown
+各ステップの icon だけど、直接指定できるので…
+route, edit-note, task-alt という単純なキー指定にしてくれ。
+---
+ところでSTEP1だけ edit アイコンになってるのは、何故かな？
+であれば、STEP1はアイコンなしでOKす。表示されることがない。
+---
+i18n だけど、あそこまで深い構造にしなくてOK。
+tariffs.step1.title くらいの構造かな。なにせ3ステップだから。
+```
