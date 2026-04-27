@@ -205,24 +205,24 @@ const step = inject(tariffStepKey)!
 const version = inject(tariffVersionKey)!
 
 function addRange(): void {
-  const last = draft.ranges[draft.ranges.length - 1]
+  const last = draft.value.ranges[draft.value.ranges.length - 1]
   const nextMin = last ? last.maxKm + 1 : 1
   const span = last ? last.maxKm - last.minKm : 19
-  draft.ranges.push({ minKm: nextMin, maxKm: nextMin + span, baseFare: 0, unitKm: 1, unitFare: 0 })
+  draft.value.ranges.push({ minKm: nextMin, maxKm: nextMin + span, baseFare: 0, unitKm: 1, unitFare: 0 })
 }
 
 function removeRange(idx: number): void {
-  draft.ranges.splice(idx, 1)
+  draft.value.ranges.splice(idx, 1)
 }
 
 watch(
-  draft.ranges,
+  draft.value.ranges,
   () => {
     if (step.value !== 2) return
-    for (let i = 1; i < draft.ranges.length; i++) {
-      const prev = draft.ranges[i - 1]!
+    for (let i = 1; i < draft.value.ranges.length; i++) {
+      const prev = draft.value.ranges[i - 1]!
       const auto = prev.baseFare + Math.ceil((prev.maxKm + 1 - prev.minKm) / prev.unitKm) * prev.unitFare
-      if (draft.ranges[i]!.baseFare !== auto) draft.ranges[i]!.baseFare = auto
+      if (draft.value.ranges[i]!.baseFare !== auto) draft.value.ranges[i]!.baseFare = auto
     }
   },
   { deep: true },
@@ -232,7 +232,7 @@ const simDistance = ref<number | null>(null)
 
 const simulatedFare = computed<number | null>(() => {
   if (simDistance.value === null || simDistance.value <= 0) return null
-  const range = draft.ranges.find(r => simDistance.value! >= r.minKm && simDistance.value! <= r.maxKm)
+  const range = draft.value.ranges.find(r => simDistance.value! >= r.minKm && simDistance.value! <= r.maxKm)
   if (!range) return null
   const units = Math.ceil((simDistance.value - range.minKm) / range.unitKm)
   return range.baseFare + units * range.unitFare

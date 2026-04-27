@@ -1,10 +1,10 @@
 <template>
   <div>
     <div class="row justify-end q-mb-md">
-      <q-btn color="primary" unelevated :icon="$icon('add')" :label="$t('labels.create')" @click="dialogOpen = true" />
+      <q-btn color="primary" unelevated :icon="$icon('add')" :label="$t('labels.create')" @click="dialogRef?.open" />
     </div>
 
-    <TariffsDialog v-model="dialogOpen" />
+    <TariffsDialog ref="dialogRef" />
   </div>
 </template>
 
@@ -12,5 +12,5 @@
 import { ref } from 'vue'
 import TariffsDialog from 'components/masters/TariffsDialog.vue'
 
-const dialogOpen = ref(false)
+const dialogRef = ref<typeof TariffsDialog|null>(null)
 </script>

@@ -1,8 +1,8 @@
 <template>
   <q-dialog
-    :model-value="modelValue"
+    v-model="dialog"
     persistent
-    @update:model-value="emit('update:modelValue', $event)">
+    >
     <q-card style="width: 680px; max-width: 95vw">
 
       <q-card-section class="row primary-gradient text-white">
@@ -11,7 +11,7 @@
           {{ $t('navi.masters-container.tariffs') }}
         </div>
         <q-space />
-        <q-btn :icon="$icon('close')" flat round dense @click="emit('update:modelValue', false)" />
+        <q-btn :icon="$icon('close')" flat round dense @click="close" />
       </q-card-section>
 
       <!-- ステップインジケーターのみ。コンテンツは TariffsForm に集約 -->
@@ -40,15 +40,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, provide } from 'vue'
+import { ref, computed, provide } from 'vue'
 import { useTariffsStore } from 'stores/masters/tariffs'
 import { tariffDraftKey, tariffStepKey, tariffVersionKey } from 'src/composables/tariff-draft'
 import TariffsForm from 'components/masters/TariffsForm.vue'
 
-defineProps<{ modelValue: boolean }>()
-const emit = defineEmits<{ 'update:modelValue': [value: boolean] }>()
-
 type Step = 'ranges' | 'values' | 'confirm'
+const dialog = ref(false)
 const STEPS: Step[] = ['ranges', 'values', 'confirm']
 
 const step = ref<Step>('ranges')
@@ -62,11 +60,14 @@ const tariffsStore = useTariffsStore()
 const version = computed(() => tariffsStore.list.length + 1)
 const stepNumber = computed(() => (STEPS.indexOf(step.value) + 1) as 1 | 2 | 3)
 
-const draft = reactive({
+const initialDraft = () => ({
   name: '',
   notes: '',
   ranges: [{ minKm: 1, maxKm: 20, baseFare: 0, unitKm: 1, unitFare: 0 }],
 })
+
+const draft = ref(initialDraft())
+
 provide(tariffDraftKey, draft)
 provide(tariffStepKey, stepNumber)
 provide(tariffVersionKey, version)
@@ -88,4 +89,29 @@ function back(): void {
 function save(): void {
   // TODO: 保存処理
 }
+
+/**
+ * データのリセット
+ */
+function reset(): void {
+  draft.value = initialDraft()
+}
+
+/**
+ * ダイアログオープン
+ */
+const open = () => { dialog.value = true }
+
+/**
+ * ダイアログクローズ
+ */
+const close = () => {
+  reset()
+  console.log('close', JSON.stringify(draft.value))
+  step.value = 'ranges'
+  dialog.value = false
+}
+
+defineExpose<{ open(): void }>({ open })
+
 </script>
