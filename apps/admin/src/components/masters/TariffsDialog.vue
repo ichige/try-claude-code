@@ -16,9 +16,9 @@
 
       <!-- ステップインジケーターのみ。コンテンツは TariffsForm に集約 -->
       <q-stepper v-model="step" style="height: 5rem;" animated>
-        <q-step name="ranges" :title="$t('tariffs.step1.title')" :done="step === 'values' || step === 'confirm'" />
-        <q-step name="values" :title="$t('tariffs.step2.title')" :icon="$icon('edit-note')" :done="step === 'confirm'" />
-        <q-step name="confirm" :title="$t('tariffs.step3.title')" :icon="$icon('task-alt')" />
+        <q-step :name="1" :title="$t('tariffs.step1.title')" :done="step > 1" />
+        <q-step :name="2" :title="$t('tariffs.step2.title')" :icon="$icon('edit-note')" :done="step > 2" />
+        <q-step :name="3" :title="$t('tariffs.step3.title')" :icon="$icon('task-alt')" />
       </q-stepper>
 
       <div style="overflow: hidden">
@@ -30,9 +30,9 @@
       <q-separator />
 
       <q-card-actions align="right" class="q-pa-md q-gutter-x-sm">
-        <q-btn v-if="step !== 'ranges'" flat :label="$t('labels.back')" @click="back" />
-        <q-btn v-if="step !== 'confirm'" color="primary" unelevated :label="$t('labels.next')" @click="next" />
-        <q-btn v-if="step === 'confirm'" color="primary" unelevated :label="$t('labels.save')" @click="save" />
+        <q-btn v-if="step !== 1" flat :label="$t('labels.back')" @click="back" />
+        <q-btn v-if="step !== 3" color="primary" unelevated :label="$t('labels.next')" @click="next" />
+        <q-btn v-if="step === 3" color="primary" unelevated :label="$t('labels.save')" @click="save" />
       </q-card-actions>
 
     </q-card>
@@ -45,11 +45,8 @@ import { useTariffsStore } from 'stores/masters/tariffs'
 import { tariffDraftKey, tariffStepKey, tariffVersionKey } from 'src/composables/tariff-draft'
 import TariffsForm from 'components/masters/TariffsForm.vue'
 
-type Step = 'ranges' | 'values' | 'confirm'
 const dialog = ref(false)
-const STEPS: Step[] = ['ranges', 'values', 'confirm']
-
-const step = ref<Step>('ranges')
+const step = ref(1)
 const formRef = ref<InstanceType<typeof TariffsForm> | null>(null)
 const forward = ref(true)
 
@@ -58,7 +55,6 @@ const leaveClass = computed(() => forward.value ? 'animated faster slideOutLeft'
 
 const tariffsStore = useTariffsStore()
 const version = computed(() => tariffsStore.list.length + 1)
-const stepNumber = computed(() => (STEPS.indexOf(step.value) + 1) as 1 | 2 | 3)
 
 const initialDraft = () => ({
   name: '',
@@ -69,21 +65,19 @@ const initialDraft = () => ({
 const draft = ref(initialDraft())
 
 provide(tariffDraftKey, draft)
-provide(tariffStepKey, stepNumber)
+provide(tariffStepKey, step)
 provide(tariffVersionKey, version)
 
 async function next(): Promise<void> {
   const ok = await formRef.value?.formRef?.validate()
   if (!ok) return
   forward.value = true
-  const idx = STEPS.indexOf(step.value)
-  if (idx < STEPS.length - 1) step.value = STEPS[idx + 1]!
+  step.value++
 }
 
 function back(): void {
   forward.value = false
-  const idx = STEPS.indexOf(step.value)
-  if (idx > 0) step.value = STEPS[idx - 1]!
+  step.value--
 }
 
 function save(): void {
@@ -108,7 +102,7 @@ const open = () => { dialog.value = true }
 const close = () => {
   reset()
   console.log('close', JSON.stringify(draft.value))
-  step.value = 'ranges'
+  step.value = 1
   dialog.value = false
 }
 
