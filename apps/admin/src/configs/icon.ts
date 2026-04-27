@@ -20,6 +20,7 @@ const iconMap: Record<string, string> = {
   delete: 'sym_o_delete',
   edit: 'sym_o_edit',
   email: 'sym_o_email',
+  info: 'sym_o_info',
   invoiceNumber: 'sym_o_tag',
   lineId: 'sym_o_chat',
   logout: 'sym_o_logout',

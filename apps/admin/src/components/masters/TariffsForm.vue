@@ -6,7 +6,7 @@
       <!-- 説明文 -->
       <q-banner v-show="step === 1" class="bg-info text-white text-caption">
         <template #avatar>
-          <q-avatar icon="sym_o_info" />
+          <q-avatar :icon="$icon('info')" />
         </template>
         <div>{{ $t('tariffs.step1.description') }}</div>
         <q-banner class="bg-warning text-black" rounded dense>{{ $t('tariffs.step1.example') }}</q-banner>
@@ -58,16 +58,17 @@
           class="row items-center q-gutter-x-sm q-mb-sm"
         >
           <q-input
-            v-model.number="range.minKm"
+            :model-value="minKms[idx]"
             :label="$t('tariffs.fields.minKm')"
-            type="number" outlined dense
+            type="number" outlined dense readonly
             class="col-5"
             input-class="text-right"
             suffix="km"
           />
           <span class="text-grey-6">〜</span>
           <q-input
-            v-model.number="range.maxKm"
+            :model-value="range.maxKm"
+            @update:model-value="val => updateMaxKm(idx, Number(val))"
             :label="$t('tariffs.fields.maxKm')"
             type="number" outlined dense
             class="col-5"
@@ -108,7 +109,7 @@
         <q-card-section>
           <div class="col-12 row items-center q-mb-sm">
             <q-icon :name="$icon('range')" size="xs" />
-            <div class="text-caption text-primary q-mr-sm">{{ range.minKm }}km ～ {{ range.maxKm }}km</div>
+            <div class="text-caption text-primary q-mr-sm">{{ minKms[idx] }}km ～ {{ range.maxKm }}km</div>
             <div class="col bg-grey-5" style="height: 1px;"></div>
           </div>
 
@@ -204,6 +205,25 @@ const draft = inject(tariffDraftKey)!
 const step = inject(tariffStepKey)!
 const version = inject(tariffVersionKey)!
 
+const minKms = computed(() =>
+  draft.value.ranges.map((_, idx) =>
+    idx === 0 ? 1 : draft.value.ranges[idx - 1]!.maxKm + 1
+  )
+)
+
+/**
+ * @param idx
+ * @param val
+ */
+function updateMaxKm(idx: number, val: number): void {
+  draft.value.ranges[idx]!.maxKm = val
+  const next = draft.value.ranges[idx + 1]
+  if (next) next.minKm = val + 1
+}
+
+/**
+ * レンジ追加
+ */
 function addRange(): void {
   const last = draft.value.ranges[draft.value.ranges.length - 1]
   const nextMin = last ? last.maxKm + 1 : 1
@@ -211,8 +231,14 @@ function addRange(): void {
   draft.value.ranges.push({ minKm: nextMin, maxKm: nextMin + span, baseFare: 0, unitKm: 1, unitFare: 0 })
 }
 
+/**
+ * レンジ削除
+ * @param idx
+ */
 function removeRange(idx: number): void {
   draft.value.ranges.splice(idx, 1)
+  const affected = draft.value.ranges[idx]
+  if (affected) affected.minKm = idx === 0 ? 1 : draft.value.ranges[idx - 1]!.maxKm + 1
 }
 
 watch(

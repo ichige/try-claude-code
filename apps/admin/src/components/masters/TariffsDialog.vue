@@ -7,8 +7,8 @@
 
       <q-card-section class="row primary-gradient text-white">
         <div class="text-h6">
-          <q-icon :name="$icon('masters-container.tariffs')" />
-          {{ $t('navi.masters-container.tariffs') }}
+          <q-icon :name="$icon('masters-tariffs')" />
+          {{ $t('navi.masters-tariffs') }}
         </div>
         <q-space />
         <q-btn :icon="$icon('close')" flat round dense @click="close" />
@@ -42,7 +42,7 @@
 <script setup lang="ts">
 import { ref, computed, provide } from 'vue'
 import { useTariffsStore } from 'stores/masters/tariffs'
-import { tariffDraftKey, tariffStepKey, tariffVersionKey } from 'src/composables/tariff-draft'
+import { tariffDraftKey, tariffStepKey, tariffVersionKey, initialDraft } from 'src/composables/tariff-draft'
 import TariffsForm from 'components/masters/TariffsForm.vue'
 
 const dialog = ref(false)
@@ -50,24 +50,24 @@ const step = ref(1)
 const formRef = ref<InstanceType<typeof TariffsForm> | null>(null)
 const forward = ref(true)
 
+// animation 調整用
 const enterClass = computed(() => forward.value ? 'animated faster slideInRight' : 'animated faster slideInLeft')
 const leaveClass = computed(() => forward.value ? 'animated faster slideOutLeft' : 'animated faster slideOutRight')
 
 const tariffsStore = useTariffsStore()
 const version = computed(() => tariffsStore.list.length + 1)
 
-const initialDraft = () => ({
-  name: '',
-  notes: '',
-  ranges: [{ minKm: 1, maxKm: 20, baseFare: 0, unitKm: 1, unitFare: 0 }],
-})
-
+// 初期値
 const draft = ref(initialDraft())
 
+// Form へは provide で渡す
 provide(tariffDraftKey, draft)
 provide(tariffStepKey, step)
 provide(tariffVersionKey, version)
 
+/**
+ * 次へボタン
+ */
 async function next(): Promise<void> {
   const ok = await formRef.value?.formRef?.validate()
   if (!ok) return
@@ -75,11 +75,17 @@ async function next(): Promise<void> {
   step.value++
 }
 
+/**
+ * 戻るボタン
+ */
 function back(): void {
   forward.value = false
   step.value--
 }
 
+/**
+ * 保存ボタン
+ */
 function save(): void {
   // TODO: 保存処理
 }
