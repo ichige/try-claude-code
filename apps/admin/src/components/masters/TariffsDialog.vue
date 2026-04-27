@@ -15,7 +15,11 @@
         <q-step name="confirm" :title="$t('tariffs.step3.title')" :icon="$icon('task-alt')" />
       </q-stepper>
 
-      <TariffsForm ref="formRef" />
+      <div style="overflow: hidden">
+        <Transition :enter-active-class="enterClass" :leave-active-class="leaveClass" mode="out-in">
+          <TariffsForm :key="step" ref="formRef" />
+        </Transition>
+      </div>
 
       <q-separator />
 
@@ -43,6 +47,10 @@ const STEPS: Step[] = ['ranges', 'values', 'confirm']
 
 const step = ref<Step>('ranges')
 const formRef = ref<InstanceType<typeof TariffsForm> | null>(null)
+const forward = ref(true)
+
+const enterClass = computed(() => forward.value ? 'animated faster slideInRight' : 'animated faster slideInLeft')
+const leaveClass = computed(() => forward.value ? 'animated faster slideOutLeft' : 'animated faster slideOutRight')
 
 const tariffsStore = useTariffsStore()
 const version = computed(() => tariffsStore.list.length + 1)
@@ -60,11 +68,13 @@ provide(tariffVersionKey, version)
 async function next(): Promise<void> {
   const ok = await formRef.value?.formRef?.validate()
   if (!ok) return
+  forward.value = true
   const idx = STEPS.indexOf(step.value)
   if (idx < STEPS.length - 1) step.value = STEPS[idx + 1]!
 }
 
 function back(): void {
+  forward.value = false
   const idx = STEPS.indexOf(step.value)
   if (idx > 0) step.value = STEPS[idx - 1]!
 }
