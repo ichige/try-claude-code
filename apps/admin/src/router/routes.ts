@@ -11,6 +11,7 @@ const routes: RouteRecordRaw[] = [
         name: 'masters',
         component: () => import('pages/MastersPage.vue'),
         children: [
+          { path: 'tariffs', name: 'masters-tariffs', component: () => import('pages/TariffsPage.vue') },
           { path: ':container', name: 'masters-container', component: () => import('components/masters/ContainerTable.vue') },
         ],
       },

@@ -12,6 +12,7 @@ export default {
       consignees: '配送先',
       consignors: '取引先',
       forwarders: '地点',
+      tariffs: '運賃',
     },
   },
   validation: {
