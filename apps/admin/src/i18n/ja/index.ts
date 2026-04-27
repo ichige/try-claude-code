@@ -12,14 +12,22 @@ export default {
       consignees: '配送先',
       consignors: '取引先',
       forwarders: '地点',
+      tariffs: '運賃',
     },
   },
   validation: {
     required: '{field}は必須です',
     numeric: '{field}は数値で入力してください',
   },
+  tariffs: {
+    step1: { title: '距離範囲の設定' },
+    step2: { title: '運賃の入力' },
+    step3: { title: '確認' },
+  },
   labels: {
     create: '登録',
+    back: '戻る',
+    next: '次へ',
     'dark-mode': 'ダークモード',
     logout: 'ログアウト',
     update: '編集',

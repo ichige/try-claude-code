@@ -50,6 +50,12 @@ const navLinks: NavLink[] = [
         icon: resolveIcon('masters-container.forwarders'),
         to: { name: 'masters-container', params: { container: 'forwarders' } },
       },
+      // 運賃
+      {
+        titleKey: 'navi.masters-container.tariffs',
+        icon: resolveIcon('masters-container.tariffs'),
+        to: { name: 'masters-tariffs' },
+      },
     ],
   },
 ]
