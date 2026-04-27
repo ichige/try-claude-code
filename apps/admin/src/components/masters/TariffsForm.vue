@@ -3,7 +3,13 @@
 
     <!-- 基本情報: STEP1・STEP3 -->
     <template v-if="step !== 2">
-      <q-card-section class="row q-gutter-x-md">
+      <q-card-section class="row">
+        <div class="col-12 row items-center q-mb-sm">
+          <q-icon :name="$icon('name')" size="xs" />
+          <div class="text-caption text-primary q-mr-sm">{{ $t('labels.basic') }}</div>
+          <div class="col bg-grey-5" style="height: 1px;"></div>
+        </div>
+
         <q-input
           :model-value="version"
           :label="$t('tariffs.fields.version')"
@@ -19,7 +25,7 @@
           :label="$t('tariffs.fields.name')"
           outlined dense
           :readonly="step === 3"
-          class="col"
+          class="col q-ml-md"
         >
           <template #prepend>
             <q-icon :name="resolveIcon('name')" size="xs" />
@@ -31,8 +37,12 @@
 
     <!-- 距離レンジ: STEP1 (まとめて一セクション) -->
     <template v-if="step === 1">
-      <q-card-section>
-        <div class="text-subtitle2 q-mb-sm">{{ $t('tariffs.fields.ranges') }}</div>
+      <q-card-section class="">
+        <div class="col-12 row items-center q-mb-sm">
+          <q-icon :name="$icon('range')" size="xs" />
+          <div class="text-caption text-primary q-mr-sm">{{ $t('tariffs.fields.ranges') }}</div>
+          <div class="col bg-grey-5" style="height: 1px;"></div>
+        </div>
         <div
           v-for="(range, idx) in draft.ranges"
           :key="idx"
@@ -43,6 +53,8 @@
             :label="$t('tariffs.fields.minKm')"
             type="number" outlined dense
             class="col-5"
+            input-class="text-right"
+            suffix="km"
           />
           <span class="text-grey-6">〜</span>
           <q-input
@@ -50,6 +62,8 @@
             :label="$t('tariffs.fields.maxKm')"
             type="number" outlined dense
             class="col-5"
+            input-class="text-right"
+            suffix="km"
           />
           <q-btn
             flat round dense
@@ -72,35 +86,57 @@
 
     <!-- 距離レンジ + 運賃: STEP2・STEP3 (レンジごとにセクション) -->
     <template v-if="step !== 1">
+      <q-banner class="bg-info text-white text-caption">
+        <template #avatar>
+          <q-avatar icon="sym_o_info" />
+        </template>
+        <div>{{ $t('tariffs.step2.description') }}</div>
+        <q-chip color="warning" square>{{ $t('tariffs.step2.example') }}</q-chip>
+      </q-banner>
       <template v-for="(range, idx) in draft.ranges" :key="idx">
         <q-card-section>
-          <div class="text-subtitle2 q-mb-sm">{{ range.minKm }}km ～ {{ range.maxKm }}km</div>
+          <div class="col-12 row items-center q-mb-sm">
+            <q-icon :name="$icon('range')" size="xs" />
+            <div class="text-caption text-primary q-mr-sm">{{ range.minKm }}km ～ {{ range.maxKm }}km</div>
+            <div class="col bg-grey-5" style="height: 1px;"></div>
+          </div>
+
           <div class="row items-center q-gutter-x-sm">
-            <span class="text-body2">{{ $t('tariffs.fields.baseFare') }}</span>
+
             <q-input
               v-model.number="range.baseFare"
-              type="number" outlined dense
-              class="col-3" input-class="text-right"
+              :label="$t('tariffs.fields.baseFare')"
+              type="number"
+              outlined
+              dense
+              class="col-4" input-class="text-right"
               :readonly="step === 3 || idx > 0"
               :rules="step === 2 ? [v => v >= 0 || $t('validation.numeric')] : []"
+              prefix="&yen;"
             />
-            <span class="text-body2">円、</span>
             <q-input
               v-model.number="range.unitKm"
-              type="number" outlined dense
-              class="col-2" input-class="text-right"
-              :readonly="step === 3"
-              :rules="step === 2 ? [v => v >= 1 || $t('validation.numeric')] : []"
-            />
-            <span class="text-body2">kmごとに</span>
-            <q-input
-              v-model.number="range.unitFare"
-              type="number" outlined dense
+              :label="$t('tariffs.fields.unitKm')"
+              type="number"
+              outlined
+              dense
               class="col-3" input-class="text-right"
               :readonly="step === 3"
-              :rules="step === 2 ? [v => v >= 0 || $t('validation.numeric')] : []"
+              :rules="step === 2 ? [v => v >= 1 || $t('validation.numeric')] : []"
+              suffix="km"
             />
-            <span class="text-body2">円加算</span>
+            <q-input
+              v-model.number="range.unitFare"
+              :label="$t('tariffs.fields.unitFare')"
+              type="number"
+              outlined
+              dense
+              class="col-4"
+              input-class="text-right"
+              :readonly="step === 3"
+              :rules="step === 2 ? [v => v >= 0 || $t('validation.numeric')] : []"
+              prefix="&yen;"
+            />
           </div>
         </q-card-section>
         <q-separator v-if="idx < draft.ranges.length - 1" />
@@ -111,9 +147,14 @@
     <template v-if="step !== 2">
       <q-separator />
       <q-card-section>
+        <div class="col-12 row items-center q-mb-sm">
+          <q-icon :name="$icon('edit-note')" size="xs" />
+          <div class="text-caption text-primary q-mr-sm">{{ $t('labels.other') }}</div>
+          <div class="col bg-grey-5" style="height: 1px;"></div>
+        </div>
         <q-input
           v-model="draft.notes"
-          :label="$t('labels.other')"
+          :label="$t('containers.fields.notes')"
           type="textarea" outlined dense
           rows="3"
         />

@@ -1,15 +1,21 @@
 <template>
-  <q-dialog :model-value="modelValue" @update:model-value="emit('update:modelValue', $event)">
+  <q-dialog
+    :model-value="modelValue"
+    persistent
+    @update:model-value="emit('update:modelValue', $event)">
     <q-card style="width: 680px; max-width: 95vw">
 
-      <q-card-section class="row items-center q-pb-none">
-        <div class="text-h6">{{ $t('navi.masters-container.tariffs') }}</div>
+      <q-card-section class="row primary-gradient text-white">
+        <div class="text-h6">
+          <q-icon :name="$icon('masters-container.tariffs')" />
+          {{ $t('navi.masters-container.tariffs') }}
+        </div>
         <q-space />
         <q-btn :icon="$icon('close')" flat round dense @click="emit('update:modelValue', false)" />
       </q-card-section>
 
       <!-- ステップインジケーターのみ。コンテンツは TariffsForm に集約 -->
-      <q-stepper v-model="step" flat animated content-class="q-pa-none">
+      <q-stepper v-model="step" style="height: 5rem;" animated>
         <q-step name="ranges" :title="$t('tariffs.step1.title')" :done="step === 'values' || step === 'confirm'" />
         <q-step name="values" :title="$t('tariffs.step2.title')" :icon="$icon('edit-note')" :done="step === 'confirm'" />
         <q-step name="confirm" :title="$t('tariffs.step3.title')" :icon="$icon('task-alt')" />

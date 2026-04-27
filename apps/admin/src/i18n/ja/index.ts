@@ -21,7 +21,11 @@ export default {
   },
   tariffs: {
     step1: { title: '距離範囲の設定' },
-    step2: { title: '運賃の入力' },
+    step2: {
+      title: '運賃の入力',
+      description: '基本料金に加えて、範囲内の走行距離が加算単位(km)を超過する毎に、加算単価分だけ加算されます。',
+      example: '例) 1km毎に200円を加算。 → 加算単位 = 1、加算単価 = 200 に設定する'
+    },
     step3: { title: '確認' },
     simulator: {
       title: '計算シミュレータ',
@@ -36,7 +40,7 @@ export default {
       maxKm: '上限 (km)',
       baseFare: '基本料金',
       unitKm: '加算単位',
-      unitFare: '加算料金',
+      unitFare: '加算単価',
     },
   },
   labels: {
