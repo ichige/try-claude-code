@@ -3,6 +3,15 @@
 
     <!-- 基本情報: STEP1・STEP3 -->
     <template v-if="step !== 2">
+      <!-- 説明文 -->
+      <q-banner v-show="step === 1" class="bg-info text-white text-caption">
+        <template #avatar>
+          <q-avatar icon="sym_o_info" />
+        </template>
+        <div>{{ $t('tariffs.step1.description') }}</div>
+        <q-banner class="bg-warning text-black" rounded dense>{{ $t('tariffs.step1.example') }}</q-banner>
+      </q-banner>
+
       <q-card-section class="row">
         <div class="col-12 row items-center q-mb-sm">
           <q-icon :name="$icon('name')" size="xs" />
@@ -86,13 +95,15 @@
 
     <!-- 距離レンジ + 運賃: STEP2・STEP3 (レンジごとにセクション) -->
     <template v-if="step !== 1">
-      <q-banner class="bg-info text-white text-caption">
+      <!-- 説明文 -->
+      <q-banner v-show="step === 2" class="bg-info text-white text-caption">
         <template #avatar>
           <q-avatar icon="sym_o_info" />
         </template>
         <div>{{ $t('tariffs.step2.description') }}</div>
-        <q-chip color="warning" square>{{ $t('tariffs.step2.example') }}</q-chip>
+        <q-banner class="bg-warning text-black" rounded dense>{{ $t('tariffs.step2.example') }}</q-banner>
       </q-banner>
+
       <template v-for="(range, idx) in draft.ranges" :key="idx">
         <q-card-section>
           <div class="col-12 row items-center q-mb-sm">
