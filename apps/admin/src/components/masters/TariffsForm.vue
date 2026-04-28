@@ -20,7 +20,7 @@
         </div>
 
         <q-input
-          :model-value="version"
+          :model-value="draft.id"
           :label="$t('tariffs.fields.version')"
           outlined dense readonly
           class="col-3"
@@ -214,12 +214,11 @@ import { ref, computed, inject, toRaw } from 'vue'
 import type { QForm } from 'quasar'
 import type { TariffsItem } from '@shisamo/shared'
 import { resolveIcon } from 'src/composables/use-icon'
-import { tariffDraftKey, tariffStepKey, tariffVersionKey } from 'src/composables/tariff-draft'
+import { tariffDraftKey, tariffStepKey } from './tariff-draft'
 import { Tariff } from 'models/tariff'
 
 const draft = inject(tariffDraftKey)!
 const step = inject(tariffStepKey)!
-const version = inject(tariffVersionKey)!
 
 /**
  * 距離下限値の自動計算

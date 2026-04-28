@@ -262,3 +262,27 @@ STEP3 で変わる要素と言えば、備考欄だけだし。
 updateBaseFare、updateUnitKm、updateUnitFare だけど、更新対象フィールドを指定することで、一本化できるのではないか？
 ```
 
+だいぶ手こずった印象がある。  
+ベストプラクティスがない？という事もあるのか、コンポーネントにメソッドを追加させるだけだと、
+正しく動くけど再利用性もなければ、非効率でカオスなコードを作成してしまうようである。  
+
+### 保存処理
+
+ここまでの過程で、おおよそ保存直前で保存するべきデータが構成されているのは確認できている。  
+あとは保存しょりと演出を追加すれば完成だ。
+
+```markdown
+packages/shared/src/types/tariffs.ts の TariffsItem には enabled と disabled というフィールドがある。  
+save メソッドの実装前に、デフォルトで false としてほしい。
+---
+その initialDraft で、id も設定してほしい。
+id は TariffsDialog.vue の version の値だけど、数値だとちょっと心もとないので、`v{version}` という文字列にしてくれ。  
+事実上 id ＝ バージョンなので、TariffsForm.vue 側でも version を削除して id を参照するように変更してほしい。
+---
+save メソッドだけど、
+composables/dialog-form.ts の onSubmit のように、Loading プラグインを使って実装してほしい。  
+useTariffsStore の create に draft を渡すだけでOKなはずや。たぶん。
+---
+functions/src/schemas/item-params.ts
+の id が uuid になってるので、単純な string 型に変更してください。
+```

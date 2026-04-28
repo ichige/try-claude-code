@@ -41,8 +41,9 @@
 
 <script setup lang="ts">
 import { ref, computed, provide } from 'vue'
+import { Loading } from 'quasar'
 import { useTariffsStore } from 'stores/masters/tariffs'
-import { tariffDraftKey, tariffStepKey, tariffVersionKey, initialDraft } from 'src/composables/tariff-draft'
+import { tariffDraftKey, tariffStepKey, type TariffDraft } from './tariff-draft'
 import TariffsForm from 'components/masters/TariffsForm.vue'
 
 const dialog = ref(false)
@@ -57,13 +58,25 @@ const leaveClass = computed(() => forward.value ? 'animated faster slideOutLeft'
 const tariffsStore = useTariffsStore()
 const version = computed(() => tariffsStore.list.length + 1)
 
+/**
+ * 入力の初期値
+ * @param version
+ */
+const initialDraft = (version: number): TariffDraft => ({
+  id: `v${version}`,
+  name: '',
+  notes: '',
+  enabled: false,
+  disabled: false,
+  ranges: [{ minKm: 1, maxKm: 20, baseFare: 0, unitKm: 1, unitFare: 0 }],
+})
+
 // 初期値
-const draft = ref(initialDraft())
+const draft = ref(initialDraft(version.value))
 
 // Form へは provide で渡す
 provide(tariffDraftKey, draft)
 provide(tariffStepKey, step)
-provide(tariffVersionKey, version)
 
 /**
  * 次へボタン
@@ -86,15 +99,24 @@ function back(): void {
 /**
  * 保存ボタン
  */
-function save(): void {
-  // TODO: 保存処理
+async function save(): Promise<void> {
+  Loading.show({ message: '保存中...' })
+  try {
+    await tariffsStore.create(draft.value)
+    close()
+  } catch (e) {
+    close()
+    throw e
+  } finally {
+    Loading.hide()
+  }
 }
 
 /**
  * データのリセット
  */
 function reset(): void {
-  draft.value = initialDraft()
+  draft.value = initialDraft(version.value)
 }
 
 /**
@@ -107,7 +129,6 @@ const open = () => { dialog.value = true }
  */
 const close = () => {
   reset()
-  console.log('close', JSON.stringify(draft.value))
   step.value = 1
   dialog.value = false
 }
