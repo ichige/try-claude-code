@@ -117,7 +117,7 @@
 
             <q-input
               :model-value="baseFares[idx]"
-              @update:model-value="val => { if (idx === 0) draft.ranges[0]!.baseFare = Number(val) }"
+              @update:model-value="val => updateRange('baseFare', idx, Number(val))"
               :label="$t('tariffs.fields.baseFare')"
               type="number"
               outlined
@@ -128,7 +128,8 @@
               prefix="&yen;"
             />
             <q-input
-              v-model.number="range.unitKm"
+              :model-value="range.unitKm"
+              @update:model-value="val => updateRange('unitKm', idx, Number(val))"
               :label="$t('tariffs.fields.unitKm')"
               type="number"
               outlined
@@ -139,7 +140,8 @@
               suffix="km"
             />
             <q-input
-              v-model.number="range.unitFare"
+              :model-value="range.unitFare"
+              @update:model-value="val => updateRange('unitFare', idx, Number(val))"
               :label="$t('tariffs.fields.unitFare')"
               type="number"
               outlined
@@ -197,10 +199,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, inject } from 'vue'
+import { ref, computed, inject, toRaw } from 'vue'
 import type { QForm } from 'quasar'
+import type { TariffsItem } from '@shisamo/shared'
 import { resolveIcon } from 'src/composables/use-icon'
 import { tariffDraftKey, tariffStepKey, tariffVersionKey } from 'src/composables/tariff-draft'
+import { Tariff } from 'models/tariff'
 
 const draft = inject(tariffDraftKey)!
 const step = inject(tariffStepKey)!
@@ -255,17 +259,25 @@ const baseFares = computed(() =>
   })
 )
 
+/**
+ * 各フィールド更新と baseFare の更新
+ */
+function updateRange(field: 'baseFare' | 'unitKm' | 'unitFare', idx: number, val: number): void {
+  draft.value.ranges[idx]![field] = val
+  for (let i = idx + 1; i < draft.value.ranges.length; i++) {
+    draft.value.ranges[i]!.baseFare = baseFares.value[i]!
+  }
+}
+
+// シミュレーションの入力
 const simDistance = ref<number | null>(null)
 
+/**
+ * 計算シミュレーション
+ */
 const simulatedFare = computed<number | null>(() => {
-  if (simDistance.value === null || simDistance.value <= 0) return null
-  const idx = draft.value.ranges.findIndex((r, i) =>
-    simDistance.value! >= minKms.value[i]! && simDistance.value! <= r.maxKm
-  )
-  if (idx === -1) return null
-  const range = draft.value.ranges[idx]!
-  const units = Math.ceil((simDistance.value - minKms.value[idx]!) / range.unitKm)
-  return baseFares.value[idx]! + units * range.unitFare
+  if (simDistance.value === null) return null
+  return new Tariff(structuredClone(toRaw(draft.value)) as TariffsItem).calculate(simDistance.value)
 })
 
 const formRef = ref<InstanceType<typeof QForm> | null>(null)
