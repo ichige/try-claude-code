@@ -92,15 +92,16 @@
               >{{ tariff.enabled ? $t('tariffs.labels.enabled') : $t('tariffs.labels.disabled') }}
               </q-chip>
               <!-- 利用状態(利用中|停止中) -->
-              <q-chip
-                :color="tariff.isActive ? 'positive' : 'grey'"
-                text-color="white"
-                size="sm"
-                clickable
-                square
-                @click="toggleDisable(tariff)"
-              >{{ tariff.isActive ? $t('tariffs.labels.active') : $t('tariffs.labels.inactive') }}
-              </q-chip>
+              <q-toggle :model-value="tariff.isActive" @click="toggleActive(tariff)">
+                <q-badge
+                  :label="tariff.isActive ? $t('tariffs.labels.active') : $t('tariffs.labels.inactive')"
+                  :color="tariff.isActive ? 'positive' : 'grey'"
+                  text-color="white"
+                  size="sm"
+                  square
+                />
+              </q-toggle>
+
               <!-- シミュレーター計算結果 -->
               <q-chip
                 color="blue-grey-6"
@@ -227,9 +228,27 @@ function enable(tariff: TariffsItem): void {
 }
 
 /**
- * TODO: 利用フラグ(運賃表を使えるか使えないの判断で、有効にすると請求計算で利用できる)
+ * 利用フラグを切り替える。
+ * @param tariff - 対象の運賃表アイテム
  */
-function toggleDisable(_: TariffsItem): void {}
+function toggleActive(tariff: TariffsItem): void {
+  const message = tariff.isActive
+    ? '利用を停止しますか？'
+    : '利用を開始しますか？'
+  $q.dialog({
+    title: tariff.isActive ? '利用停止' : '利用開始',
+    message,
+    cancel: true,
+    persistent: true,
+  }).onOk(async () => {
+    Loading.show({ message: '更新中...' })
+    try {
+      await tariffsStore.toggleActive(tariff)
+    } finally {
+      Loading.hide()
+    }
+  })
+}
 
 /**
  * TODO: 運用開始後は編集不可となる。

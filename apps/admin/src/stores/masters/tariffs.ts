@@ -19,11 +19,24 @@ export const useTariffsStore = defineStore('masters/tariffs', () => {
     const item = await masters.patch<TariffsItem>('Tariffs', tariff.id, {
       _etag: tariff._etag,
       enabled: true,
+      isActive: true,
     })
     store.items.value.set(item.id, item)
   }
 
-  return { ...store, enable } satisfies MasterStore & { enable: typeof enable }
+  /**
+   * 利用フラグを切り替える。
+   * @param tariff - 対象の運賃表アイテム
+   */
+  async function toggleActive(tariff: TariffsItem): Promise<void> {
+    const item = await masters.patch<TariffsItem>('Tariffs', tariff.id, {
+      _etag: tariff._etag,
+      isActive: !tariff.isActive,
+    })
+    store.items.value.set(item.id, item)
+  }
+
+  return { ...store, enable, toggleActive } satisfies MasterStore & { enable: typeof enable, toggleActive: typeof toggleActive }
 })
 
 if (import.meta.hot) {
