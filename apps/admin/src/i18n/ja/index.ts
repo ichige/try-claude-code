@@ -40,7 +40,9 @@ export default {
     labels: {
       selection: '運賃表の選択',
       enabled: '運用済',
-      disabled: '利用中',
+      disabled: '運用前',
+      active: '利用中',
+      inactive: '停止中',
     },
     fields: {
       version: 'バージョン',

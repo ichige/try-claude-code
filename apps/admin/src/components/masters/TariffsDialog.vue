@@ -46,6 +46,8 @@ import { useTariffsStore } from 'stores/masters/tariffs'
 import { tariffDraftKey, tariffStepKey, type TariffDraft } from './tariff-draft'
 import TariffsForm from 'components/masters/TariffsForm.vue'
 
+const emit = defineEmits<{ created: [id: string] }>()
+
 const dialog = ref(false)
 const step = ref(1)
 const formRef = ref<InstanceType<typeof TariffsForm> | null>(null)
@@ -101,8 +103,10 @@ function back(): void {
  */
 async function save(): Promise<void> {
   Loading.show({ message: '保存中...' })
+  const id = draft.value.id
   try {
     await tariffsStore.create(draft.value)
+    emit('created', id)
     close()
   } catch (e) {
     close()

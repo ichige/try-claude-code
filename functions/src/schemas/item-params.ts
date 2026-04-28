@@ -7,7 +7,7 @@ import { containerSchema } from './container'
  */
 export const itemParamsSchema = z.object({
   container: containerSchema,
-  id: z.uuid(),
+  id: z.string(),
   pk: z.string().optional(),
 }).transform((data) => ({
   ...data,

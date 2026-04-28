@@ -82,27 +82,27 @@
               </div>
               <!-- 運用状態(運用前|運用開始) -->
               <q-chip
-                color="positive"
+                :color="tariff.enabled ? 'positive' : 'primary'"
                 text-color="white"
                 size="sm"
                 clickable
                 square
+                :disable="tariff.enabled"
                 @click="enable(tariff)"
-              >{{ $t('tariffs.labels.enabled') }}
+              >{{ tariff.enabled ? $t('tariffs.labels.enabled') : $t('tariffs.labels.disabled') }}
               </q-chip>
               <!-- 利用状態(利用中|停止中) -->
               <q-chip
-                color="negative"
+                :color="tariff.isActive ? 'positive' : 'grey'"
                 text-color="white"
                 size="sm"
                 clickable
                 square
                 @click="toggleDisable(tariff)"
-              >{{ $t('tariffs.labels.disabled') }}
+              >{{ tariff.isActive ? $t('tariffs.labels.active') : $t('tariffs.labels.inactive') }}
               </q-chip>
               <!-- シミュレーター計算結果 -->
               <q-chip
-                v-if="distance > 0"
                 color="blue-grey-6"
                 text-color="white"
                 size="sm"
@@ -147,12 +147,13 @@
       </div>
     </q-card-section>
 
-    <TariffsDialog ref="dialogRef" />
+    <TariffsDialog ref="dialogRef" @created="selectedIds.add($event)" />
   </q-card>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { Loading, useQuasar } from 'quasar'
 import type { QTableProps } from 'quasar'
 import { useI18n } from 'vue-i18n'
 import type { TariffsItem } from '@shisamo/shared'
@@ -161,9 +162,11 @@ import TariffsDialog from 'components/masters/TariffsDialog.vue'
 import { Tariff } from 'models/tariff'
 
 const { t } = useI18n()
+const $q = useQuasar()
 const tariffsStore = useTariffsStore()
 const dialogRef = ref<InstanceType<typeof TariffsDialog> | null>(null)
-const selected = ref<TariffsItem[]>([...tariffsStore.list])
+const selectedIds = ref(new Set(tariffsStore.list.map(t => t.id)))
+const selected = computed(() => tariffsStore.list.filter(t => selectedIds.value.has(t.id)))
 const twoColumns = ref(false)
 const distance = ref(0)
 
@@ -171,16 +174,15 @@ const distance = ref(0)
  * 選択判定
  */
 function isSelected(tariff: TariffsItem): boolean {
-  return selected.value.some(s => s.id === tariff.id)
+  return selectedIds.value.has(tariff.id)
 }
 
 /**
  * スイッチで選択状態を変更
  */
 function toggleSelect(tariff: TariffsItem): void {
-  const idx = selected.value.findIndex(s => s.id === tariff.id)
-  if (idx === -1) selected.value.push(tariff)
-  else selected.value.splice(idx, 1)
+  if (selectedIds.value.has(tariff.id)) selectedIds.value.delete(tariff.id)
+  else selectedIds.value.add(tariff.id)
 }
 
 /**
@@ -203,9 +205,26 @@ function fareOf(tariff: TariffsItem): string {
 }
 
 /**
- * TODO: 運用開始フラグ(一度有効にしたら無効には出来ない)
+ * 運用開始フラグを有効化する。一度有効にしたら無効には出来ない。
+ * @param tariff - 対象の運賃表アイテム
  */
-function enable(_: TariffsItem): void {}
+function enable(tariff: TariffsItem): void {
+  $q.dialog({
+    title: '運用開始',
+    message: '運用を開始すると運賃表の利用が可能になりますが、編集が不可になります。運用開始しますか？',
+    cancel: true,
+    persistent: true,
+  }).onOk(() => {
+    void (async () => {
+      Loading.show({ message: '更新中...' })
+      try {
+        await tariffsStore.enable(tariff)
+      } finally {
+        Loading.hide()
+      }
+    })()
+  })
+}
 
 /**
  * TODO: 利用フラグ(運賃表を使えるか使えないの判断で、有効にすると請求計算で利用できる)
