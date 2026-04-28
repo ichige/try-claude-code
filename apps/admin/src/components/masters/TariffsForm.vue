@@ -178,9 +178,20 @@
 
     <!-- 計算シミュレータ: STEP3 -->
     <template v-if="step === 3">
-      <q-separator />
+      <!-- 説明文 -->
+      <q-banner class="bg-info text-white text-caption">
+        <template #avatar>
+          <q-avatar icon="sym_o_info" />
+        </template>
+        <div>{{ $t('tariffs.simulator.description') }}</div>
+      </q-banner>
       <q-card-section>
-        <div class="text-subtitle2 q-mb-sm">{{ $t('tariffs.simulator.title') }}</div>
+        <div class="col-12 row items-center q-mb-sm">
+          <q-icon :name="$icon('calculate')" size="xs" />
+          <div class="text-caption text-primary q-mr-sm">{{ $t('tariffs.simulator.title') }}</div>
+          <div class="col bg-grey-5" style="height: 1px;"></div>
+        </div>
+
         <div class="row items-center q-gutter-x-sm">
           <q-input
             v-model.number="simDistance"

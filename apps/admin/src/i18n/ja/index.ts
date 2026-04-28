@@ -33,6 +33,7 @@ export default {
     step3: { title: '確認' },
     simulator: {
       title: '計算シミュレータ',
+      description: '作成した設定が正しいか、シミュレータを使って確認しましょう。',
       distance: '距離 (km)',
       outOfRange: '範囲外',
     },

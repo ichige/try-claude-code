@@ -10,6 +10,7 @@ const iconMap: Record<string, string> = {
   address: 'sym_o_location_on',
   basic: 'sym_o_article',
   building: 'sym_o_apartment',
+  calculate: 'sym_o_calculate',
   city: 'sym_o_location_on',
   cityStreet: 'sym_o_location_home',
   close: 'sym_o_close',
