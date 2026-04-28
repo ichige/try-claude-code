@@ -47,6 +47,21 @@
         :label="$t('labels.create')"
         @click="dialogRef?.open"
       />
+      <q-separator vertical class="q-mx-sm" />
+      <q-input
+        v-model.number="distance"
+        :label="$t('tariffs.simulator.title')"
+        dense
+        outlined
+        type="number"
+        suffix="km"
+        class="col-2"
+        input-class="text-right"
+      >
+        <template #prepend>
+          <q-icon :name="$icon('calculate')" />
+        </template>
+      </q-input>
     </q-card-actions>
 
     <q-card-section class="row q-col-gutter-sm">
@@ -62,15 +77,49 @@
           <template #top>
             <div class="row items-center full-width q-gutter-x-sm">
               <div class="text-subtitle1 text-weight-bold">
-                <q-chip :label="tariff.id" color="positive" size="sm" outline square />
+                <q-badge color="positive" :label="tariff.id" size="sm" outline />
                 {{ tariff.name }}
               </div>
-              <q-chip color="positive" text-color="white" size="sm" square dense>{{ $t('tariffs.labels.enabled') }}</q-chip>
-              <q-chip color="negative" text-color="white" size="sm" square dense>{{ $t('tariffs.labels.disabled') }}</q-chip>
+              <!-- 運用状態(運用前|運用開始) -->
+              <q-chip
+                color="positive"
+                text-color="white"
+                size="sm"
+                clickable
+                square
+                @click="enable(tariff)"
+              >{{ $t('tariffs.labels.enabled') }}
+              </q-chip>
+              <!-- 利用状態(利用中|停止中) -->
+              <q-chip
+                color="negative"
+                text-color="white"
+                size="sm"
+                clickable
+                square
+                @click="toggleDisable(tariff)"
+              >{{ $t('tariffs.labels.disabled') }}
+              </q-chip>
+              <!-- シミュレーター計算結果 -->
+              <q-chip
+                v-if="distance > 0"
+                color="blue-grey-6"
+                text-color="white"
+                size="sm"
+                square
+              >
+                <q-icon :name="$icon('calculate')" left />
+                {{ fareOf(tariff) }}
+              </q-chip>
               <q-space />
-              <q-btn size="sm" unelevated v-if="!tariff.enabled" color="primary" :label="$t('labels.use')" @click="enable(tariff)" />
-              <q-btn size="sm" unelevated :color="tariff.disabled ? 'positive' : 'negative'" :label="tariff.disabled ? $t('labels.off') : $t('labels.off')" @click="toggleDisable(tariff)" />
-              <q-btn size="sm" unelevated color="primary" :icon="$icon('edit')" :label="$t('labels.update')" @click="edit(tariff)" />
+              <q-btn
+                size="sm"
+                unelevated
+                color="primary"
+                :icon="$icon('edit')"
+                :label="$t('labels.update')"
+                @click="edit(tariff)"
+              />
             </div>
           </template>
 
@@ -109,23 +158,34 @@ import { useI18n } from 'vue-i18n'
 import type { TariffsItem } from '@shisamo/shared'
 import { useTariffsStore } from 'stores/masters/tariffs'
 import TariffsDialog from 'components/masters/TariffsDialog.vue'
+import { Tariff } from 'models/tariff'
 
 const { t } = useI18n()
 const tariffsStore = useTariffsStore()
 const dialogRef = ref<InstanceType<typeof TariffsDialog> | null>(null)
-const selected = ref<TariffsItem[]>([])
+const selected = ref<TariffsItem[]>([...tariffsStore.list])
 const twoColumns = ref(false)
+const distance = ref(0)
 
+/**
+ * 選択判定
+ */
 function isSelected(tariff: TariffsItem): boolean {
   return selected.value.some(s => s.id === tariff.id)
 }
 
+/**
+ * スイッチで選択状態を変更
+ */
 function toggleSelect(tariff: TariffsItem): void {
   const idx = selected.value.findIndex(s => s.id === tariff.id)
   if (idx === -1) selected.value.push(tariff)
   else selected.value.splice(idx, 1)
 }
 
+/**
+ * テーブル行の設定
+ */
 const columns: QTableProps['columns'] = [
   { name: 'minKm',    label: t('tariffs.fields.minKm'),    field: 'minKm',    align: 'right' },
   { name: 'maxKm',    label: t('tariffs.fields.maxKm'),    field: 'maxKm',    align: 'right' },
@@ -134,7 +194,26 @@ const columns: QTableProps['columns'] = [
   { name: 'unitFare', label: t('tariffs.fields.unitFare'), field: 'unitFare', align: 'right' },
 ]
 
+/**
+ * 運賃シミュレータ
+ */
+function fareOf(tariff: TariffsItem): string {
+  const result = new Tariff(tariff).calculate(distance.value)
+  return result !== null ? `¥${result.toLocaleString()}` : '-'
+}
+
+/**
+ * TODO: 運用開始フラグ(一度有効にしたら無効には出来ない)
+ */
 function enable(_: TariffsItem): void {}
+
+/**
+ * TODO: 利用フラグ(運賃表を使えるか使えないの判断で、有効にすると請求計算で利用できる)
+ */
 function toggleDisable(_: TariffsItem): void {}
+
+/**
+ * TODO: 運用開始後は編集不可となる。
+ */
 function edit(_: TariffsItem): void {}
 </script>
