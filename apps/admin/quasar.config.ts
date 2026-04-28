@@ -51,6 +51,8 @@ export default defineConfig((ctx) => {
           tsConfig.compilerOptions.paths['composables/*'] = ['../src/composables/*']
           tsConfig.compilerOptions.paths['configs'] = ['../src/configs']
           tsConfig.compilerOptions.paths['configs/*'] = ['../src/configs/*']
+          tsConfig.compilerOptions.paths['models'] = ['../src/models']
+          tsConfig.compilerOptions.paths['models/*'] = ['../src/models/*']
           tsConfig.compilerOptions.paths['@shisamo/shared'] = ['../../../packages/shared/src/*']
           tsConfig.compilerOptions.paths['@/*'] = ['../src/*']
           tsConfig.include ??= []
@@ -80,6 +82,7 @@ export default defineConfig((ctx) => {
           ...viteConf.resolve.alias,
           composables: fileURLToPath(new URL('./src/composables', import.meta.url)),
           configs: fileURLToPath(new URL('./src/configs', import.meta.url)),
+          models: fileURLToPath(new URL('./src/models', import.meta.url)),
           '@shisamo/shared': fileURLToPath(new URL('../../packages/shared/src', import.meta.url)),
         }
 
@@ -159,7 +162,12 @@ export default defineConfig((ctx) => {
 
     // animations: 'all', // --- includes all animations
     // https://v2.quasar.dev/options/animations
-    animations: [],
+    animations: [
+      'slideInLeft',
+      'slideInRight',
+      'slideOutLeft',
+      'slideOutRight',
+    ],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#sourcefiles
     // sourceFiles: {

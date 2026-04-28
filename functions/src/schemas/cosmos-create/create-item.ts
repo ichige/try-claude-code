@@ -23,7 +23,7 @@ export const createItemBodySchema = (req: HttpRequest) => {
   const { container } = req.params
   return z
     .object({
-      id: z.uuid().default(() => crypto.randomUUID()),
+      id: z.string().default(() => crypto.randomUUID()),
       pk: z.string().default(`pk-${container.toLowerCase()}`),
     })
     .catchall(z.unknown())

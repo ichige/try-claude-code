@@ -52,8 +52,8 @@ const navLinks: NavLink[] = [
       },
       // 運賃
       {
-        titleKey: 'navi.masters-container.tariffs',
-        icon: resolveIcon('masters-container.tariffs'),
+        titleKey: 'navi.masters-tariffs',
+        icon: resolveIcon('masters-tariffs'),
         to: { name: 'masters-tariffs' },
       },
     ],
