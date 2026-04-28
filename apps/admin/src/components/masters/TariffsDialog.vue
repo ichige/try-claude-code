@@ -67,7 +67,7 @@ const initialDraft = (version: number): TariffDraft => ({
   name: '',
   notes: '',
   enabled: false,
-  disabled: false,
+  isActive: false,
   ranges: [{ minKm: 1, maxKm: 20, baseFare: 0, unitKm: 1, unitFare: 0 }],
 })
 
