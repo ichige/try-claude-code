@@ -1,6 +1,6 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header class="bg-transparent" elevated>
+    <q-header class="bg-transparent" bordered>
       <q-toolbar>
         <q-btn flat dense round icon="menu" aria-label="Menu" @click="uiStore.toggleSideMenu" />
         <BreadcrumbNav />

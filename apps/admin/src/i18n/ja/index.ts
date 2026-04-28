@@ -37,6 +37,11 @@ export default {
       distance: '距離 (km)',
       outOfRange: '範囲外',
     },
+    labels: {
+      selection: '運賃表の選択',
+      enabled: '運用済',
+      disabled: '利用中',
+    },
     fields: {
       version: 'バージョン',
       name: '運賃表の名前',
@@ -62,6 +67,9 @@ export default {
     address: '所在地',
     contact: '連絡先',
     other: 'その他',
+    'two-columns': '2カラム表示',
+    use: '利用開始',
+    off: '停止'
   },
   containers: {
     fields: {
