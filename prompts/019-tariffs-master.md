@@ -211,3 +211,22 @@ minKm は基本的に自動算出できるはずである。
 ---
 model-value には computed を使うべきだと言っているのだが？
 ```
+
+続いて、baseFare も同様のロジックに変更させる。
+
+```markdown
+baseFare も同じ理屈で model-value + computed + @update に出来るのでは？
+updateMaxKm って必要か？
+---
+baseFares が利用されるのは STEP2 と STEP3 だろ。
+minKm が更新されるのは STEP1 だけだろ。
+prev.minKm を computed 見たところで、結果は同じではないか？
+---
+updateMaxKm って、minKms computed と処理が被ってるやろ？
+---
+そもそも、minKm で @update を使って更新できるのでは？
+となると、updateMaxKm で行うべきは、minKms computed を使って更新するべきなのでは？
+```
+
+これはあっさりできた。2回目だからだな。
+

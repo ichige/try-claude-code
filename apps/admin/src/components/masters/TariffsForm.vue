@@ -116,7 +116,8 @@
           <div class="row items-center q-gutter-x-sm">
 
             <q-input
-              v-model.number="range.baseFare"
+              :model-value="baseFares[idx]"
+              @update:model-value="val => { if (idx === 0) draft.ranges[0]!.baseFare = Number(val) }"
               :label="$t('tariffs.fields.baseFare')"
               type="number"
               outlined
@@ -196,7 +197,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed, inject } from 'vue'
+import { ref, computed, inject } from 'vue'
 import type { QForm } from 'quasar'
 import { resolveIcon } from 'src/composables/use-icon'
 import { tariffDraftKey, tariffStepKey, tariffVersionKey } from 'src/composables/tariff-draft'
@@ -205,6 +206,9 @@ const draft = inject(tariffDraftKey)!
 const step = inject(tariffStepKey)!
 const version = inject(tariffVersionKey)!
 
+/**
+ * 距離下限値の自動計算
+ */
 const minKms = computed(() =>
   draft.value.ranges.map((_, idx) =>
     idx === 0 ? 1 : draft.value.ranges[idx - 1]!.maxKm + 1
@@ -212,13 +216,12 @@ const minKms = computed(() =>
 )
 
 /**
- * @param idx
- * @param val
+ * 距離上限値を変更することで、next の下限値を更新させる
  */
 function updateMaxKm(idx: number, val: number): void {
   draft.value.ranges[idx]!.maxKm = val
   const next = draft.value.ranges[idx + 1]
-  if (next) next.minKm = val + 1
+  if (next) next.minKm = minKms.value[idx + 1]!
 }
 
 /**
@@ -238,30 +241,31 @@ function addRange(): void {
 function removeRange(idx: number): void {
   draft.value.ranges.splice(idx, 1)
   const affected = draft.value.ranges[idx]
-  if (affected) affected.minKm = idx === 0 ? 1 : draft.value.ranges[idx - 1]!.maxKm + 1
+  if (affected) affected.minKm = minKms.value[idx]!
 }
 
-watch(
-  draft.value.ranges,
-  () => {
-    if (step.value !== 2) return
-    for (let i = 1; i < draft.value.ranges.length; i++) {
-      const prev = draft.value.ranges[i - 1]!
-      const auto = prev.baseFare + Math.ceil((prev.maxKm + 1 - prev.minKm) / prev.unitKm) * prev.unitFare
-      if (draft.value.ranges[i]!.baseFare !== auto) draft.value.ranges[i]!.baseFare = auto
-    }
-  },
-  { deep: true },
+/**
+ * 基本料金の自動計算(2行目以降)
+ */
+const baseFares = computed(() =>
+  draft.value.ranges.map((range, idx) => {
+    if (idx === 0) return range.baseFare
+    const prev = draft.value.ranges[idx - 1]!
+    return prev.baseFare + Math.ceil((prev.maxKm + 1 - prev.minKm) / prev.unitKm) * prev.unitFare
+  })
 )
 
 const simDistance = ref<number | null>(null)
 
 const simulatedFare = computed<number | null>(() => {
   if (simDistance.value === null || simDistance.value <= 0) return null
-  const range = draft.value.ranges.find(r => simDistance.value! >= r.minKm && simDistance.value! <= r.maxKm)
-  if (!range) return null
-  const units = Math.ceil((simDistance.value - range.minKm) / range.unitKm)
-  return range.baseFare + units * range.unitFare
+  const idx = draft.value.ranges.findIndex((r, i) =>
+    simDistance.value! >= minKms.value[i]! && simDistance.value! <= r.maxKm
+  )
+  if (idx === -1) return null
+  const range = draft.value.ranges[idx]!
+  const units = Math.ceil((simDistance.value - minKms.value[idx]!) / range.unitKm)
+  return baseFares.value[idx]! + units * range.unitFare
 })
 
 const formRef = ref<InstanceType<typeof QForm> | null>(null)
