@@ -140,8 +140,61 @@
             </q-td>
           </template>
           <!--suppress VueUnrecognizedSlot-->
-          <template #body-cell-unitFare="{ value }">
-            <q-td class="text-right">¥{{ value.toLocaleString() }}</q-td>
+          <template #body-cell-baseUnit="{ row }">
+            <q-td class="text-right">
+              {{ row.baseUnit }}
+              <q-popup-edit
+                v-if="row.unit === 'minutes'"
+                :model-value="row.baseUnit"
+                :disable="charge.enabled"
+                @save="(val) => updateItemField(charge, row.code, 'baseUnit', Number(val))"
+                v-slot="scope"
+              >
+                <q-input v-model.number="scope.value" dense autofocus type="number" />
+                <div class="row justify-end q-gutter-x-sm q-mt-xs">
+                  <q-btn flat size="sm" :label="$t('labels.back')" @click="scope.cancel" />
+                  <q-btn flat size="sm" color="primary" :label="$t('labels.save')" @click="scope.set" />
+                </div>
+              </q-popup-edit>
+            </q-td>
+          </template>
+          <!--suppress VueUnrecognizedSlot-->
+          <template #body-cell-minUnit="{ row }">
+            <q-td class="text-right">
+              {{ row.minUnit }}
+              <q-popup-edit
+                v-if="row.unit === 'count'"
+                :model-value="row.minUnit"
+                :disable="charge.enabled"
+                @save="(val) => updateItemField(charge, row.code, 'minUnit', Number(val))"
+                v-slot="scope"
+              >
+                <q-input v-model.number="scope.value" dense autofocus type="number" />
+                <div class="row justify-end q-gutter-x-sm q-mt-xs">
+                  <q-btn flat size="sm" :label="$t('labels.back')" @click="scope.cancel" />
+                  <q-btn flat size="sm" color="primary" :label="$t('labels.save')" @click="scope.set" />
+                </div>
+              </q-popup-edit>
+            </q-td>
+          </template>
+          <!--suppress VueUnrecognizedSlot-->
+          <template #body-cell-unitFare="{ row }">
+            <q-td class="text-right">
+              ¥{{ row.unitFare.toLocaleString() }}
+              <q-popup-edit
+                v-if="row.unit !== 'yen'"
+                :model-value="row.unitFare"
+                :disable="charge.enabled"
+                @save="(val) => updateItemField(charge, row.code, 'unitFare', Number(val))"
+                v-slot="scope"
+              >
+                <q-input v-model.number="scope.value" dense autofocus type="number" />
+                <div class="row justify-end q-gutter-x-sm q-mt-xs">
+                  <q-btn flat size="sm" :label="$t('labels.back')" @click="scope.cancel" />
+                  <q-btn flat size="sm" color="primary" :label="$t('labels.save')" @click="scope.set" />
+                </div>
+              </q-popup-edit>
+            </q-td>
           </template>
         </q-table>
       </div>
@@ -229,7 +282,7 @@ function createPreset(): void {
  * @param field - 更新するフィールド名
  * @param value - 新しい値
  */
-async function updateItemField(charge: ChargeItems, code: string, field: 'label' | 'notes', value: string): Promise<void> {
+async function updateItemField(charge: ChargeItems, code: string, field: 'label' | 'notes' | 'baseUnit' | 'minUnit' | 'unitFare', value: string | number): Promise<void> {
   Loading.show()
   try {
     const items = charge.items.map(item =>

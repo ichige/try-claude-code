@@ -112,3 +112,12 @@ textarea だと enter キーでの決定ができないね？
 ---
 QTable の Loading だと、控えめな演出なので、やはり Loading Plugin を使ってほしい。
 ```
+
+続いて個別の更新設定を追加する。
+
+```markdown
+unit が count である場合、minUnit と unitFare を更新対象にしたい。
+同じく unit が minutes である場合、baseUnit と unitFare を更新したい。
+unit が yen の場合は baseUnit、minUnit、unitFare は全て 1 固定なので更新対象にはしない。
+実装できそうか？
+```
