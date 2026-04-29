@@ -28,3 +28,10 @@ UIはテーブルからの直接ポップアップ更新が良さそうである
 
 ## prompt
 
+まずは store の整備から始める。
+
+```markdown
+packages/shared/src/types/charges.ts に ChargeItems というマスタデータの型を追加した。
+stores/masters/tariffs.ts と構成的には似ているので、まずは対応する Store の作成をお願いしたい。
+- enable や toggleActive も同じ考えに基づくので、ほぼほぼコピーでOK。
+```

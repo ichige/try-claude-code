@@ -34,6 +34,8 @@ export type ChargeUnit =
 export interface ChargeItem {
   /** アイテム種別コード */
   code: ChargeCode | string
+  /** 帳票ラベル */
+  label: string
   /** 単位 */
   unit: ChargeUnit
   /** 課税対象フラグ */
