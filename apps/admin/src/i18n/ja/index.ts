@@ -44,6 +44,20 @@ export default {
       active: '利用中',
       inactive: '停止中',
     },
+    enabled: {
+      title: '運用開始',
+      message: '運用を開始すると運賃表の利用が可能になりますが、編集が不可になります。運用開始しますか？'
+    },
+    active: {
+      titles: {
+        active: '利用開始',
+        inactive: '利用停止'
+      },
+      messages: {
+        active: '利用を開始しますか？',
+        inactive: '利用を停止しますか？',
+      }
+    },
     fields: {
       version: 'バージョン',
       name: '運賃表の名前',
@@ -60,6 +74,7 @@ export default {
     back: '戻る',
     next: '次へ',
     'dark-mode': 'ダークモード',
+    loading: '更新中...',
     logout: 'ログアウト',
     update: '編集',
     save: '保存',

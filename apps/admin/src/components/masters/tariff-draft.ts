@@ -5,5 +5,6 @@ export type TariffDraft = Pick<TariffsItem, 'id' | 'name' | 'notes' | 'ranges' |
 
 export const tariffDraftKey: InjectionKey<Ref<TariffDraft>> = Symbol('tariffDraft')
 export const tariffStepKey: InjectionKey<Ref<number>> = Symbol('tariffStep')
+export const tariffEditTargetKey: InjectionKey<Ref<TariffsItem | null>> = Symbol('tariffEditTarget')
 
 

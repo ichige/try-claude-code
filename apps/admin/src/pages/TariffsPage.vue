@@ -71,8 +71,7 @@
           :columns="columns"
           row-key="minKm"
           flat bordered
-          hide-bottom
-          table-header-class="bg-blue-grey-2"
+          table-header-class="bg-blue-grey-2 text-black"
         >
           <template #top>
             <div class="row items-center full-width q-gutter-x-sm">
@@ -117,11 +116,22 @@
                 size="sm"
                 unelevated
                 color="primary"
+                :disable="tariff.enabled"
                 :icon="$icon('edit')"
                 :label="$t('labels.update')"
                 @click="edit(tariff)"
               />
             </div>
+          </template>
+
+          <!-- 備考欄表示 -->
+          <template #bottom>
+            <q-banner class="full-width text-caption text-black bg-blue-grey-1" rounded>
+              <template #avatar>
+                <q-icon :name="$icon('format-quote')" color="grey" size="sm" />
+              </template>
+              {{ tariff.notes }}
+            </q-banner>
           </template>
 
           <!--suppress VueUnrecognizedSlot-->
@@ -153,7 +163,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, provide } from 'vue'
 import { Loading, useQuasar } from 'quasar'
 import type { QTableProps } from 'quasar'
 import { useI18n } from 'vue-i18n'
@@ -161,11 +171,14 @@ import type { TariffsItem } from '@shisamo/shared'
 import { useTariffsStore } from 'stores/masters/tariffs'
 import TariffsDialog from 'components/masters/TariffsDialog.vue'
 import { Tariff } from 'models/tariff'
+import { tariffEditTargetKey } from 'components/masters/tariff-draft'
 
 const { t } = useI18n()
 const $q = useQuasar()
 const tariffsStore = useTariffsStore()
 const dialogRef = ref<InstanceType<typeof TariffsDialog> | null>(null)
+const editTarget = ref<TariffsItem | null>(null)
+provide(tariffEditTargetKey, editTarget)
 const selectedIds = ref(new Set(tariffsStore.list.map(t => t.id)))
 const selected = computed(() => tariffsStore.list.filter(t => selectedIds.value.has(t.id)))
 const twoColumns = ref(false)
@@ -211,13 +224,13 @@ function fareOf(tariff: TariffsItem): string {
  */
 function enable(tariff: TariffsItem): void {
   $q.dialog({
-    title: '運用開始',
-    message: '運用を開始すると運賃表の利用が可能になりますが、編集が不可になります。運用開始しますか？',
+    title: t('tariffs.enabled.title'),
+    message: t('tariffs.enabled.message'),
     cancel: true,
     persistent: true,
   }).onOk(() => {
     void (async () => {
-      Loading.show({ message: '更新中...' })
+      Loading.show({ message: t('labels.loading') })
       try {
         await tariffsStore.enable(tariff)
       } finally {
@@ -233,25 +246,31 @@ function enable(tariff: TariffsItem): void {
  */
 function toggleActive(tariff: TariffsItem): void {
   const message = tariff.isActive
-    ? '利用を停止しますか？'
-    : '利用を開始しますか？'
+    ? t('tariffs.active.messages.inactive')
+    : t('tariffs.active.messages.active')
   $q.dialog({
-    title: tariff.isActive ? '利用停止' : '利用開始',
+    title: tariff.isActive ? t('tariffs.active.titles.inactive') : t('tariffs.active.titles.active'),
     message,
     cancel: true,
     persistent: true,
-  }).onOk(async () => {
-    Loading.show({ message: '更新中...' })
-    try {
-      await tariffsStore.toggleActive(tariff)
-    } finally {
-      Loading.hide()
-    }
+  }).onOk(() => {
+    void (async () => {
+      Loading.show({ message: t('labels.loading') })
+      try {
+        await tariffsStore.toggleActive(tariff)
+      } finally {
+        Loading.hide()
+      }
+    })()
   })
 }
 
 /**
- * TODO: 運用開始後は編集不可となる。
+ * 編集ダイアログを開く。
+ * @param tariff - 編集対象の運賃表アイテム
  */
-function edit(_: TariffsItem): void {}
+function edit(tariff: TariffsItem): void {
+  editTarget.value = tariff
+  dialogRef.value?.open()
+}
 </script>

@@ -16,7 +16,7 @@ export const replaceItemParamsSchema = itemParamsSchema
  */
 export const replaceItemSchema = z
   .object({
-    id: z.uuid(),
+    id: z.string(),
     pk: z.string(),
     _etag: z.string(),
     createdAt: z.iso.datetime(),

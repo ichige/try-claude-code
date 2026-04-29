@@ -40,10 +40,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, provide } from 'vue'
+import { ref, computed, provide, inject } from 'vue'
 import { Loading } from 'quasar'
 import { useTariffsStore } from 'stores/masters/tariffs'
-import { tariffDraftKey, tariffStepKey, type TariffDraft } from './tariff-draft'
+import { tariffDraftKey, tariffStepKey, tariffEditTargetKey, type TariffDraft } from './tariff-draft'
 import TariffsForm from 'components/masters/TariffsForm.vue'
 
 const emit = defineEmits<{ created: [id: string] }>()
@@ -59,6 +59,7 @@ const leaveClass = computed(() => forward.value ? 'animated faster slideOutLeft'
 
 const tariffsStore = useTariffsStore()
 const version = computed(() => tariffsStore.list.length + 1)
+const editTarget = inject(tariffEditTargetKey, ref(null))
 
 /**
  * 入力の初期値
@@ -105,8 +106,12 @@ async function save(): Promise<void> {
   Loading.show({ message: '保存中...' })
   const id = draft.value.id
   try {
-    await tariffsStore.create(draft.value)
-    emit('created', id)
+    if (editTarget.value) {
+      await tariffsStore.update(editTarget.value.id, { ...draft.value, _etag: editTarget.value._etag })
+    } else {
+      await tariffsStore.create(draft.value)
+      emit('created', id)
+    }
     close()
   } catch (e) {
     close()
@@ -126,12 +131,18 @@ function reset(): void {
 /**
  * ダイアログオープン
  */
-const open = () => { dialog.value = true }
+const open = () => {
+  draft.value = editTarget.value
+    ? { ...editTarget.value }
+    : initialDraft(version.value)
+  dialog.value = true
+}
 
 /**
  * ダイアログクローズ
  */
 const close = () => {
+  editTarget.value = null
   reset()
   step.value = 1
   dialog.value = false

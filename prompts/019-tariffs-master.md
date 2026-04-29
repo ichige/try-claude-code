@@ -383,3 +383,15 @@ selected の Tariffs が非リアクティブな状況なのではないか？
 ついでに、enable や toggleActive は async 関数にすれば良いのでは？
 つまり型が微妙なのか？
 ```
+
+次は編集機能。
+
+```markdown
+edit を実装する。
+- 編集ボタンを押下したタイミングで、ターゲットをTariffsDialog.vueに渡す必要があるだろう。  
+    - コンポーネントに再利用性がないので、provide/inject でターゲットを通知するのが良いだろう。
+- TariffsDialog.vue はターゲットの有無で、初期化処理および更新処理の分岐が必要になる。
+    - 更新は Store の update が使えると思う。
+    - 初期化すればDialogを開くだけだが、update イベントは今のとことは不要かと。
+```
+
