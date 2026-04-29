@@ -70,6 +70,12 @@ export default {
       unitFare: '加算単価',
     },
   },
+  charges: {
+    preset: {
+      title: 'プリセット作成',
+      message: 'プリセットを作成しますか？',
+    },
+  },
   labels: {
     create: '登録',
     back: '戻る',
