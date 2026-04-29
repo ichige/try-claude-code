@@ -35,3 +35,16 @@ packages/shared/src/types/charges.ts に ChargeItems というマスタデータ
 stores/masters/tariffs.ts と構成的には似ているので、まずは対応する Store の作成をお願いしたい。
 - enable や toggleActive も同じ考えに基づくので、ほぼほぼコピーでOK。
 ```
+
+これはあっさりだな。  
+続いてマスタ編集ページの基盤を作成する。
+
+```markdown
+router/routes.ts に /masters/charges ルートを追加してほしい。
+- とりあえず pages 配下に「工事中」ページを追加して。
+- EssentialLink.vue コンポーネントでサイドメニューにリンクを作ってほしい。
+```
+
+ここもあっさり出来る。  
+運賃ページに合わせてヘッダまで勝手に作ってくれるとは気が利いてるな。
+

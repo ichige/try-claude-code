@@ -48,6 +48,7 @@ const iconMap: Record<string, string> = {
   'masters-container.consignors': 'sym_o_domain',
   'masters-container.forwarders': 'sym_o_warehouse',
   'masters-tariffs': 'sym_o_price_change',
+  'masters-charges': 'sym_o_add_card',
 }
 
 export default iconMap

@@ -14,6 +14,7 @@ export default {
       forwarders: '地点',
     },
     'masters-tariffs': '運賃',
+    'masters-charges': '付帯料金',
   },
   validation: {
     required: '{field}は必須です',
