@@ -33,6 +33,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useConfirmAction } from 'composables/use-confirm-action'
 import { useChargesStore } from 'stores/masters/charges'
@@ -41,6 +42,7 @@ import type { ChargeItem } from '@shisamo/shared'
 const { t } = useI18n()
 const { confirmAction } = useConfirmAction()
 const chargesStore = useChargesStore()
+const version = computed(() => chargesStore.list.length + 1)
 
 const PRESET_ITEMS: ChargeItem[] = [
   { code: 'delivery-count', label: '配送件数',    unit: 'count',   taxable: true,  baseUnit: 1,  minUnit: 4, unitFare: 300, notes: '配送件数は4件から300円ずつ課金されます。' },
@@ -62,6 +64,7 @@ function createPreset(): void {
     t('charges.preset.title'),
     t('charges.preset.message'),
     () => chargesStore.create({
+      id: `v${version.value}`,
       name: '標準',
       enabled: false,
       isActive: false,
