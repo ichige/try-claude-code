@@ -1,14 +1,42 @@
 import { defineStore, acceptHMRUpdate } from 'pinia'
 import type { TariffsItem } from '@shisamo/shared'
-import { type MasterStore } from 'stores/masters'
+import { useMastersStore, type MasterStore } from 'stores/masters'
 import { createMasterStore } from './factory'
 
 /**
  * 運賃マスタのストア
  */
 export const useTariffsStore = defineStore('masters/tariffs', () => {
+  const masters = useMastersStore()
   const store = createMasterStore<TariffsItem>('Tariffs')
-  return store satisfies MasterStore
+
+  /**
+   * 運用開始フラグを有効化する。一度 true にすると以後変更不可。
+   * @param tariff - 対象の運賃表アイテム
+   */
+  async function enable(tariff: TariffsItem): Promise<void> {
+    if (tariff.enabled) return
+    const item = await masters.patch<TariffsItem>('Tariffs', tariff.id, {
+      _etag: tariff._etag,
+      enabled: true,
+      isActive: true,
+    })
+    store.items.value.set(item.id, item)
+  }
+
+  /**
+   * 利用フラグを切り替える。
+   * @param tariff - 対象の運賃表アイテム
+   */
+  async function toggleActive(tariff: TariffsItem): Promise<void> {
+    const item = await masters.patch<TariffsItem>('Tariffs', tariff.id, {
+      _etag: tariff._etag,
+      isActive: !tariff.isActive,
+    })
+    store.items.value.set(item.id, item)
+  }
+
+  return { ...store, enable, toggleActive } satisfies MasterStore & { enable: typeof enable, toggleActive: typeof toggleActive }
 })
 
 if (import.meta.hot) {

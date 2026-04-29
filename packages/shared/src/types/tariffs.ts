@@ -24,8 +24,8 @@ export interface TariffsItem extends CosmosItem {
   name: string
   /** 有効化フラグ。一度有効化したら変更できず、ReadOnly となる。 */
   enabled: boolean
-  /** 無効化フラグ。無効になると利用できなくなるが、いつでも解除できる。 */
-  disabled: boolean
+  /** 有効フラグ。false になると利用できなくなるが、いつでも解除できる。 */
+  isActive: boolean
   /** 距離別運賃条件 */
   ranges: TariffRange[]
   /** 備考欄 */

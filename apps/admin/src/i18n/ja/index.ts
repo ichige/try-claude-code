@@ -37,6 +37,27 @@ export default {
       distance: '距離 (km)',
       outOfRange: '範囲外',
     },
+    labels: {
+      selection: '運賃表の選択',
+      enabled: '運用済',
+      disabled: '運用前',
+      active: '利用中',
+      inactive: '停止中',
+    },
+    enabled: {
+      title: '運用開始',
+      message: '運用を開始すると運賃表の利用が可能になりますが、編集が不可になります。運用開始しますか？'
+    },
+    active: {
+      titles: {
+        active: '利用開始',
+        inactive: '利用停止'
+      },
+      messages: {
+        active: '利用を開始しますか？',
+        inactive: '利用を停止しますか？',
+      }
+    },
     fields: {
       version: 'バージョン',
       name: '運賃表の名前',
@@ -53,6 +74,7 @@ export default {
     back: '戻る',
     next: '次へ',
     'dark-mode': 'ダークモード',
+    loading: '更新中...',
     logout: 'ログアウト',
     update: '編集',
     save: '保存',
@@ -62,6 +84,9 @@ export default {
     address: '所在地',
     contact: '連絡先',
     other: 'その他',
+    'two-columns': '2カラム表示',
+    use: '利用開始',
+    off: '停止'
   },
   containers: {
     fields: {
