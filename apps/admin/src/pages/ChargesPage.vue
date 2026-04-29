@@ -52,6 +52,7 @@
         <q-table
           :rows="charge.items"
           :columns="columns"
+          :pagination="{ rowsPerPage: 10 }"
           row-key="code"
           flat bordered
           table-header-class="bg-blue-grey-2 text-black"
@@ -97,6 +98,42 @@
           </template>
 
           <!--suppress VueUnrecognizedSlot-->
+          <template #body-cell-label="{ row }">
+            <q-td>
+              {{ row.label }}
+              <q-popup-edit
+                :model-value="row.label"
+                :disable="charge.enabled"
+                @save="(val) => updateItemField(charge, row.code, 'label', val)"
+                v-slot="scope"
+              >
+                <q-input v-model="scope.value" dense autofocus />
+                <div class="row justify-end q-gutter-x-sm q-mt-xs">
+                  <q-btn flat size="sm" :label="$t('labels.back')" @click="scope.cancel" />
+                  <q-btn flat size="sm" color="primary" :label="$t('labels.save')" @click="scope.set" />
+                </div>
+              </q-popup-edit>
+            </q-td>
+          </template>
+          <!--suppress VueUnrecognizedSlot-->
+          <template #body-cell-notes="{ row }">
+            <q-td>
+              {{ row.notes }}
+              <q-popup-edit
+                :model-value="row.notes"
+                :disable="charge.enabled"
+                @save="(val) => updateItemField(charge, row.code, 'notes', val)"
+                v-slot="scope"
+              >
+                <q-input v-model="scope.value" dense autofocus type="textarea" />
+                <div class="row justify-end q-gutter-x-sm q-mt-xs">
+                  <q-btn flat size="sm" :label="$t('labels.back')" @click="scope.cancel" />
+                  <q-btn flat size="sm" color="primary" :label="$t('labels.save')" @click="scope.set" />
+                </div>
+              </q-popup-edit>
+            </q-td>
+          </template>
+          <!--suppress VueUnrecognizedSlot-->
           <template #body-cell-taxable="{ value }">
             <q-td class="text-center">
               <q-icon :name="value ? 'check' : 'remove'" :color="value ? 'positive' : 'grey'" />
@@ -115,6 +152,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import type { QTableProps } from 'quasar'
+import { Loading } from 'quasar'
 import { useI18n } from 'vue-i18n'
 import { useConfirmAction } from 'composables/use-confirm-action'
 import { useChargesStore } from 'stores/masters/charges'
@@ -182,6 +220,25 @@ function createPreset(): void {
       items: PRESET_ITEMS,
     }),
   )
+}
+
+/**
+ * 指定行の文字列フィールドを更新する。
+ * @param charge - 対象の付帯料金マスタ
+ * @param code - 更新対象の種別コード
+ * @param field - 更新するフィールド名
+ * @param value - 新しい値
+ */
+async function updateItemField(charge: ChargeItems, code: string, field: 'label' | 'notes', value: string): Promise<void> {
+  Loading.show()
+  try {
+    const items = charge.items.map(item =>
+      item.code === code ? { ...item, [field]: value } : item
+    )
+    await chargesStore.update(charge.id, { ...charge, items })
+  } finally {
+    Loading.hide()
+  }
 }
 
 /**
