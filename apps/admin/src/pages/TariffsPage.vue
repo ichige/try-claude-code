@@ -164,9 +164,9 @@
 
 <script setup lang="ts">
 import { ref, computed, provide } from 'vue'
-import { Loading, useQuasar } from 'quasar'
 import type { QTableProps } from 'quasar'
 import { useI18n } from 'vue-i18n'
+import { useConfirmAction } from 'composables/use-confirm-action'
 import type { TariffsItem } from '@shisamo/shared'
 import { useTariffsStore } from 'stores/masters/tariffs'
 import TariffsDialog from 'components/masters/TariffsDialog.vue'
@@ -174,15 +174,23 @@ import { Tariff } from 'models/tariff'
 import { tariffEditTargetKey } from 'components/masters/tariff-draft'
 
 const { t } = useI18n()
-const $q = useQuasar()
+const { confirmAction } = useConfirmAction()
 const tariffsStore = useTariffsStore()
+
 const dialogRef = ref<InstanceType<typeof TariffsDialog> | null>(null)
+// 編集対象の運賃表
 const editTarget = ref<TariffsItem | null>(null)
-provide(tariffEditTargetKey, editTarget)
+// 表示対象の運賃表ID
 const selectedIds = ref(new Set(tariffsStore.list.map(t => t.id)))
+// 表示対象の運賃表を返す
 const selected = computed(() => tariffsStore.list.filter(t => selectedIds.value.has(t.id)))
+// 2カラム表示切替フラグ
 const twoColumns = ref(false)
+// 運賃シミュレータ用の距離入力値
 const distance = ref(0)
+
+// TariffsDialog へ編集ターゲットを通知
+provide(tariffEditTargetKey, editTarget)
 
 /**
  * 選択判定
@@ -223,21 +231,11 @@ function fareOf(tariff: TariffsItem): string {
  * @param tariff - 対象の運賃表アイテム
  */
 function enable(tariff: TariffsItem): void {
-  $q.dialog({
-    title: t('tariffs.enabled.title'),
-    message: t('tariffs.enabled.message'),
-    cancel: true,
-    persistent: true,
-  }).onOk(() => {
-    void (async () => {
-      Loading.show({ message: t('labels.loading') })
-      try {
-        await tariffsStore.enable(tariff)
-      } finally {
-        Loading.hide()
-      }
-    })()
-  })
+  confirmAction(
+    t('tariffs.enabled.title'),
+    t('tariffs.enabled.message'),
+    () => tariffsStore.enable(tariff),
+  )
 }
 
 /**
@@ -245,24 +243,9 @@ function enable(tariff: TariffsItem): void {
  * @param tariff - 対象の運賃表アイテム
  */
 function toggleActive(tariff: TariffsItem): void {
-  const message = tariff.isActive
-    ? t('tariffs.active.messages.inactive')
-    : t('tariffs.active.messages.active')
-  $q.dialog({
-    title: tariff.isActive ? t('tariffs.active.titles.inactive') : t('tariffs.active.titles.active'),
-    message,
-    cancel: true,
-    persistent: true,
-  }).onOk(() => {
-    void (async () => {
-      Loading.show({ message: t('labels.loading') })
-      try {
-        await tariffsStore.toggleActive(tariff)
-      } finally {
-        Loading.hide()
-      }
-    })()
-  })
+  const title = tariff.isActive ? t('tariffs.active.titles.inactive') : t('tariffs.active.titles.active')
+  const message = tariff.isActive ? t('tariffs.active.messages.inactive') : t('tariffs.active.messages.active')
+  confirmAction(title, message, () => tariffsStore.toggleActive(tariff))
 }
 
 /**
@@ -273,4 +256,5 @@ function edit(tariff: TariffsItem): void {
   editTarget.value = tariff
   dialogRef.value?.open()
 }
+
 </script>

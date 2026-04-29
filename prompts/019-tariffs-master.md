@@ -395,3 +395,9 @@ edit を実装する。
     - 初期化すればDialogを開くだけだが、update イベントは今のとことは不要かと。
 ```
 
+Dialog + Loading パターンは共通化出来そう。
+
+```markdown
+TariffsPage.vue の enable と toggleActive で dialog からの 更新処理というパターンは一緒だよね？
+であれば、composable で共通化出来そうではないかな？
+```
