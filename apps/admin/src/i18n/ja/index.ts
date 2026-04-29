@@ -75,6 +75,37 @@ export default {
       title: 'プリセット作成',
       message: 'プリセットを作成しますか？',
     },
+    labels: {
+      selection: '付帯料金マスタの選択',
+      enabled: '運用済',
+      disabled: '運用前',
+      active: '利用中',
+      inactive: '停止中',
+    },
+    enabled: {
+      title: '運用開始',
+      message: '運用を開始すると付帯料金マスタの利用が可能になりますが、編集が不可になります。運用開始しますか？',
+    },
+    active: {
+      titles: {
+        active: '利用開始',
+        inactive: '利用停止',
+      },
+      messages: {
+        active: '利用を開始しますか？',
+        inactive: '利用を停止しますか？',
+      },
+    },
+    fields: {
+      code: '種別コード',
+      label: '帳票ラベル',
+      unit: '単位',
+      taxable: '課税',
+      baseUnit: '基本単位',
+      minUnit: '最低単位',
+      unitFare: '加算料金',
+      notes: '備考',
+    },
   },
   labels: {
     create: '登録',
