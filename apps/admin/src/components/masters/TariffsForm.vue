@@ -66,16 +66,18 @@
             class="col-5"
             input-class="text-right"
             suffix="km"
+            :rules="[() => true]"
           />
           <span class="text-grey-6">〜</span>
           <q-input
             :model-value="range.maxKm"
             @update:model-value="val => updateMaxKm(idx, Number(val))"
             :label="$t('tariffs.fields.maxKm')"
-            type="number" outlined dense
+            type="number" min="1" outlined dense
             class="col-5"
             input-class="text-right"
             suffix="km"
+            :rules="step === 1 ? [v => Number(v) >= minKms[idx]! || $t('validation.minValue', { min: minKms[idx] })] : []"
           />
           <q-btn
             flat round dense
@@ -244,7 +246,7 @@ const minKms = computed(() =>
  * 距離上限値を変更することで、next の下限値を更新させる
  */
 function updateMaxKm(idx: number, val: number): void {
-  draft.value.ranges[idx]!.maxKm = val
+  draft.value.ranges[idx]!.maxKm = Math.max(1, val)
   const next = draft.value.ranges[idx + 1]
   if (next) next.minKm = minKms.value[idx + 1]!
 }
