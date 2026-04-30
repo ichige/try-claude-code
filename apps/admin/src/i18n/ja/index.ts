@@ -75,6 +75,11 @@ export default {
       title: 'プリセット作成',
       message: 'プリセットを作成しますか？',
     },
+    simulator: {
+      yen: '金額',
+      count: '件数',
+      minutes: '分数',
+    },
     labels: {
       selection: '付帯料金マスタの選択',
       enabled: '運用済',
@@ -105,6 +110,7 @@ export default {
       minUnit: '最低単位',
       unitFare: '加算料金',
       notes: '備考',
+      calc: '計算結果',
     },
   },
   labels: {

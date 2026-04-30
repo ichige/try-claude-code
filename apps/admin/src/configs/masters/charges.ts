@@ -13,6 +13,7 @@ export const columns: QTableProps['columns'] = [
   { name: 'minUnit',  label: t('charges.fields.minUnit'),  field: 'minUnit',  align: 'right'  },
   { name: 'unitFare', label: t('charges.fields.unitFare'), field: 'unitFare', align: 'right'  },
   { name: 'notes',    label: t('charges.fields.notes'),    field: 'notes',    align: 'left'   },
+  { name: 'calc',     label: t('charges.fields.calc'),     field: () => '',   align: 'right'  },
 ]
 
 export const PRESET_ITEMS: ChargeItem[] = [

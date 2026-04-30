@@ -45,6 +45,31 @@
         :label="$t('labels.create')"
         @click="createPreset"
       />
+      <q-separator vertical class="q-mx-sm" />
+      <q-input
+        v-model.number="simulatorYen"
+        :label="$t('charges.simulator.yen')"
+        dense outlined type="number" suffix="円"
+        class="col-2" input-class="text-right"
+      >
+        <template #prepend><q-icon :name="$icon('calculate')" /></template>
+      </q-input>
+      <q-input
+        v-model.number="simulatorCount"
+        :label="$t('charges.simulator.count')"
+        dense outlined type="number" suffix="件"
+        class="col-2" input-class="text-right"
+      >
+        <template #prepend><q-icon :name="$icon('calculate')" /></template>
+      </q-input>
+      <q-input
+        v-model.number="simulatorMinutes"
+        :label="$t('charges.simulator.minutes')"
+        dense outlined type="number" suffix="分"
+        class="col-2" input-class="text-right"
+      >
+        <template #prepend><q-icon :name="$icon('calculate')" /></template>
+      </q-input>
     </q-card-actions>
 
     <q-card-section class="row q-col-gutter-sm">
@@ -98,6 +123,15 @@
           </template>
 
           <!--suppress VueUnrecognizedSlot-->
+          <template #body-cell-calc="{ row }">
+            <q-td class="text-right">
+              <q-chip color="blue-grey-6" text-color="white" size="sm" square>
+                <q-icon :name="$icon('calculate')" left />
+                {{ calcOf(charge, row) }}
+              </q-chip>
+            </q-td>
+          </template>
+          <!--suppress VueUnrecognizedSlot-->
           <template #body-cell-label="{ row }">
             <q-td>
               {{ row.label }}
@@ -150,9 +184,10 @@ import { Loading } from 'quasar'
 import { useI18n } from 'vue-i18n'
 import { useConfirmAction } from 'composables/use-confirm-action'
 import { useChargesStore } from 'stores/masters/charges'
-import type { ChargeItems } from '@shisamo/shared'
+import type { ChargeItem, ChargeItems } from '@shisamo/shared'
 import InlineEditPopup from 'components/InlineEditPopup.vue'
 import { columns, PRESET_ITEMS } from 'configs/masters/charges'
+import { Charge } from 'models/charge'
 
 const { t } = useI18n()
 const { confirmAction } = useConfirmAction()
@@ -161,7 +196,23 @@ const chargesStore = useChargesStore()
 const version = computed(() => chargesStore.list.length + 1)
 const selectedIds = ref(new Set(chargesStore.list.map(c => c.id)))
 const selected = computed(() => chargesStore.list.filter(c => selectedIds.value.has(c.id)))
+const simulatorYen = ref(0)
+const simulatorCount = ref(0)
+const simulatorMinutes = ref(0)
 
+
+/**
+ * @param charge - 対象の付帯料金マスタ
+ * @param item - 計算対象の行
+ * @returns 計算結果の表示文字列
+ */
+function calcOf(charge: ChargeItems, item: ChargeItem): string {
+  const value = item.unit === 'count' ? simulatorCount.value
+    : item.unit === 'minutes' ? simulatorMinutes.value
+    : simulatorYen.value
+  const result = new Charge(charge).calculator(item.code)?.calculate(value)
+  return result != null ? `¥${result.toLocaleString()}` : '-'
+}
 
 /**
  * @param charge - 対象の付帯料金マスタ

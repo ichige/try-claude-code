@@ -130,3 +130,36 @@ unit が yen の場合は baseUnit、minUnit、unitFare は全て 1 固定なの
 ---
 PRESET_ITEMS と columns は、configs/ 配下に切り出しておけるか？
 ```
+
+### シミュレータの作成
+
+運賃マスタの場合は表全体が計算で利用されるが、付帯料金マスタは items レコードのunitごとに計算が変わる。
+
+```markdown
+付帯料金マスタの計算クラスを作成したい。
+models 配下に Tariff と同じようなイメージで配置する。
+- `new Charge(ChargeItems).calculator(ChargeCode).calculate(value)` みたいな利用を想定・
+- 計算式は unit によって変わるので、ChargeUnitCount など3つほど Calculator を用意すれば良さそうな？
+- count の場合は value >= minUnit となり、(value - minUnit + 1) * unitFare という計算になる。
+    - minUnit = 4 であれば、value = 4 で課金開始となり、移行は value が minUnit だけ加算されると追加料金も加算される。
+- minutes の場合は trunc(value / baseUnit) >= minUnit という条件となったら * unitFare という計算になる。 
+    - baseUnit = 15 であれば、value = 15 で課金開始となり、value = 30 で追加料金が発生する。
+- yen は value がそのまま課金される。
+- 消費税はの計算はここではしないので、 戻り値は計算結果を返せばOK。
+実装できそうか？
+```
+
+それっぽいのが出来たので、シミュレータを実装する。
+
+```markdown
+TariffsPage.vue では、distance という値だけだったが、
+ChargesPage.vue では、yen, count, minutes という変数を用意して、3つの textFiled を作ってほしい。
+デザインは TariffsPage を参考にして。
+計算結果は各items レコードの code の隣くらいに表示してほしい。
+実装可能か？
+---
+この計算表示を表の列として追加できるか？
+```
+
+だいたいイイ感じになったので、デザイン調整と、ロジックの見直しをする。  
+
