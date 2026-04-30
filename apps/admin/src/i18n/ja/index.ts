@@ -20,6 +20,7 @@ export default {
     required: '{field}は必須です',
     numeric: '{field}は数値で入力してください',
     maxLength: '{field}は{max}文字以内で入力してください',
+    minValue: '{min}以上の値を入力してください',
   },
   tariffs: {
     step1: {

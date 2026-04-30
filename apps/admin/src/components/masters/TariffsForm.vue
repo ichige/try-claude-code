@@ -123,7 +123,7 @@
               :model-value="baseFares[idx]"
               @update:model-value="val => updateRange('baseFare', idx, Number(val))"
               :label="$t('tariffs.fields.baseFare')"
-              type="number"
+              type="number" min="0"
               outlined
               dense
               class="col-4" input-class="text-right"
@@ -135,7 +135,7 @@
               :model-value="range.unitKm"
               @update:model-value="val => updateRange('unitKm', idx, Number(val))"
               :label="$t('tariffs.fields.unitKm')"
-              type="number"
+              type="number" min="1"
               outlined
               dense
               class="col-3" input-class="text-right"
@@ -147,7 +147,7 @@
               :model-value="range.unitFare"
               @update:model-value="val => updateRange('unitFare', idx, Number(val))"
               :label="$t('tariffs.fields.unitFare')"
-              type="number"
+              type="number" min="0"
               outlined
               dense
               class="col-4"
@@ -285,8 +285,10 @@ const baseFares = computed(() =>
 /**
  * 各フィールド更新と baseFare の更新
  */
+const minValues: Record<'baseFare' | 'unitKm' | 'unitFare', number> = { baseFare: 0, unitKm: 1, unitFare: 0 }
+
 function updateRange(field: 'baseFare' | 'unitKm' | 'unitFare', idx: number, val: number): void {
-  draft.value.ranges[idx]![field] = val
+  draft.value.ranges[idx]![field] = Math.max(minValues[field], val)
   for (let i = idx + 1; i < draft.value.ranges.length; i++) {
     draft.value.ranges[i]!.baseFare = baseFares.value[i]!
   }
