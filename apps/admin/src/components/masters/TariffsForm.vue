@@ -34,6 +34,8 @@
           :label="$t('tariffs.fields.name')"
           outlined dense
           :readonly="step === 3"
+          maxlength="32"
+          :rules="step === 1 ? [zodRule(nameSchema, $t('tariffs.fields.name'))] : []"
           class="col q-ml-md"
         >
           <template #prepend>
@@ -211,11 +213,20 @@
 
 <script setup lang="ts">
 import { ref, computed, inject, toRaw } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { z } from 'zod'
 import type { QForm } from 'quasar'
 import type { TariffsItem } from '@shisamo/shared'
 import { resolveIcon } from 'src/composables/use-icon'
 import { tariffDraftKey, tariffStepKey } from './tariff-draft'
 import { Tariff } from 'models/tariff'
+import { zodRule } from 'src/utils/zod-rule'
+
+const { t } = useI18n()
+
+const nameSchema = z.string()
+  .min(1, t('validation.required'))
+  .max(32, t('validation.maxLength', { max: 32 }))
 
 const draft = inject(tariffDraftKey)!
 const step = inject(tariffStepKey)!

@@ -19,6 +19,7 @@ export default {
   validation: {
     required: '{field}は必須です',
     numeric: '{field}は数値で入力してください',
+    maxLength: '{field}は{max}文字以内で入力してください',
   },
   tariffs: {
     step1: {
