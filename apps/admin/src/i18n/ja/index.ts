@@ -14,6 +14,7 @@ export default {
       forwarders: '地点',
     },
     'masters-tariffs': '運賃',
+    'masters-charges': '付帯料金',
   },
   validation: {
     required: '{field}は必須です',
@@ -46,7 +47,7 @@ export default {
     },
     enabled: {
       title: '運用開始',
-      message: '運用を開始すると運賃表の利用が可能になりますが、編集が不可になります。運用開始しますか？'
+      message: '運用を開始すると運賃表の利用が可能になりますが、一部の項目をのぞいて編集が不可になります。運用開始しますか？'
     },
     active: {
       titles: {
@@ -69,7 +70,76 @@ export default {
       unitFare: '加算単価',
     },
   },
+  charges: {
+    preset: {
+      title: 'プリセット作成',
+      message: 'プリセットを作成しますか？',
+    },
+    description: '付帯料金マスタはプリセットから作成したものをカスタマイズして利用します。' +
+      '運賃マスタ同様に世代管理が必要ですが、各レコードの値は表のセルを直接クリックして編集可能です。' +
+      '一度運用開始したバージョンは編集不可能になることに注意してください。',
+    descriptions: {
+      'delivery-count': '配送件数の割増設定',
+      'highway-fee': '高速道路利用料金(税込)',
+      'waiting-time': '待機時間料金',
+      'working-time': '作業時間料金',
+      'parking-fee': '駐車料金(税込)',
+      'cancel-fee': 'キャンセル料金',
+      'flat-rate-fee': '定額料金',
+      'other-fee1': 'その他(税抜)',
+      'other-fee2': 'その他(税込)',
+    },
+    taxable: {
+      true: '税抜',
+      false: '税込'
+    },
+    simulator: {
+      yen: '金額',
+      count: '件数',
+      minutes: '分',
+    },
+    unit: {
+      yen: '円',
+      count: '件',
+      minutes: '分',
+    },
+    labels: {
+      selection: '付帯料金マスタの選択',
+      notesPlaceholder: '備考を入力...',
+      enabled: '運用済',
+      disabled: '運用前',
+      active: '利用中',
+      inactive: '停止中',
+    },
+    enabled: {
+      title: '運用開始',
+      message: '運用を開始すると付帯料金マスタの利用が可能になりますが、一部の項目をのぞいて編集が不可になります。運用開始しますか？',
+    },
+    active: {
+      titles: {
+        active: '利用開始',
+        inactive: '利用停止',
+      },
+      messages: {
+        active: '利用を開始しますか？',
+        inactive: '利用を停止しますか？',
+      },
+    },
+    fields: {
+      code: '種別コード',
+      label: '帳票ラベル',
+      unit: '単位',
+      taxable: '課税',
+      baseUnit: '基本単位',
+      minUnit: '最低単位',
+      unitFare: '加算料金',
+      notes: '備考',
+      calc: '計算結果',
+    },
+  },
   labels: {
+    createdAt: '作成日時',
+    updatedAt: '更新日時',
     create: '登録',
     back: '戻る',
     next: '次へ',

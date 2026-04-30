@@ -1,0 +1,188 @@
+# 付帯料金表マスタの作成
+
+運賃以外の付帯料金となるマスタの作成・編集機能を追加する。  
+こちらは運賃マスタ以上にビジネスロジック寄りになるので、UIは分かりやすいかもしれないが、
+その分だけ処理は面倒になる。
+
+主に課金単位となる「件数」「分」「円」という種類によって、編集可能な項目が変わる。
+
+- 件数: 基本ユニットは `1` 固定で、最低ユニットと金額を変更できる。
+- 分: 基本ユニット、最低ユニット、金額全て変更できる。
+- 円: 全て `1` 固定となり、任意の金額で課金が出来る。
+
+これらの項目はプリセットとして設定することになり、任意の項目は追加出来ない。
+
+## テーブルプリセット
+
+| コード              | ラベル     | 課税    | 単位      | 基本ユニット | 最低ユニット | 金額  | 備考                      |
+|------------------|---------|-------|---------|--------|--------|-----|-------------------------|
+| `delivery-count` | 配送件数    | TRUE  | count   | 1      | 4      | 300 | 配送件数は4件から300円ずつ課金されます。  |
+| `highway-fee`    | 高速料金    | FALSE | yen     | 1      | 1      | 1   | 高速料金は非課税です。             |
+| `waiting-fee`    | 待機時間    | TRUE  | minutes | 15     | 1      | 750 | 待機料金は15分単位で課金されます。      |
+| `working-fee`    | 作業時間    | TRUE  | minutes | 15     | 1      | 750 | 作業料金は15分単位で課金されます。      |
+| `parking-fee`    | 駐車料金    | FALSE | yen     | 1      | 1      | 1   | 駐車料金は非課税です。             |
+| `cancel-fee`     | キャンセル料金 | TRUE  | yen     | 1      | 1      | 1   | 稀にキャンセル料金が発生する場合があります。  |
+| `flat-rate-fee`  | 定額料金    | TRUE  | ye      | 1      | 1      | 1   | 定期的な配送などは、定額になる場合があります。 |
+| `other-fee1`     | その他     | TRUE  | yen     | 1      | 1      | 1   | その他例外的な料金です。            |
+| `other-fee2`     | その他     | FALSE | yen     | 1      | 1      | 1   | その他例外的な料金(非課税)です。       |
+
+UIはテーブルからの直接ポップアップ更新が良さそうである。
+
+## prompt
+
+まずは store の整備から始める。
+
+```markdown
+packages/shared/src/types/charges.ts に ChargeItems というマスタデータの型を追加した。
+stores/masters/tariffs.ts と構成的には似ているので、まずは対応する Store の作成をお願いしたい。
+- enable や toggleActive も同じ考えに基づくので、ほぼほぼコピーでOK。
+```
+
+これはあっさりだな。  
+続いてマスタ編集ページの基盤を作成する。
+
+```markdown
+router/routes.ts に /masters/charges ルートを追加してほしい。
+- とりあえず pages 配下に「工事中」ページを追加して。
+- EssentialLink.vue コンポーネントでサイドメニューにリンクを作ってほしい。
+```
+
+ここもあっさり出来る。  
+運賃ページに合わせてヘッダまで勝手に作ってくれるとは気が利いてるな。
+
+さて、登録ボタン + プリセット作成をお願いしてみよう。
+
+```markdown
+運賃マスタと違って、付帯料金マスタの「登録」ボタンはプリセットを作成する。  
+すなわちダイアログフォームも使わず、ボタン一つでひな型を生成するわけだ。
+prompts/020-charges-master.md にテーブルプリセットという表ある。
+これを元に Store を使ってプリセット作成はできそうかね？
+- useConfirmAction を使って「プリセットを作成しますか？」というメッセージを出す。
+- とりあえずは ChargesPage.vue にプリセットデータも直接書いてOKである。
+- 登録ボタンの位置やデザインは TariffsPage.vue を参考にしてほしい。
+出来そうかね？
+```
+
+これもあっさり出来た。  
+サンプルが多いし、上記のテーブルも役だったな。  
+しかし id の指定に注文するのを忘れてしまった。
+
+```markdown
+Charges の id なんだが、Tariffs 同様に v{コンテナのレコード数} というパターンで自動生成してほしい。
+---
+TariffsDialog.vue これを参考にしてほしい。あまり深く考える必要はない。
+```
+
+やけに長考し始めた。  
+非常にシンプルな解答なのだが、なんの条件が揃うと迷い始めるのだろうか？  
+何にしても長考すべきところで、余計な詮索をしはじめたら止めた方がトークン消費の節減になるだろう。
+
+### テーブル作成
+
+```markdown
+今日のタスク project_charges_master.md は読んだか？
+TariffsPage.vue を参考にして、ChargesPage.vue にテーブルを作成してほしい。
+- 計算シミュレータは不要
+- 付帯料金マスタの表示選択は必要
+- 2カラム表示機能は不要
+Charged の構造は Tariffs と近いので、ranges の代わりに items をレコードとして取り扱うことが出来る。
+作成できそうか？
+- 編集ボタンも不要です。
+```
+
+うむ。実に見事に再現してくれたな。  
+続けて Popup Editing で更新する機能を追加する。
+
+```markdown
+まずは、全てのレコードの帳票ラベルに対して、QPopuppEditを使った更新機能を追加したい。
+更新処理は useChargesStore で 部分的に patch メソッドを使うか、まるごと update メソッドで更新しても良い。  
+このケースだとネスト構造になる(ので、patch よりも update の方が向いているかもしれない。
+```
+
+それっぽい実装にはなった。
+
+```markdown
+pop-up-edit で直接モデルを変更しない理由はあるか？
+では同じように全レコードで notes も変更できるようにしたい。
+---
+textarea だと enter キーでの決定ができないね？
+であれば、帳票ラベルも同じインタフェースにできる？
+---
+更新時は手応えがないのでQTableのloadingをtrueにしてほしい。
+---
+QTable の Loading だと、控えめな演出なので、やはり Loading Plugin を使ってほしい。
+```
+
+続いて個別の更新設定を追加する。
+
+```markdown
+unit が count である場合、minUnit と unitFare を更新対象にしたい。
+同じく unit が minutes である場合、baseUnit と unitFare を更新したい。
+unit が yen の場合は baseUnit、minUnit、unitFare は全て 1 固定なので更新対象にはしない。
+実装できそうか？
+```
+
+共通化出来そうなものがあるので、問い合わせてみる。
+
+```markdown
+この q-popup-edit の部分は共通コンポーネントとして切り出せるかな？
+試しにやってみてくれ。
+---
+PRESET_ITEMS と columns は、configs/ 配下に切り出しておけるか？
+```
+
+### シミュレータの作成
+
+運賃マスタの場合は表全体が計算で利用されるが、付帯料金マスタは items レコードのunitごとに計算が変わる。
+
+```markdown
+付帯料金マスタの計算クラスを作成したい。
+models 配下に Tariff と同じようなイメージで配置する。
+- `new Charge(ChargeItems).calculator(ChargeCode).calculate(value)` みたいな利用を想定・
+- 計算式は unit によって変わるので、ChargeUnitCount など3つほど Calculator を用意すれば良さそうな？
+- count の場合は value >= minUnit となり、(value - minUnit + 1) * unitFare という計算になる。
+    - minUnit = 4 であれば、value = 4 で課金開始となり、移行は value が minUnit だけ加算されると追加料金も加算される。
+- minutes の場合は trunc(value / baseUnit) >= minUnit という条件となったら * unitFare という計算になる。 
+    - baseUnit = 15 であれば、value = 15 で課金開始となり、value = 30 で追加料金が発生する。
+- yen は value がそのまま課金される。
+- 消費税はの計算はここではしないので、 戻り値は計算結果を返せばOK。
+実装できそうか？
+```
+
+それっぽいのが出来たので、シミュレータを実装する。
+
+```markdown
+TariffsPage.vue では、distance という値だけだったが、
+ChargesPage.vue では、yen, count, minutes という変数を用意して、3つの textFiled を作ってほしい。
+デザインは TariffsPage を参考にして。
+計算結果は各items レコードの code の隣くらいに表示してほしい。
+実装可能か？
+---
+この計算表示を表の列として追加できるか？
+---
+ChargesPage.vue の テーブルの bottom スロットで描画している charge.notes にも、InlineEditPopup が適用できるものなのかね？
+charge.name も同様に編集対象にしたいのだが、それも同時に実装可能か？
+---
+charge.notes だが、何かしら文字がないと反応しないとか？
+```
+
+だいたいイイ感じになったので、デザイン調整と、ロジックの見直しをする。  
+
+プリセット登録機能で、name をプロンプトから生成したい。
+
+```markdown
+ChargesPage.vue の createPreset で confirmAction を使ってプリセットを登録している。
+confirmPrompt を別途作成して、name (default = '標準')を入力文字列で設定したいのだが、可能かな？
+---
+createPreset の実行直後に、selectedIds に作成した Charges を即追加してほしいが、可能かな？
+---
+toggleActive を利用している q-toggle だが、disabled にしても、@click が反応するのは止められないのかな？
+---
+QTable の #bottom で備考欄を表示しているけど、その下部にChargesの作成日時と更新日時を表示したい。
+右に寄せておいた方が見やすいかな。出来そう？
+---
+https://quasar.dev/quasar-utils/date-utils
+Date Utils が使えるのではないかな？
+---
+ついでに、TariffsPage.vue の備考欄の下にも、同じように作成日時と更新日時を表示できるかな？
+```

@@ -7,8 +7,9 @@ import { useConsignorsStore } from 'stores/masters/consignors'
 import { useCarriersStore } from 'stores/masters/carriers'
 import { useForwardersStore } from 'stores/masters/forwarders'
 import { useTariffsStore } from 'stores/masters/tariffs'
+import { useChargesStore } from 'stores/masters/charges'
 
-export type ContainerName = 'Consignees' | 'Carriers' | 'Forwarders' | 'Consignors' | 'Tariffs'
+export type ContainerName = 'Consignees' | 'Carriers' | 'Forwarders' | 'Consignors' | 'Tariffs' | 'Charges'
 
 export interface MasterStore {
   fetchAll(): Promise<void>
@@ -73,6 +74,7 @@ export const useMastersStore = defineStore('masters', () => {
       useCarriersStore().fetchAll(),
       useForwardersStore().fetchAll(),
       useTariffsStore().fetchAll(),
+      useChargesStore().fetchAll(),
     ])
     loaded.value = true
   }

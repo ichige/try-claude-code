@@ -32,5 +32,31 @@ export function useConfirmAction() {
     })
   }
 
-  return { confirmAction }
+  /**
+   * テキスト入力付き確認ダイアログを表示し、OK 時に入力値を渡して action を実行する。
+   * @param title - ダイアログのタイトル
+   * @param message - ダイアログのメッセージ
+   * @param defaultValue - 入力欄の初期値
+   * @param action - OK 後に実行する非同期処理。入力値を受け取る
+   */
+  function confirmPrompt(title: string, message: string, defaultValue: string, action: (value: string) => Promise<void>): void {
+    $q.dialog({
+      title,
+      message,
+      prompt: { model: defaultValue, type: 'text' },
+      cancel: true,
+      persistent: true,
+    }).onOk((value: string) => {
+      void (async () => {
+        Loading.show({ message: t('labels.loading') })
+        try {
+          await action(value)
+        } finally {
+          Loading.hide()
+        }
+      })()
+    })
+  }
+
+  return { confirmAction, confirmPrompt }
 }

@@ -21,6 +21,7 @@ const iconMap: Record<string, string> = {
   delete: 'sym_o_delete',
   edit: 'sym_o_edit',
   email: 'sym_o_email',
+  false: 'sym_o_cancel',
   info: 'sym_o_info',
   invoiceNumber: 'sym_o_tag',
   lineId: 'sym_o_chat',
@@ -36,7 +37,9 @@ const iconMap: Record<string, string> = {
   restore: 'sym_o_restore_from_trash',
   remove: 'sym_o_remove',
   search: 'sym_o_search',
+  true: 'sym_o_check_circle',
   version: 'sym_o_tag',
+  waning: 'sym_o_warning',
   website: 'sym_o_language',
   'dark-mode': 'sym_o_dark_mode',
   'edit-note': 'sym_o_edit_note',
@@ -48,6 +51,7 @@ const iconMap: Record<string, string> = {
   'masters-container.consignors': 'sym_o_domain',
   'masters-container.forwarders': 'sym_o_warehouse',
   'masters-tariffs': 'sym_o_price_change',
+  'masters-charges': 'sym_o_add_card',
 }
 
 export default iconMap

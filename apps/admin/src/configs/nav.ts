@@ -56,6 +56,12 @@ const navLinks: NavLink[] = [
         icon: resolveIcon('masters-tariffs'),
         to: { name: 'masters-tariffs' },
       },
+      // 付帯料金
+      {
+        titleKey: 'navi.masters-charges',
+        icon: resolveIcon('masters-charges'),
+        to: { name: 'masters-charges' },
+      },
     ],
   },
 ]

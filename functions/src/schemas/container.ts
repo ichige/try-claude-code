@@ -10,5 +10,5 @@ export const containerSchema = z.enum([
   'Forwarders', // 地点
   'Consignors', // 取引先
   'Tariffs', // 運賃表
-  'Surcharges' // 付帯料金
+  'Charges' // 付帯料金
 ])
