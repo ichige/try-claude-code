@@ -75,6 +75,9 @@ export default {
       title: 'プリセット作成',
       message: 'プリセットを作成しますか？',
     },
+    description: '付帯料金マスタはプリセットから作成したものをカスタマイズして利用します。' +
+      '運賃マスタ同様に世代管理が必要ですが、各レコードの値は表のセルを直接クリックして編集可能です。' +
+      '一度運用開始したバージョンは編集不可能になることに注意してください。',
     descriptions: {
       'delivery-count': '配送件数の割増設定',
       'highway-fee': '高速道路利用料金(税込)',
@@ -102,6 +105,7 @@ export default {
     },
     labels: {
       selection: '付帯料金マスタの選択',
+      notesPlaceholder: '備考を入力...',
       enabled: '運用済',
       disabled: '運用前',
       active: '利用中',
@@ -109,7 +113,7 @@ export default {
     },
     enabled: {
       title: '運用開始',
-      message: '運用を開始すると付帯料金マスタの利用が可能になりますが、編集が不可になります。運用開始しますか？',
+      message: '運用を開始すると付帯料金マスタの利用が可能になりますが、一部の項目を除いて編集が不可になります。運用開始しますか？',
     },
     active: {
       titles: {
@@ -134,6 +138,8 @@ export default {
     },
   },
   labels: {
+    createdAt: '作成日時',
+    updatedAt: '更新日時',
     create: '登録',
     back: '戻る',
     next: '次へ',

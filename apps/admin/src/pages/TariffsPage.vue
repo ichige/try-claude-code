@@ -126,12 +126,18 @@
 
           <!-- 備考欄表示 -->
           <template #bottom>
-            <q-banner class="full-width text-caption text-black bg-blue-grey-1" rounded>
-              <template #avatar>
-                <q-icon :name="$icon('format-quote')" color="grey" size="sm" />
-              </template>
-              {{ tariff.notes }}
-            </q-banner>
+            <div class="full-width column q-gutter-y-xs">
+              <q-banner class="full-width text-caption text-black bg-blue-grey-1" rounded>
+                <template #avatar>
+                  <q-icon :name="$icon('format-quote')" color="grey" size="sm" />
+                </template>
+                {{ tariff.notes }}
+              </q-banner>
+              <div class="row justify-end text-caption text-grey-6 q-gutter-x-md">
+                <span>{{ $t('labels.createdAt') }}: {{ date.formatDate(tariff.createdAt, 'YYYY/MM/DD HH:mm') }}</span>
+                <span>{{ $t('labels.updatedAt') }}: {{ date.formatDate(tariff.updatedAt, 'YYYY/MM/DD HH:mm') }}</span>
+              </div>
+            </div>
           </template>
 
           <!--suppress VueUnrecognizedSlot-->
@@ -165,6 +171,7 @@
 <script setup lang="ts">
 import { ref, computed, provide } from 'vue'
 import type { QTableProps } from 'quasar'
+import { date } from 'quasar'
 import { useI18n } from 'vue-i18n'
 import { useConfirmAction } from 'composables/use-confirm-action'
 import type { TariffsItem } from '@shisamo/shared'

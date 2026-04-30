@@ -39,6 +39,7 @@ const iconMap: Record<string, string> = {
   search: 'sym_o_search',
   true: 'sym_o_check_circle',
   version: 'sym_o_tag',
+  waning: 'sym_o_warning',
   website: 'sym_o_language',
   'dark-mode': 'sym_o_dark_mode',
   'edit-note': 'sym_o_edit_note',
