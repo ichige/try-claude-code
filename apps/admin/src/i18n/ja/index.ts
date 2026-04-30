@@ -75,10 +75,30 @@ export default {
       title: 'プリセット作成',
       message: 'プリセットを作成しますか？',
     },
+    descriptions: {
+      'delivery-count': '配送件数の割増設定',
+      'highway-fee': '高速道路利用料金(税込)',
+      'waiting-time': '待機時間料金',
+      'working-time': '作業時間料金',
+      'parking-fee': '駐車料金(税込)',
+      'cancel-fee': 'キャンセル料金',
+      'flat-rate-fee': '定額料金',
+      'other-fee1': 'その他(税抜)',
+      'other-fee2': 'その他(税込)',
+    },
+    taxable: {
+      true: '税抜',
+      false: '税込'
+    },
     simulator: {
       yen: '金額',
       count: '件数',
-      minutes: '分数',
+      minutes: '分',
+    },
+    unit: {
+      yen: '円',
+      count: '件',
+      minutes: '分',
     },
     labels: {
       selection: '付帯料金マスタの選択',

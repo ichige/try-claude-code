@@ -1,5 +1,6 @@
 <template>
   <q-card flat bordered>
+    <!-- 見出し -->
     <q-card-section class="q-pb-none">
       <q-avatar
         class="secondary-gradient q-mr-sm"
@@ -11,6 +12,7 @@
     </q-card-section>
 
     <q-card-actions class="q-py-sm">
+      <!-- バージョン選択 -->
       <q-btn-dropdown
         unelevated
         size="sm"
@@ -37,6 +39,7 @@
         </q-list>
       </q-btn-dropdown>
       <q-separator vertical class="q-mx-sm" />
+      <!-- プリセット作成 -->
       <q-btn
         color="positive"
         size="sm"
@@ -46,26 +49,29 @@
         @click="createPreset"
       />
       <q-separator vertical class="q-mx-sm" />
+      <!-- 計算シミュレータ(金額) -->
       <q-input
         v-model.number="simulatorYen"
         :label="$t('charges.simulator.yen')"
-        dense outlined type="number" suffix="円"
+        dense outlined type="number" :suffix="$t('charges.unit.yen')"
         class="col-2" input-class="text-right"
       >
         <template #prepend><q-icon :name="$icon('calculate')" /></template>
       </q-input>
+      <!-- 計算シミュレータ(件数) -->
       <q-input
         v-model.number="simulatorCount"
         :label="$t('charges.simulator.count')"
-        dense outlined type="number" suffix="件"
-        class="col-2" input-class="text-right"
+        dense outlined type="number" :suffix="$t('charges.unit.count')"
+        class="col-2 q-mx-sm" input-class="text-right"
       >
         <template #prepend><q-icon :name="$icon('calculate')" /></template>
       </q-input>
+      <!-- 計算シミュレータ(分) -->
       <q-input
         v-model.number="simulatorMinutes"
         :label="$t('charges.simulator.minutes')"
-        dense outlined type="number" suffix="分"
+        dense outlined type="number" :suffix="$t('charges.unit.minutes')"
         class="col-2" input-class="text-right"
       >
         <template #prepend><q-icon :name="$icon('calculate')" /></template>
@@ -122,6 +128,83 @@
             </q-banner>
           </template>
 
+          <!--suppress VueUnrecognizedSlot 種別コード -->
+          <template #body-cell-code="{ row }">
+            <q-td>
+              <q-chip color="info" square outline>
+                <q-tooltip anchor="bottom end">{{ $t(`charges.descriptions.${row.code}`) }}</q-tooltip>
+                <q-icon :name="$icon('info')" size="xs" class="q-mr-xs" />
+                {{ row.code }}
+              </q-chip>
+            </q-td>
+          </template>
+
+          <!--suppress VueUnrecognizedSlot 帳票ラベル -->
+          <template #body-cell-label="{ row }">
+            <q-td class="cursor-pointer">
+              {{ row.label }}
+              <InlineEditPopup :model-value="row.label" :disable="charge.enabled" @save="(val) => updateItemField(charge, row.code, 'label', val)" />
+            </q-td>
+          </template>
+
+          <!--suppress VueUnrecognizedSlot 単位 -->
+          <template #body-cell-unit="{ row }">
+            <q-td>
+              <q-avatar color="info" rounded class="text-white" size="sm">
+                {{ $t(`charges.unit.${row.unit}`) }}
+              </q-avatar>
+            </q-td>
+          </template>
+
+          <!--suppress VueUnrecognizedSlot 課税 -->
+          <template #body-cell-taxable="{ value }">
+            <q-td class="text-center">
+              <q-icon :name="$icon(value)" :color="value ? 'positive' : 'grey'" size="sm">
+                <q-tooltip anchor="bottom end">{{ $t(`charges.taxable.${value}`) }}</q-tooltip>
+              </q-icon>
+            </q-td>
+          </template>
+
+          <!--suppress VueUnrecognizedSlot 基本単位 -->
+          <template #body-cell-baseUnit="{ row }">
+            <q-td v-if="row.unit === 'minutes'" class="text-right cursor-pointer">
+              {{ row.baseUnit }}
+              <InlineEditPopup  type="number" :model-value="row.baseUnit" :disable="charge.enabled" @save="(val) => updateItemField(charge, row.code, 'baseUnit', val)" />
+            </q-td>
+            <q-td v-else class="text-right">
+              {{ row.baseUnit }}
+            </q-td>
+          </template>
+
+          <!--suppress VueUnrecognizedSlot 最低単位 -->
+          <template #body-cell-minUnit="{ row }">
+            <q-td v-if="row.unit === 'count'" class="text-right cursor-pointer">
+              {{ row.minUnit }}
+              <InlineEditPopup type="number" :model-value="row.minUnit" :disable="charge.enabled" @save="(val) => updateItemField(charge, row.code, 'minUnit', val)" />
+            </q-td>
+            <q-td v-else class="text-right">
+              {{ row.minUnit }}
+            </q-td>
+          </template>
+
+          <!--suppress VueUnrecognizedSlot 加算料金 -->
+          <template #body-cell-unitFare="{ row }">
+            <q-td v-if="row.unit !== 'yen'" class="text-right cursor-pointer">
+              &yen;{{ row.unitFare.toLocaleString() }}
+              <InlineEditPopup  type="number" :model-value="row.unitFare" :disable="charge.enabled" @save="(val) => updateItemField(charge, row.code, 'unitFare', val)" />
+            </q-td>
+            <q-td v-else class="text-right">
+              &yen;{{ row.unitFare.toLocaleString() }}
+            </q-td>
+          </template>
+
+          <!--suppress VueUnrecognizedSlot 備考-->
+          <template #body-cell-notes="{ row }">
+            <q-td class="cursor-pointer">
+              {{ row.notes }}
+              <InlineEditPopup type="textarea" :model-value="row.notes" :disable="charge.enabled" @save="(val) => updateItemField(charge, row.code, 'notes', val)" />
+            </q-td>
+          </template>
           <!--suppress VueUnrecognizedSlot-->
           <template #body-cell-calc="{ row }">
             <q-td class="text-right">
@@ -129,47 +212,6 @@
                 <q-icon :name="$icon('calculate')" left />
                 {{ calcOf(charge, row) }}
               </q-chip>
-            </q-td>
-          </template>
-          <!--suppress VueUnrecognizedSlot-->
-          <template #body-cell-label="{ row }">
-            <q-td>
-              {{ row.label }}
-              <InlineEditPopup :model-value="row.label" :disable="charge.enabled" @save="(val) => updateItemField(charge, row.code, 'label', val)" />
-            </q-td>
-          </template>
-          <!--suppress VueUnrecognizedSlot-->
-          <template #body-cell-notes="{ row }">
-            <q-td>
-              {{ row.notes }}
-              <InlineEditPopup type="textarea" :model-value="row.notes" :disable="charge.enabled" @save="(val) => updateItemField(charge, row.code, 'notes', val)" />
-            </q-td>
-          </template>
-          <!--suppress VueUnrecognizedSlot-->
-          <template #body-cell-taxable="{ value }">
-            <q-td class="text-center">
-              <q-icon :name="value ? 'check' : 'remove'" :color="value ? 'positive' : 'grey'" />
-            </q-td>
-          </template>
-          <!--suppress VueUnrecognizedSlot-->
-          <template #body-cell-baseUnit="{ row }">
-            <q-td class="text-right">
-              {{ row.baseUnit }}
-              <InlineEditPopup v-if="row.unit === 'minutes'" type="number" :model-value="row.baseUnit" :disable="charge.enabled" @save="(val) => updateItemField(charge, row.code, 'baseUnit', val)" />
-            </q-td>
-          </template>
-          <!--suppress VueUnrecognizedSlot-->
-          <template #body-cell-minUnit="{ row }">
-            <q-td class="text-right">
-              {{ row.minUnit }}
-              <InlineEditPopup v-if="row.unit === 'count'" type="number" :model-value="row.minUnit" :disable="charge.enabled" @save="(val) => updateItemField(charge, row.code, 'minUnit', val)" />
-            </q-td>
-          </template>
-          <!--suppress VueUnrecognizedSlot-->
-          <template #body-cell-unitFare="{ row }">
-            <q-td class="text-right">
-              ¥{{ row.unitFare.toLocaleString() }}
-              <InlineEditPopup v-if="row.unit !== 'yen'" type="number" :model-value="row.unitFare" :disable="charge.enabled" @save="(val) => updateItemField(charge, row.code, 'unitFare', val)" />
             </q-td>
           </template>
         </q-table>
@@ -250,6 +292,8 @@ function createPreset(): void {
 
 /**
  * 指定行の文字列フィールドを更新する。
+ * 編集操作 → DB更新 → Storeの更新という流れになる。
+ *
  * @param charge - 対象の付帯料金マスタ
  * @param code - 更新対象の種別コード
  * @param field - 更新するフィールド名
