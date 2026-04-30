@@ -101,36 +101,14 @@
           <template #body-cell-label="{ row }">
             <q-td>
               {{ row.label }}
-              <q-popup-edit
-                :model-value="row.label"
-                :disable="charge.enabled"
-                @save="(val) => updateItemField(charge, row.code, 'label', val)"
-                v-slot="scope"
-              >
-                <q-input v-model="scope.value" dense autofocus />
-                <div class="row justify-end q-gutter-x-sm q-mt-xs">
-                  <q-btn flat size="sm" :label="$t('labels.back')" @click="scope.cancel" />
-                  <q-btn flat size="sm" color="primary" :label="$t('labels.save')" @click="scope.set" />
-                </div>
-              </q-popup-edit>
+              <InlineEditPopup :model-value="row.label" :disable="charge.enabled" @save="(val) => updateItemField(charge, row.code, 'label', val)" />
             </q-td>
           </template>
           <!--suppress VueUnrecognizedSlot-->
           <template #body-cell-notes="{ row }">
             <q-td>
               {{ row.notes }}
-              <q-popup-edit
-                :model-value="row.notes"
-                :disable="charge.enabled"
-                @save="(val) => updateItemField(charge, row.code, 'notes', val)"
-                v-slot="scope"
-              >
-                <q-input v-model="scope.value" dense autofocus type="textarea" />
-                <div class="row justify-end q-gutter-x-sm q-mt-xs">
-                  <q-btn flat size="sm" :label="$t('labels.back')" @click="scope.cancel" />
-                  <q-btn flat size="sm" color="primary" :label="$t('labels.save')" @click="scope.set" />
-                </div>
-              </q-popup-edit>
+              <InlineEditPopup type="textarea" :model-value="row.notes" :disable="charge.enabled" @save="(val) => updateItemField(charge, row.code, 'notes', val)" />
             </q-td>
           </template>
           <!--suppress VueUnrecognizedSlot-->
@@ -143,57 +121,21 @@
           <template #body-cell-baseUnit="{ row }">
             <q-td class="text-right">
               {{ row.baseUnit }}
-              <q-popup-edit
-                v-if="row.unit === 'minutes'"
-                :model-value="row.baseUnit"
-                :disable="charge.enabled"
-                @save="(val) => updateItemField(charge, row.code, 'baseUnit', Number(val))"
-                v-slot="scope"
-              >
-                <q-input v-model.number="scope.value" dense autofocus type="number" />
-                <div class="row justify-end q-gutter-x-sm q-mt-xs">
-                  <q-btn flat size="sm" :label="$t('labels.back')" @click="scope.cancel" />
-                  <q-btn flat size="sm" color="primary" :label="$t('labels.save')" @click="scope.set" />
-                </div>
-              </q-popup-edit>
+              <InlineEditPopup v-if="row.unit === 'minutes'" type="number" :model-value="row.baseUnit" :disable="charge.enabled" @save="(val) => updateItemField(charge, row.code, 'baseUnit', val)" />
             </q-td>
           </template>
           <!--suppress VueUnrecognizedSlot-->
           <template #body-cell-minUnit="{ row }">
             <q-td class="text-right">
               {{ row.minUnit }}
-              <q-popup-edit
-                v-if="row.unit === 'count'"
-                :model-value="row.minUnit"
-                :disable="charge.enabled"
-                @save="(val) => updateItemField(charge, row.code, 'minUnit', Number(val))"
-                v-slot="scope"
-              >
-                <q-input v-model.number="scope.value" dense autofocus type="number" />
-                <div class="row justify-end q-gutter-x-sm q-mt-xs">
-                  <q-btn flat size="sm" :label="$t('labels.back')" @click="scope.cancel" />
-                  <q-btn flat size="sm" color="primary" :label="$t('labels.save')" @click="scope.set" />
-                </div>
-              </q-popup-edit>
+              <InlineEditPopup v-if="row.unit === 'count'" type="number" :model-value="row.minUnit" :disable="charge.enabled" @save="(val) => updateItemField(charge, row.code, 'minUnit', val)" />
             </q-td>
           </template>
           <!--suppress VueUnrecognizedSlot-->
           <template #body-cell-unitFare="{ row }">
             <q-td class="text-right">
               ¥{{ row.unitFare.toLocaleString() }}
-              <q-popup-edit
-                v-if="row.unit !== 'yen'"
-                :model-value="row.unitFare"
-                :disable="charge.enabled"
-                @save="(val) => updateItemField(charge, row.code, 'unitFare', Number(val))"
-                v-slot="scope"
-              >
-                <q-input v-model.number="scope.value" dense autofocus type="number" />
-                <div class="row justify-end q-gutter-x-sm q-mt-xs">
-                  <q-btn flat size="sm" :label="$t('labels.back')" @click="scope.cancel" />
-                  <q-btn flat size="sm" color="primary" :label="$t('labels.save')" @click="scope.set" />
-                </div>
-              </q-popup-edit>
+              <InlineEditPopup v-if="row.unit !== 'yen'" type="number" :model-value="row.unitFare" :disable="charge.enabled" @save="(val) => updateItemField(charge, row.code, 'unitFare', val)" />
             </q-td>
           </template>
         </q-table>
@@ -204,12 +146,13 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import type { QTableProps } from 'quasar'
 import { Loading } from 'quasar'
 import { useI18n } from 'vue-i18n'
 import { useConfirmAction } from 'composables/use-confirm-action'
 import { useChargesStore } from 'stores/masters/charges'
 import type { ChargeItems } from '@shisamo/shared'
+import InlineEditPopup from 'components/InlineEditPopup.vue'
+import { columns, PRESET_ITEMS } from 'configs/masters/charges'
 
 const { t } = useI18n()
 const { confirmAction } = useConfirmAction()
@@ -219,17 +162,6 @@ const version = computed(() => chargesStore.list.length + 1)
 const selectedIds = ref(new Set(chargesStore.list.map(c => c.id)))
 const selected = computed(() => chargesStore.list.filter(c => selectedIds.value.has(c.id)))
 
-const PRESET_ITEMS = [
-  { code: 'delivery-count', label: '配送件数',    unit: 'count',   taxable: true,  baseUnit: 1,  minUnit: 4, unitFare: 300, notes: '配送件数は4件から300円ずつ課金されます。' },
-  { code: 'highway-fee',    label: '高速料金',    unit: 'yen',     taxable: false, baseUnit: 1,  minUnit: 1, unitFare: 1,   notes: '高速料金は非課税です。' },
-  { code: 'waiting-time',   label: '待機時間',    unit: 'minutes', taxable: true,  baseUnit: 15, minUnit: 1, unitFare: 750, notes: '待機料金は15分単位で課金されます。' },
-  { code: 'working-time',   label: '作業時間',    unit: 'minutes', taxable: true,  baseUnit: 15, minUnit: 1, unitFare: 750, notes: '作業料金は15分単位で課金されます。' },
-  { code: 'parking-fee',    label: '駐車料金',    unit: 'yen',     taxable: false, baseUnit: 1,  minUnit: 1, unitFare: 1,   notes: '駐車料金は非課税です。' },
-  { code: 'cancel-fee',     label: 'キャンセル料金', unit: 'yen',  taxable: true,  baseUnit: 1,  minUnit: 1, unitFare: 1,   notes: '稀にキャンセル料金が発生する場合があります。' },
-  { code: 'flat-rate-fee',  label: '定額料金',    unit: 'yen',     taxable: true,  baseUnit: 1,  minUnit: 1, unitFare: 1,   notes: '定期的な配送などは、定額になる場合があります。' },
-  { code: 'other-fee1',     label: 'その他',      unit: 'yen',     taxable: true,  baseUnit: 1,  minUnit: 1, unitFare: 1,   notes: 'その他例外的な料金です。' },
-  { code: 'other-fee2',     label: 'その他',      unit: 'yen',     taxable: false, baseUnit: 1,  minUnit: 1, unitFare: 1,   notes: 'その他例外的な料金(非課税)です。' },
-]
 
 /**
  * @param charge - 対象の付帯料金マスタ
@@ -246,16 +178,6 @@ function toggleSelect(charge: ChargeItems): void {
   else selectedIds.value.add(charge.id)
 }
 
-const columns: QTableProps['columns'] = [
-  { name: 'code',     label: t('charges.fields.code'),     field: 'code',     align: 'left'   },
-  { name: 'label',    label: t('charges.fields.label'),    field: 'label',    align: 'left'   },
-  { name: 'unit',     label: t('charges.fields.unit'),     field: 'unit',     align: 'left'   },
-  { name: 'taxable',  label: t('charges.fields.taxable'),  field: 'taxable',  align: 'center' },
-  { name: 'baseUnit', label: t('charges.fields.baseUnit'), field: 'baseUnit', align: 'right'  },
-  { name: 'minUnit',  label: t('charges.fields.minUnit'),  field: 'minUnit',  align: 'right'  },
-  { name: 'unitFare', label: t('charges.fields.unitFare'), field: 'unitFare', align: 'right'  },
-  { name: 'notes',    label: t('charges.fields.notes'),    field: 'notes',    align: 'left'   },
-]
 
 /**
  * プリセットを1件作成する。
