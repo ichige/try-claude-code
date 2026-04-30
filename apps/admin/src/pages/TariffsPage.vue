@@ -127,11 +127,12 @@
           <!-- 備考欄表示 -->
           <template #bottom>
             <div class="full-width column q-gutter-y-xs">
-              <q-banner class="full-width text-caption text-black bg-blue-grey-1" rounded>
+              <q-banner class="full-width text-caption text-black bg-blue-grey-1 cursor-pointer" rounded>
                 <template #avatar>
                   <q-icon :name="$icon('format-quote')" color="grey" size="sm" />
                 </template>
-                {{ tariff.notes }}
+                <span :class="{ 'text-grey-5': !tariff.notes }">{{ tariff.notes || $t('charges.labels.notesPlaceholder') }}</span>
+                <InlineEditPopup type="textarea" :model-value="tariff.notes"  @save="(val) => updateTariffNotes(tariff, String(val))" />
               </q-banner>
               <div class="row justify-end text-caption text-grey-6 q-gutter-x-md">
                 <span>{{ $t('labels.createdAt') }}: {{ date.formatDate(tariff.createdAt, 'YYYY/MM/DD HH:mm') }}</span>
@@ -171,12 +172,13 @@
 <script setup lang="ts">
 import { ref, computed, provide } from 'vue'
 import type { QTableProps } from 'quasar'
-import { date } from 'quasar'
+import { date, Loading } from 'quasar'
 import { useI18n } from 'vue-i18n'
 import { useConfirmAction } from 'composables/use-confirm-action'
 import type { TariffsItem } from '@shisamo/shared'
 import { useTariffsStore } from 'stores/masters/tariffs'
 import TariffsDialog from 'components/masters/TariffsDialog.vue'
+import InlineEditPopup from 'components/InlineEditPopup.vue'
 import { Tariff } from 'models/tariff'
 import { tariffEditTargetKey } from 'components/masters/tariff-draft'
 
@@ -262,6 +264,20 @@ function toggleActive(tariff: TariffsItem): void {
 function edit(tariff: TariffsItem): void {
   editTarget.value = tariff
   dialogRef.value?.open()
+}
+
+/**
+ * 備考欄を更新する。
+ * @param tariff - 対象の運賃表アイテム
+ * @param notes - 新しい備考
+ */
+async function updateTariffNotes(tariff: TariffsItem, notes: string): Promise<void> {
+  Loading.show()
+  try {
+    await tariffsStore.update(tariff.id, { ...tariff, notes })
+  } finally {
+    Loading.hide()
+  }
 }
 
 </script>

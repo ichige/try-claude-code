@@ -401,3 +401,12 @@ Dialog + Loading パターンは共通化出来そう。
 TariffsPage.vue の enable と toggleActive で dialog からの 更新処理というパターンは一緒だよね？
 であれば、composable で共通化出来そうではないかな？
 ```
+
+### 仕様変更？
+
+さすがに備考欄くらい運用済で変更させたいところ。
+
+```markdown
+ChargesPage.vue で ChargeItems の notes を QTable から直接変更できるようにした。
+この機能を TariffsPage.vue の TariffsItem の備考欄にも適用できるかな？
+```
