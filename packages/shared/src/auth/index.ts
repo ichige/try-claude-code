@@ -73,6 +73,7 @@ export class MSAuth {
    * ssoSilent → loginPopup の順でログインを試みます。
    */
   async login(request: PopupRequest): Promise<AccountInfo> {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return Pipeline.send(this.client)
       .pipe(initializeMiddleware)
       .pipe(ssoSilentMiddleware, request)

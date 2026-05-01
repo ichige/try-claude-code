@@ -58,7 +58,6 @@ export class Pipeline<T, Ret = never> {
     options?: O,
   ): Pipeline<T, [Ret] extends [never] ? R : Ret> {
     this._pipes.push({ middleware, options: options ?? null })
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return this as unknown as Pipeline<T, [Ret] extends [never] ? R : Ret>
   }
 
@@ -89,8 +88,8 @@ export class Pipeline<T, Ret = never> {
     )
 
     try {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any
-      return await pipeline(passable) as any
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      return await pipeline(passable)
     } finally {
       if (this._finallyCallback) {
         await this._finallyCallback(passable)
@@ -103,6 +102,6 @@ export class Pipeline<T, Ret = never> {
    */
   async thenReturn(): Promise<[Ret] extends [never] ? T : Ret> {
     // eslint-disable-next-line @typescript-eslint/require-await
-    return this.then(async (passable) => passable as unknown as T)
+    return this.then(async (passable) => passable)
   }
 }

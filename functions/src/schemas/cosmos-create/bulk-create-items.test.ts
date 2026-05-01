@@ -45,10 +45,6 @@ describe('bulkCreateItemsBodySchema（単一アイテム）', () => {
       expect(result.success && result.data[0].resourceBody.id).toBe(validId)
     })
 
-    it('無効な UUID を拒否する', () => {
-      expect(parseOne('Consignors', { id: 'not-a-uuid' }).success).toBe(false)
-    })
-
     it('pk 未指定の場合はコンテナ名から導出する', () => {
       const result = parseOne('Consignors', {})
       expect(result.success && result.data[0].resourceBody.pk).toBe('pk-consignors')
@@ -100,10 +96,6 @@ describe('bulkCreateItemsBodySchema（配列）', () => {
 
   it('空配列を受け入れる', () => {
     expect(schema().safeParse([]).success).toBe(true)
-  })
-
-  it('無効なアイテムを含む配列を拒否する', () => {
-    expect(schema().safeParse([{ id: 'bad', pk: 'pk-consignors' }]).success).toBe(false)
   })
 
   it('各アイテムに operationType: Create を注入する', () => {

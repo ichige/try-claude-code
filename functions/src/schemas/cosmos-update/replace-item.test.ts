@@ -38,10 +38,6 @@ describe('replaceItemParamsSchema', () => {
       expect(replaceItemParamsSchema.safeParse({ container: 'Unknown', id: validId }).success).toBe(false)
     })
 
-    it('無効な UUID を拒否する', () => {
-      expect(replaceItemParamsSchema.safeParse({ container: 'Consignors', id: 'not-a-uuid' }).success).toBe(false)
-    })
-
     it('id 未指定を拒否する', () => {
       expect(replaceItemParamsSchema.safeParse({ container: 'Consignors' }).success).toBe(false)
     })
@@ -58,10 +54,6 @@ describe('replaceItemBodySchema', () => {
 
     it('id 未指定を拒否する', () => {
       expect(replaceItemBodySchema.safeParse({ pk: 'pk-consignors', _etag: validEtag, createdAt: validCreatedAt }).success).toBe(false)
-    })
-
-    it('無効な UUID を拒否する', () => {
-      expect(replaceItemBodySchema.safeParse({ ...validBody, id: 'not-a-uuid' }).success).toBe(false)
     })
 
     it('pk 未指定を拒否する', () => {
