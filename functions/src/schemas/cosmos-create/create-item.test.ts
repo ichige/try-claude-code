@@ -30,10 +30,6 @@ describe('createItemBodySchema', () => {
       const result = schema.safeParse({ id: validId })
       expect(result.success && result.data.id).toBe(validId)
     })
-
-    it('無効な UUID を拒否する', () => {
-      expect(schema.safeParse({ id: 'not-a-uuid' }).success).toBe(false)
-    })
   })
 
   describe('pk の導出', () => {

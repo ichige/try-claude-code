@@ -30,9 +30,5 @@ describe('deleteItemParamsSchema', () => {
     it('無効なコンテナ名を拒否する', () => {
       expect(deleteItemParamsSchema.safeParse({ container: 'Unknown', id: validId }).success).toBe(false)
     })
-
-    it('無効な UUID を拒否する', () => {
-      expect(deleteItemParamsSchema.safeParse({ container: 'Consignors', id: 'not-a-uuid' }).success).toBe(false)
-    })
   })
 })

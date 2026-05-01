@@ -37,9 +37,20 @@ jobs:
       - name: Lint
         run: pnpm run lint:admin
 
+      - name: Lint Shared
+        run: pnpm run lint:shared
+
       - name: Type Check
-        run: pnpm exec vue-tsc --noEmit
-        working-directory: ./apps/admin
+        run: pnpm run typecheck:admin
+
+      - name: Type Check Shared
+        run: pnpm run typecheck:shared
+
+      - name: Test Admin
+        run: pnpm run test:admin
+
+      - name: Test Shared
+        run: pnpm run test:shared
 
   build_and_deploy_job:
     runs-on: ubuntu-latest

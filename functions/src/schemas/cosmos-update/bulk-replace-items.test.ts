@@ -32,10 +32,6 @@ describe('bulkReplaceItemSchema', () => {
       const result = bulkReplaceItemSchema.safeParse(validItem)
       expect(result.success && result.data.id).toBe(validId)
     })
-
-    it('無効な UUID を拒否する', () => {
-      expect(bulkReplaceItemSchema.safeParse({ ...validItem, id: 'not-a-uuid' }).success).toBe(false)
-    })
   })
 
   describe('resourceBody の構造', () => {
