@@ -198,14 +198,15 @@
 
         <div class="row items-center q-gutter-x-sm">
           <q-input
-            v-model.number="simDistance"
+            :model-value="simDistance"
+            @update:model-value="v => simDistance = toNonNegative(v)"
             :label="$t('tariffs.simulator.distance')"
-            type="number" outlined dense
+            type="number" min="0" outlined dense
             class="col-3" input-class="text-right"
           />
           <span class="text-body2">km →</span>
           <span v-if="simulatedFare !== null" class="text-h6">{{ simulatedFare.toLocaleString() }} 円</span>
-          <span v-else-if="simDistance !== null" class="text-body2 text-grey">{{ $t('tariffs.simulator.outOfRange') }}</span>
+          <span v-else class="text-body2 text-grey">{{ $t('tariffs.simulator.outOfRange') }}</span>
         </div>
       </q-card-section>
     </template>
@@ -220,6 +221,7 @@ import { z } from 'zod'
 import type { QForm } from 'quasar'
 import type { TariffsItem } from '@shisamo/shared'
 import { resolveIcon } from 'src/composables/use-icon'
+import { toNonNegative } from 'src/utils/clamp'
 import { tariffDraftKey, tariffStepKey } from './tariff-draft'
 import { Tariff } from 'models/tariff'
 import { zodRule } from 'src/utils/zod-rule'
@@ -301,15 +303,14 @@ function updateRange(field: 'baseFare' | 'unitKm' | 'unitFare', idx: number, val
 }
 
 // シミュレーションの入力
-const simDistance = ref<number | null>(null)
+const simDistance = ref(0)
 
 /**
  * 計算シミュレーション
  */
-const simulatedFare = computed<number | null>(() => {
-  if (simDistance.value === null) return null
-  return new Tariff(structuredClone(toRaw(draft.value)) as TariffsItem).calculate(simDistance.value)
-})
+const simulatedFare = computed<number | null>(() =>
+  new Tariff(structuredClone(toRaw(draft.value)) as TariffsItem).calculate(simDistance.value)
+)
 
 const formRef = ref<InstanceType<typeof QForm> | null>(null)
 
