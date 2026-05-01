@@ -226,6 +226,9 @@ import { zodRule } from 'src/utils/zod-rule'
 
 const { t } = useI18n()
 
+/**
+ * マスタ名のバリデート
+ */
 const nameSchema = z.string()
   .min(1, t('validation.required'))
   .max(32, t('validation.maxLength', { max: 32 }))
@@ -287,6 +290,9 @@ const baseFares = computed(() =>
  */
 const minValues: Record<'baseFare' | 'unitKm' | 'unitFare', number> = { baseFare: 0, unitKm: 1, unitFare: 0 }
 
+/**
+ * 各値の最低値を強制更新(マイナス値にしない)
+ */
 function updateRange(field: 'baseFare' | 'unitKm' | 'unitFare', idx: number, val: number): void {
   draft.value.ranges[idx]![field] = Math.max(minValues[field], val)
   for (let i = idx + 1; i < draft.value.ranges.length; i++) {

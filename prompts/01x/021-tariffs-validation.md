@@ -97,3 +97,9 @@ logger.error('vue error', { err, info })
 ---
 うむ。exceptions へ報告されたな。
 ```
+
+### コードの整理
+
+```markdown
+TariffsDialog.vue の tariffRangeSchema や tariffDraftSchema あたりは、configs/masters 配下に切り出しておけるかね？
+```
