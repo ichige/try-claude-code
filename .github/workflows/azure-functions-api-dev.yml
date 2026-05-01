@@ -45,7 +45,11 @@ jobs:
         working-directory: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
 
       - name: Type Check
-        run: npm run type-check
+        run: npm run typecheck
+        working-directory: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+
+      - name: Test
+        run: npm run test
         working-directory: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
 
   build:

@@ -36,3 +36,7 @@ functions/package.json には型チェックがあるけど、呼び出し型が
 ---
 root の package.json に、admin と shared の typecheck を追加してみて。
 ```
+
+```markdown
+Github Actions でも linter やら test を走らせようと思うのだが、設定方法はわかるか？
+```
