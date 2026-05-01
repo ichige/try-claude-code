@@ -57,27 +57,30 @@
       <q-separator vertical class="q-mx-sm" />
       <!-- 計算シミュレータ(金額) -->
       <q-input
-        v-model.number="simulatorYen"
+        :model-value="simulatorYen"
+        @update:model-value="v => simulatorYen = toNonNegative(v)"
         :label="$t('charges.simulator.yen')"
-        dense outlined type="number" :suffix="$t('charges.unit.yen')"
+        dense outlined type="number" min="0" :suffix="$t('charges.unit.yen')"
         class="col-2" input-class="text-right"
       >
         <template #prepend><q-icon :name="$icon('calculate')" /></template>
       </q-input>
       <!-- 計算シミュレータ(件数) -->
       <q-input
-        v-model.number="simulatorCount"
+        :model-value="simulatorCount"
+        @update:model-value="v => simulatorCount = toNonNegative(v)"
         :label="$t('charges.simulator.count')"
-        dense outlined type="number" :suffix="$t('charges.unit.count')"
+        dense outlined type="number" min="0" :suffix="$t('charges.unit.count')"
         class="col-2 q-mx-sm" input-class="text-right"
       >
         <template #prepend><q-icon :name="$icon('calculate')" /></template>
       </q-input>
       <!-- 計算シミュレータ(分) -->
       <q-input
-        v-model.number="simulatorMinutes"
+        :model-value="simulatorMinutes"
+        @update:model-value="v => simulatorMinutes = toNonNegative(v)"
         :label="$t('charges.simulator.minutes')"
-        dense outlined type="number" :suffix="$t('charges.unit.minutes')"
+        dense outlined type="number" min="0" :suffix="$t('charges.unit.minutes')"
         class="col-2" input-class="text-right"
       >
         <template #prepend><q-icon :name="$icon('calculate')" /></template>
@@ -99,7 +102,7 @@
               <div :class="`text-subtitle1 text-weight-bold ${ charge.enabled ? 'cursor-not-allowed' : 'cursor-pointer'}`">
                 <q-badge color="positive" :label="charge.id" size="sm" outline />
                 {{ charge.name }}
-                <InlineEditPopup :model-value="charge.name" :disable="charge.enabled" @save="(val) => updateChargeField(charge, 'name', String(val))" />
+                <InlineEditPopup :model-value="charge.name" :disable="charge.enabled" :schema="nameSchema" @save="(val) => updateChargeField(charge, 'name', String(val))" />
               </div>
               <!-- 運用状態(運用前|運用開始) -->
               <q-chip
@@ -136,7 +139,7 @@
                   <q-icon :name="$icon('format-quote')" color="grey" size="sm" />
                 </template>
                 <span :class="{ 'text-grey-5': !charge.notes }">{{ charge.notes || $t('charges.labels.notesPlaceholder') }}</span>
-                <InlineEditPopup type="textarea" :model-value="charge.notes" @save="(val) => updateChargeField(charge, 'notes', String(val))" />
+                <InlineEditPopup type="textarea" :model-value="charge.notes" :maxlength="1024" @save="(val) => updateChargeField(charge, 'notes', String(val))" />
               </q-banner>
               <div class="row justify-end text-caption text-grey-6 q-gutter-x-md">
                 <span>{{ $t('labels.createdAt') }}: {{ date.formatDate(charge.createdAt, 'YYYY/MM/DD HH:mm') }}</span>
@@ -160,7 +163,7 @@
           <template #body-cell-label="{ row }">
             <q-td :class="charge.enabled ? 'cursor-not-allowed' : 'cursor-pointer'">
               {{ row.label }}
-              <InlineEditPopup v-if="!charge.enabled" :model-value="row.label" :disable="charge.enabled" @save="(val) => updateItemField(charge, row.code, 'label', val)" />
+              <InlineEditPopup v-if="!charge.enabled" :model-value="row.label" :disable="charge.enabled" :schema="nameSchema" @save="(val) => updateItemField(charge, row.code, 'label', val)" />
             </q-td>
           </template>
 
@@ -231,6 +234,7 @@
               <InlineEditPopup
                 type="textarea"
                 :model-value="row.notes"
+                :maxlength="256"
                 @save="(val) => updateItemField(charge, row.code, 'notes', val)"
               />
             </q-td>
@@ -256,14 +260,19 @@ import { ref, computed } from 'vue'
 import { Loading, date } from 'quasar'
 import { useI18n } from 'vue-i18n'
 import { useConfirmAction } from 'composables/use-confirm-action'
+import { toNonNegative } from 'src/utils/clamp'
 import { useChargesStore } from 'stores/masters/charges'
 import type { ChargeItem, ChargeItems } from '@shisamo/shared'
+import { z } from 'zod'
 import InlineEditPopup from 'components/InlineEditPopup.vue'
 import { columns, PRESET_ITEMS } from 'configs/masters/charges'
 import { Charge } from 'models/charge'
 
 const { t } = useI18n()
 const { confirmAction, confirmPrompt } = useConfirmAction()
+
+const NAME_MAX_LENGTH = 32
+const nameSchema = z.string().min(1, t('validation.required')).max(NAME_MAX_LENGTH, t('validation.maxLength', { max: NAME_MAX_LENGTH }))
 const chargesStore = useChargesStore()
 
 const version = computed(() => chargesStore.list.length + 1)
@@ -328,7 +337,7 @@ function createPreset(): void {
     '標準',
     async (name) => {
       const id = `v${version.value}`
-      await chargesStore.create({ id, name, enabled: false, isActive: false, notes: '', items: PRESET_ITEMS })
+      await chargesStore.create({ id, name: name.slice(0, NAME_MAX_LENGTH), enabled: false, isActive: false, notes: '', items: PRESET_ITEMS })
       selectedIds.value.add(id)
     },
   )

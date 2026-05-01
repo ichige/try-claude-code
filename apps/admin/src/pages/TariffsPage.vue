@@ -49,11 +49,12 @@
       />
       <q-separator vertical class="q-mx-sm" />
       <q-input
-        v-model.number="distance"
+        :model-value="distance"
+        @update:model-value="v => distance = toNonNegative(v)"
         :label="$t('tariffs.simulator.title')"
         dense
         outlined
-        type="number"
+        type="number" min="0"
         suffix="km"
         class="col-2"
         input-class="text-right"
@@ -132,7 +133,11 @@
                   <q-icon :name="$icon('format-quote')" color="grey" size="sm" />
                 </template>
                 <span :class="{ 'text-grey-5': !tariff.notes }">{{ tariff.notes || $t('charges.labels.notesPlaceholder') }}</span>
-                <InlineEditPopup type="textarea" :model-value="tariff.notes"  @save="(val) => updateTariffNotes(tariff, String(val))" />
+                <InlineEditPopup
+                  type="textarea"
+                  :model-value="tariff.notes"
+                  :maxlength="1024"
+                  @save="(val) => updateTariffNotes(tariff, String(val))" />
               </q-banner>
               <div class="row justify-end text-caption text-grey-6 q-gutter-x-md">
                 <span>{{ $t('labels.createdAt') }}: {{ date.formatDate(tariff.createdAt, 'YYYY/MM/DD HH:mm') }}</span>
@@ -175,6 +180,7 @@ import type { QTableProps } from 'quasar'
 import { date, Loading } from 'quasar'
 import { useI18n } from 'vue-i18n'
 import { useConfirmAction } from 'composables/use-confirm-action'
+import { toNonNegative } from 'src/utils/clamp'
 import type { TariffsItem } from '@shisamo/shared'
 import { useTariffsStore } from 'stores/masters/tariffs'
 import TariffsDialog from 'components/masters/TariffsDialog.vue'

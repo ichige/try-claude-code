@@ -34,6 +34,8 @@
           :label="$t('tariffs.fields.name')"
           outlined dense
           :readonly="step === 3"
+          maxlength="32"
+          :rules="step === 1 ? [zodRule(nameSchema, $t('tariffs.fields.name'))] : []"
           class="col q-ml-md"
         >
           <template #prepend>
@@ -64,16 +66,18 @@
             class="col-5"
             input-class="text-right"
             suffix="km"
+            :rules="[() => true]"
           />
           <span class="text-grey-6">〜</span>
           <q-input
             :model-value="range.maxKm"
             @update:model-value="val => updateMaxKm(idx, Number(val))"
             :label="$t('tariffs.fields.maxKm')"
-            type="number" outlined dense
+            type="number" min="1" outlined dense
             class="col-5"
             input-class="text-right"
             suffix="km"
+            :rules="step === 1 ? [v => Number(v) >= minKms[idx]! || $t('validation.minValue', { min: minKms[idx] })] : []"
           />
           <q-btn
             flat round dense
@@ -119,7 +123,7 @@
               :model-value="baseFares[idx]"
               @update:model-value="val => updateRange('baseFare', idx, Number(val))"
               :label="$t('tariffs.fields.baseFare')"
-              type="number"
+              type="number" min="0"
               outlined
               dense
               class="col-4" input-class="text-right"
@@ -131,7 +135,7 @@
               :model-value="range.unitKm"
               @update:model-value="val => updateRange('unitKm', idx, Number(val))"
               :label="$t('tariffs.fields.unitKm')"
-              type="number"
+              type="number" min="1"
               outlined
               dense
               class="col-3" input-class="text-right"
@@ -143,7 +147,7 @@
               :model-value="range.unitFare"
               @update:model-value="val => updateRange('unitFare', idx, Number(val))"
               :label="$t('tariffs.fields.unitFare')"
-              type="number"
+              type="number" min="0"
               outlined
               dense
               class="col-4"
@@ -194,14 +198,15 @@
 
         <div class="row items-center q-gutter-x-sm">
           <q-input
-            v-model.number="simDistance"
+            :model-value="simDistance"
+            @update:model-value="v => simDistance = toNonNegative(v)"
             :label="$t('tariffs.simulator.distance')"
-            type="number" outlined dense
+            type="number" min="0" outlined dense
             class="col-3" input-class="text-right"
           />
           <span class="text-body2">km →</span>
           <span v-if="simulatedFare !== null" class="text-h6">{{ simulatedFare.toLocaleString() }} 円</span>
-          <span v-else-if="simDistance !== null" class="text-body2 text-grey">{{ $t('tariffs.simulator.outOfRange') }}</span>
+          <span v-else class="text-body2 text-grey">{{ $t('tariffs.simulator.outOfRange') }}</span>
         </div>
       </q-card-section>
     </template>
@@ -211,11 +216,24 @@
 
 <script setup lang="ts">
 import { ref, computed, inject, toRaw } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { z } from 'zod'
 import type { QForm } from 'quasar'
 import type { TariffsItem } from '@shisamo/shared'
 import { resolveIcon } from 'src/composables/use-icon'
+import { toNonNegative } from 'src/utils/clamp'
 import { tariffDraftKey, tariffStepKey } from './tariff-draft'
 import { Tariff } from 'models/tariff'
+import { zodRule } from 'src/utils/zod-rule'
+
+const { t } = useI18n()
+
+/**
+ * マスタ名のバリデート
+ */
+const nameSchema = z.string()
+  .min(1, t('validation.required'))
+  .max(32, t('validation.maxLength', { max: 32 }))
 
 const draft = inject(tariffDraftKey)!
 const step = inject(tariffStepKey)!
@@ -233,7 +251,7 @@ const minKms = computed(() =>
  * 距離上限値を変更することで、next の下限値を更新させる
  */
 function updateMaxKm(idx: number, val: number): void {
-  draft.value.ranges[idx]!.maxKm = val
+  draft.value.ranges[idx]!.maxKm = Math.max(1, val)
   const next = draft.value.ranges[idx + 1]
   if (next) next.minKm = minKms.value[idx + 1]!
 }
@@ -272,23 +290,27 @@ const baseFares = computed(() =>
 /**
  * 各フィールド更新と baseFare の更新
  */
+const minValues: Record<'baseFare' | 'unitKm' | 'unitFare', number> = { baseFare: 0, unitKm: 1, unitFare: 0 }
+
+/**
+ * 各値の最低値を強制更新(マイナス値にしない)
+ */
 function updateRange(field: 'baseFare' | 'unitKm' | 'unitFare', idx: number, val: number): void {
-  draft.value.ranges[idx]![field] = val
+  draft.value.ranges[idx]![field] = Math.max(minValues[field], val)
   for (let i = idx + 1; i < draft.value.ranges.length; i++) {
     draft.value.ranges[i]!.baseFare = baseFares.value[i]!
   }
 }
 
 // シミュレーションの入力
-const simDistance = ref<number | null>(null)
+const simDistance = ref(0)
 
 /**
  * 計算シミュレーション
  */
-const simulatedFare = computed<number | null>(() => {
-  if (simDistance.value === null) return null
-  return new Tariff(structuredClone(toRaw(draft.value)) as TariffsItem).calculate(simDistance.value)
-})
+const simulatedFare = computed<number | null>(() =>
+  new Tariff(structuredClone(toRaw(draft.value)) as TariffsItem).calculate(simDistance.value)
+)
 
 const formRef = ref<InstanceType<typeof QForm> | null>(null)
 

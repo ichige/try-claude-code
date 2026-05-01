@@ -9,7 +9,11 @@ export default defineBoot(({ app, router }) => {
    */
   app.config.errorHandler = (err, _instance, info) => {
     console.error('[Vue errorHandler]', err, info)
-    logger.error('vue error', { err, info })
+    if (err instanceof Error) {
+      logger.error(err, { info })
+    } else {
+      logger.error('vue error', { err, info })
+    }
     void router.push({ name: 'error' })
   }
 
@@ -18,7 +22,11 @@ export default defineBoot(({ app, router }) => {
    */
   window.addEventListener('unhandledrejection', (event) => {
     console.error('[unhandledrejection]', event.reason)
-    logger.error('unhandled rejection', { reason: event.reason })
+    if (event.reason instanceof Error) {
+      logger.error(event.reason)
+    } else {
+      logger.error('unhandled rejection', { reason: event.reason })
+    }
     void router.push({ name: 'error' })
   })
 })

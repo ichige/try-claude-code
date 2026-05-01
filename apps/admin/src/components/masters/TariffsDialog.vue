@@ -45,6 +45,7 @@ import { Loading } from 'quasar'
 import { useTariffsStore } from 'stores/masters/tariffs'
 import { tariffDraftKey, tariffStepKey, tariffEditTargetKey, type TariffDraft } from './tariff-draft'
 import TariffsForm from 'components/masters/TariffsForm.vue'
+import { tariffDraftSchema } from 'src/configs/masters/tariffs'
 
 const emit = defineEmits<{ created: [id: string] }>()
 
@@ -103,6 +104,11 @@ function back(): void {
  * 保存ボタン
  */
 async function save(): Promise<void> {
+  const result = tariffDraftSchema.safeParse(draft.value)
+  if (!result.success) {
+    throw result.error
+  }
+
   Loading.show({ message: '保存中...' })
   const id = draft.value.id
   try {
