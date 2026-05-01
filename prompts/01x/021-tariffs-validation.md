@@ -74,3 +74,26 @@ STEP1のバリデートはこんなもの。
 ```markdown
 STEP2の場合、baseFares, unitKm,unitFare それぞれに、maxKm と同じく -1 にならないように強制を入れてほしい。
 ```
+
+最後に STEP3 だな。
+
+```markdown
+STEP3 というか、TariffsDialog.vue での save で全体的な zod バリデートを実施したい。
+試しに実装してみてくれ。エラーはとりあえずログにでも吐いてくれ。
+---
+code: z.ZodIssueCode.custom, これは非推奨みたいだぜ？
+---
+とはいえこれを無理やりエラーにするとなると、devtools でいじるしかないか。
+---
+うむエラーがでたな。
+では、このエラーを例外として投げてしまってくれ。
+---
+ZodError は message instanceof Error で true になるのかね？
+---
+error-handler.ts の errorHandler だと、
+logger.error('vue error', { err, info })
+という実装になってるけど、これだと Application Insights の Exception に報告されないと思われる。
+ここで分岐を書くしなないのではないかな？
+---
+うむ。exceptions へ報告されたな。
+```

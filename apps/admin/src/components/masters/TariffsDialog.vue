@@ -42,9 +42,37 @@
 <script setup lang="ts">
 import { ref, computed, provide, inject } from 'vue'
 import { Loading } from 'quasar'
+import { z } from 'zod'
 import { useTariffsStore } from 'stores/masters/tariffs'
 import { tariffDraftKey, tariffStepKey, tariffEditTargetKey, type TariffDraft } from './tariff-draft'
 import TariffsForm from 'components/masters/TariffsForm.vue'
+
+const tariffRangeSchema = z.object({
+  minKm: z.number().int().min(1),
+  maxKm: z.number().int().min(1),
+  baseFare: z.number().int().min(0),
+  unitKm: z.number().int().min(1),
+  unitFare: z.number().int().min(0),
+})
+
+const tariffDraftSchema = z.object({
+  id: z.string().min(1),
+  name: z.string().min(1).max(32),
+  notes: z.string(),
+  enabled: z.boolean(),
+  isActive: z.boolean(),
+  ranges: z.array(tariffRangeSchema).min(1).superRefine((ranges, ctx) => {
+    for (let i = 1; i < ranges.length; i++) {
+      if (ranges[i]!.maxKm <= ranges[i - 1]!.maxKm) {
+        ctx.addIssue({
+          code: "custom",
+          path: [i, 'maxKm'],
+          message: `ranges[${i}].maxKm must be greater than ranges[${i - 1}].maxKm`,
+        })
+      }
+    }
+  }),
+})
 
 const emit = defineEmits<{ created: [id: string] }>()
 
@@ -103,6 +131,11 @@ function back(): void {
  * 保存ボタン
  */
 async function save(): Promise<void> {
+  const result = tariffDraftSchema.safeParse(draft.value)
+  if (!result.success) {
+    throw result.error
+  }
+
   Loading.show({ message: '保存中...' })
   const id = draft.value.id
   try {
