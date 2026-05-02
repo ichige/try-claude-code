@@ -17,6 +17,7 @@ const iconMap: Record<string, string> = {
   companyCode: 'sym_o_settings_ethernet',
   companyName: 'sym_o_domain',
   contact: 'sym_o_id_card',
+  'calendar-month': 'sym_o_calendar_month',
   dashboard: 'sym_o_dashboard',
   delete: 'sym_o_delete',
   edit: 'sym_o_edit',
