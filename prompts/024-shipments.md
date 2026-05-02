@@ -35,3 +35,21 @@
 ---
 取引先一覧だけど、リンクの表示ラベルは「取引管理」としておいて。
 ```
+
+## Step 1 ～ 4 までのモック生成
+
+次は QDialog を使った Step1 ～ Step4 のフォームを作成する。  
+まずは土台から生成させよう。
+
+```markdown
+ShipmentsPage.vue に QDialog を使った入力フォームを作りたい。
+- 構成としては、TariffsPage.vue に近いものになる予定。
+- components/shipments 配下に DialogFormを配置しておいてほしい。
+- DialogForm では、QStepper を使って Step1 ～ Step4 構成になる予定。
+- TariffsDialog.vue と近いけど、もう少し大規模になる予定。
+    - とりあえずはステップするだけで中身の実装はなくて良い。
+    - 取引登録 → 配送業者の選定 → 実績入力 → 確認 といった流れになる想定。
+こんな感じでモックを作れるか？
+```
+
+デザインなども TariffsDialog を踏襲してくれて、バッチリであった。  

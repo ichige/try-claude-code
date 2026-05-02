@@ -17,6 +17,12 @@ export default {
     'masters-tariffs': '運賃',
     'masters-charges': '付帯料金',
   },
+  shipments: {
+    step1: { title: '取引登録' },
+    step2: { title: '配送業者の選定' },
+    step3: { title: '実績入力' },
+    step4: { title: '確認' },
+  },
   validation: {
     required: '{field}は必須です',
     numeric: '{field}は数値で入力してください',
