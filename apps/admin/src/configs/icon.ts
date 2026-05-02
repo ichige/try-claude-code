@@ -27,6 +27,7 @@ const iconMap: Record<string, string> = {
   lineId: 'sym_o_chat',
   logout: 'sym_o_logout',
   masters: 'sym_o_table',
+  shipments: 'sym_o_package_2',
   name: 'sym_o_label',
   other: 'sym_o_notes',
   paymentRate: 'sym_o_percent',

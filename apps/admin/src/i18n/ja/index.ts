@@ -5,6 +5,7 @@ export default {
   },
   navi: {
     dashboard: 'ダッシュボード',
+    shipments: '取引管理',
     'masters': 'マスタ管理',
     'masters-caption': '各種マスタの管理',
     'masters-container': {

@@ -13,24 +13,23 @@ export const useBreadcrumbStore = defineStore('breadcrumb', () => {
    */
   const params = ref<RouteParamsGeneric>({})
 
-
   /**
    * パンくず生成データの作成
    */
   const items = computed(() => {
-    const [, ...pages] = matched.value  // skip layout (index 0)
+    const [, ...pages] = matched.value // skip layout (index 0)
 
-    return pages.map(r => {
+    return pages.map((r) => {
       let routeKey = String(r.name!)
       for (const [k, v] of Object.entries(params.value)) {
-        if (r.path.includes(`:${k}`)) {
+        if (r.path.includes(`:${k}`) && typeof v === 'string') {
           routeKey += `.${String(v).toLowerCase()}`
         }
       }
       // 静的ルートの場合 _root 修飾子とする
       const i18nKey = `navi.${routeKey}`
       const routeParams = Object.fromEntries(
-        Object.entries(params.value).filter(([k]) => r.path.includes(`:${k}`))
+        Object.entries(params.value).filter(([k]) => r.path.includes(`:${k}`)),
       )
       const to: RouteLocationRaw = { name: r.name!, params: routeParams }
       const icon = resolveIcon(routeKey)
@@ -38,7 +37,7 @@ export const useBreadcrumbStore = defineStore('breadcrumb', () => {
     })
   })
 
-  return { items, matched, params}
+  return { items, matched, params }
 })
 
 if (import.meta.hot) {

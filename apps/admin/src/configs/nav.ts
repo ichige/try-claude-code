@@ -22,6 +22,11 @@ const navLinks: NavLink[] = [
     to: { name: 'dashboard' },
   },
   {
+    titleKey: 'navi.shipments',
+    icon: resolveIcon('shipments'),
+    to: { name: 'shipments' },
+  },
+  {
     titleKey: 'navi.masters',
     icon: resolveIcon('masters'),
     captionKey: 'navi.masters-caption',

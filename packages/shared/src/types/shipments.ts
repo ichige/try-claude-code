@@ -34,7 +34,7 @@ export interface ShipmentInvoiceDetails {
  */
 export interface ShipmentsItem extends CosmosItem {
   /** 取引先ID(荷主) */
-  consignorsId: string
+  consignorId: string
   /** 配送日(YYYY-MM-DD) */
   deliveryDate: string
   /** 発送地名(主に市区町村名) */
@@ -46,11 +46,11 @@ export interface ShipmentsItem extends CosmosItem {
   /** 納品先住所 */
   destinationAddress: string
   /** 配送業者ID */
-  carriersId: string|null
+  carrierId: string | null
   /** 内訳 */
   breakdown: ShipmentBreakdown[]
   /** 請求書データ */
-  invoice: ShipmentInvoice|null
+  invoice: ShipmentInvoice | null
   /** 請求書明細データ */
   details: ShipmentInvoiceDetails | null
   /** 備考 */
