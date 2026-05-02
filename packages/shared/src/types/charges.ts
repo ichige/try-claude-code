@@ -1,5 +1,8 @@
 import type { CosmosItem } from './cosmos'
 
+/**
+ * 付帯料金コード
+ */
 export type ChargeCode =
   // 配送件数
   'delivery-count' |
@@ -20,6 +23,9 @@ export type ChargeCode =
   // その他(税抜)
   'other-fee2'
 
+/**
+ * 付帯料金単位
+ */
 export type ChargeUnit =
   // 件数割増
   'count' |
@@ -29,7 +35,7 @@ export type ChargeUnit =
   'minutes'
 
 /**
- * 追加料金データ
+ * 付帯料金データ
  */
 export interface ChargeItem {
   /** アイテム種別コード */
