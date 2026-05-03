@@ -22,6 +22,14 @@ export default {
     step2: { title: '配送業者の選定' },
     step3: { title: '実績入力' },
     step4: { title: '確認' },
+    fields: {
+      consignorId: '取引先',
+      deliveryDate: '配送日',
+      origin: '発送地',
+      originAddress: '積地住所',
+      destination: '納品先',
+      destinationAddress: '納品先住所',
+    },
   },
   validation: {
     required: '{field}は必須です',

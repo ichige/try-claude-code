@@ -11,48 +11,79 @@
         <q-btn :icon="$icon('close')" flat round dense @click="close" />
       </q-card-section>
 
-      <q-stepper v-model="step" style="height: 5rem;" animated>
-        <q-step :name="1" :title="$t('shipments.step1.title')" :done="step > 1" />
-        <q-step :name="2" :title="$t('shipments.step2.title')" :icon="$icon('masters-container.carriers')" :done="step > 2" />
-        <q-step :name="3" :title="$t('shipments.step3.title')" :icon="$icon('edit-note')" :done="step > 3" />
-        <q-step :name="4" :title="$t('shipments.step4.title')" :icon="$icon('task-alt')" />
-      </q-stepper>
+      <q-stepper v-model="step" animated flat>
+        <q-step :name="1" :title="$t('shipments.step1.title')" :done="step > 1">
+          <ShipmentsStep1 ref="step1Ref" />
+        </q-step>
 
-      <div style="overflow: hidden">
-        <Transition :enter-active-class="enterClass" :leave-active-class="leaveClass" mode="out-in">
-          <div :key="step" class="row items-center justify-center q-pa-md" style="min-height: 200px">
+        <q-step :name="2" :title="$t('shipments.step2.title')" :icon="$icon('masters-container.carriers')" :done="step > 2">
+          <div class="row items-center justify-center" style="min-height: 200px">
             <div class="text-h6 text-grey-5">工事中</div>
           </div>
-        </Transition>
-      </div>
+        </q-step>
 
-      <q-separator />
+        <q-step :name="3" :title="$t('shipments.step3.title')" :icon="$icon('edit-note')" :done="step > 3">
+          <div class="row items-center justify-center" style="min-height: 200px">
+            <div class="text-h6 text-grey-5">工事中</div>
+          </div>
+        </q-step>
 
-      <q-card-actions align="right" class="q-pa-md q-gutter-x-sm">
-        <q-btn v-if="step !== 1" flat :label="$t('labels.back')" @click="back" />
-        <q-btn v-if="step !== 4" color="primary" unelevated :label="$t('labels.next')" @click="next" />
-        <q-btn v-if="step === 4" color="primary" unelevated :label="$t('labels.save')" @click="save" />
-      </q-card-actions>
+        <q-step :name="4" :title="$t('shipments.step4.title')" :icon="$icon('task-alt')">
+          <div class="row items-center justify-center" style="min-height: 200px">
+            <div class="text-h6 text-grey-5">工事中</div>
+          </div>
+        </q-step>
+
+        <template #navigation>
+          <q-stepper-navigation class="row justify-end q-gutter-x-sm q-pa-md">
+            <q-btn v-if="step !== 1" flat :label="$t('labels.back')" @click="back" />
+            <q-btn v-if="step !== 4" color="primary" unelevated :label="$t('labels.next')" @click="next" />
+            <q-btn v-if="step === 4" color="primary" unelevated :label="$t('labels.save')" @click="save" />
+          </q-stepper-navigation>
+        </template>
+      </q-stepper>
 
     </q-card>
   </q-dialog>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, provide } from 'vue'
+import type { ShipmentDraft } from './shipment-draft'
+import { shipmentDraftKey, shipmentStepKey } from './shipment-draft'
+import ShipmentsStep1 from './ShipmentsStep1.vue'
 
 const dialog = ref(false)
 const step = ref(1)
-const forward = ref(true)
+const step1Ref = ref<InstanceType<typeof ShipmentsStep1> | null>(null)
 
-const enterClass = computed(() => forward.value ? 'animated faster slideInRight' : 'animated faster slideInLeft')
-const leaveClass = computed(() => forward.value ? 'animated faster slideOutLeft' : 'animated faster slideOutRight')
+const initialDraft = (): ShipmentDraft => ({
+  consignorId: '',
+  deliveryDate: '',
+  origin: '',
+  originAddress: '',
+  destination: '',
+  destinationAddress: '',
+  carrierId: null,
+  breakdown: [],
+  invoice: null,
+  details: null,
+  notes: '',
+})
+
+const draft = ref(initialDraft())
+
+provide(shipmentDraftKey, draft)
+provide(shipmentStepKey, step)
 
 /**
  * 次へボタン
  */
-function next(): void {
-  forward.value = true
+async function next(): Promise<void> {
+  if (step.value === 1) {
+    const ok = await step1Ref.value?.formRef?.validate()
+    if (!ok) return
+  }
   step.value++
 }
 
@@ -60,7 +91,6 @@ function next(): void {
  * 戻るボタン
  */
 function back(): void {
-  forward.value = false
   step.value--
 }
 
@@ -71,10 +101,15 @@ function save(): void {
   close()
 }
 
+function reset(): void {
+  draft.value = initialDraft()
+}
+
 /**
  * ダイアログオープン
  */
 function open(): void {
+  reset()
   step.value = 1
   dialog.value = true
 }
@@ -83,6 +118,7 @@ function open(): void {
  * ダイアログクローズ
  */
 function close(): void {
+  reset()
   step.value = 1
   dialog.value = false
 }
