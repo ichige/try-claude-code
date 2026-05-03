@@ -1,14 +1,21 @@
 <template>
-  <div class="row items-center no-wrap">
+  <div class="row items-center q-mx-sm">
     <q-btn flat dense round icon="sym_o_chevron_left" size="sm" @click="prevMonth" />
 
-    <q-btn flat dense no-caps :label="appStore.processingMonthLabel">
+    <q-btn
+      flat
+      dense
+      :label="appStore.processingMonthLabel"
+      color="primary"
+      :icon="$icon('calendar-month')"
+      size="md"
+    >
       <q-popup-proxy @before-show="syncYear">
         <q-card flat style="min-width: 224px">
           <q-card-section class="row items-center justify-between q-py-xs q-px-sm">
-            <q-btn flat dense round icon="sym_o_chevron_left" @click.stop="prevYear" />
+            <q-btn flat dense round icon="sym_o_chevron_left" @click.stop="displayYear--" />
             <span class="text-subtitle2 text-weight-bold">{{ displayYear }}年</span>
-            <q-btn flat dense round icon="sym_o_chevron_right" @click.stop="nextYear" />
+            <q-btn flat dense round icon="sym_o_chevron_right" @click.stop="displayYear++" />
           </q-card-section>
 
           <q-separator />
@@ -56,14 +63,6 @@ function syncYear(): void {
  */
 function isSelected(month: number): boolean {
   return appStore.processingMonth === `${displayYear.value}${String(month).padStart(2, '0')}`
-}
-
-function prevYear(): void {
-  displayYear.value--
-}
-
-function nextYear(): void {
-  displayYear.value++
 }
 
 /**
