@@ -14,6 +14,8 @@ npm install -g azure-functions-core-tools@4
 cd functions
 # ログインする
 az login
+# ビルド実行
+npm run build
 # デプロイ実行
 func azure functionapp publish shisamo-api
 ```

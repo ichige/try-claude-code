@@ -49,15 +49,24 @@
 
 <script setup lang="ts">
 import { ref, provide } from 'vue'
+import { Loading } from 'quasar'
+import type { ShipmentsItem } from '@shisamo/shared'
 import type { ShipmentDraft } from './shipment-draft'
 import { shipmentDraftKey, shipmentStepKey } from './shipment-draft'
+import { useShipmentsStore } from 'stores/shipments'
+import { useAppStore } from 'stores/app'
 import ShipmentsStep1 from './ShipmentsStep1.vue'
+
+const shipmentsStore = useShipmentsStore()
+const appStore = useAppStore()
 
 const dialog = ref(false)
 const step = ref(1)
 const step1Ref = ref<InstanceType<typeof ShipmentsStep1> | null>(null)
+const createdItem = ref<ShipmentsItem | null>(null)
 
 const initialDraft = (): ShipmentDraft => ({
+  pk: appStore.processingMonth,
   consignorId: '',
   deliveryDate: '',
   origin: '',
@@ -84,6 +93,19 @@ async function next(): Promise<void> {
     const ok = await step1Ref.value?.formRef?.validate()
     if (!ok) return
   }
+  Loading.show()
+  try {
+    if (step.value === 1 && !createdItem.value) {
+      createdItem.value = await shipmentsStore.create({ ...draft.value })
+    } else if (createdItem.value) {
+      createdItem.value = await shipmentsStore.update(createdItem.value.id, {
+        ...draft.value,
+        _etag: createdItem.value._etag,
+      })
+    }
+  } finally {
+    Loading.hide()
+  }
   step.value++
 }
 
@@ -95,14 +117,25 @@ function back(): void {
 }
 
 /**
- * 保存ボタン（未実装）
+ * 保存ボタン
  */
-function save(): void {
-  close()
+async function save(): Promise<void> {
+  if (!createdItem.value) return
+  Loading.show()
+  try {
+    await shipmentsStore.update(createdItem.value.id, {
+      ...draft.value,
+      _etag: createdItem.value._etag,
+    })
+    close()
+  } finally {
+    Loading.hide()
+  }
 }
 
 function reset(): void {
   draft.value = initialDraft()
+  createdItem.value = null
 }
 
 /**

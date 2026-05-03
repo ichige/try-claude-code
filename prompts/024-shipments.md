@@ -149,3 +149,30 @@ prepend スロットではなく before の方が良い。
 ---
 LocationInput.vue という形でコンポーネントにするのは悪くないけど、QInputは要件によってカスタマイズが入るので、スロット部分だけ共通化した方が良くないか？
 ```
+
+## Store の準備
+
+このダイアログフォームでは、「次へ」でDBを更新するという動作にする。  
+STEP1 ～ STEP4 は言ってみればステートの変化であり、STEP4まで到達することで請求対象になるといったイメージになる。
+
+```markdown
+続いて Shipment の Store を作成してくれ。
+基本的には useConsignorsStore と同じようなものではあるが、マスタデータではないので別途用意する。
+useMastersStore の create update patch の固定版みたいなもので、list はまだ作成しなくてOK。
+```
+
+とりあえず出来た。
+
+```markdown
+STEP1で「次へ」ボタンを押したタイミングで、作成した useShipmentsStore の create を実行して、レコードを作成したい。  
+STEP2以降はステップごとに update するイメージであるので、ShipmentsDialog.vue でも引き継ぐ必要がある。
+実装できそうか？
+---
+ごめん言い忘れたけど、initialDraft で pk の初期値を appStore.processingMonth の値(YYYYMM)にしてくれ。
+月間単位でフェッチするためやな。
+```
+
+動きは出来ているが、ロジックが微妙である。
+
+
+
