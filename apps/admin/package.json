@@ -19,7 +19,7 @@
   "dependencies": {
     "@quasar/extras": "^1.16.4",
     "@shisamo/shared": "workspace:*",
-    "axios": "^1.15.2",
+    "axios": "^1.16.0",
     "pinia": "^3.0.1",
     "pinia-plugin-persistedstate": "^4.7.1",
     "quasar": "^2.16.0",
