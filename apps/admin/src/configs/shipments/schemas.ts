@@ -11,3 +11,7 @@ export const step1Schema = z.object({
   destination:  z.string().min(1, t('validation.required')),
   destinationAddress: z.string().default(''),
 })
+
+export const step2Schema = z.object({
+  carrierId: z.string().min(1, t('validation.required')),
+})

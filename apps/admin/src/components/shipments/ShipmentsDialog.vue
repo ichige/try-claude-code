@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { ref, provide } from 'vue'
 import { Loading } from 'quasar'
-import type { ShipmentDraft } from './shipment-draft'
 import { shipmentDraftKey, shipmentStepKey } from './shipment-draft'
 import { useShipmentsStore } from 'stores/shipments'
 import { useShipmentDraft } from 'composables/shipments/use-shipment-draft'
 import ShipmentsStep1 from './ShipmentsStep1.vue'
+import ShipmentsStep2 from './ShipmentsStep2.vue'
 
 const shipmentsStore = useShipmentsStore()
 const { initialDraft } = useShipmentDraft()
@@ -13,6 +13,7 @@ const { initialDraft } = useShipmentDraft()
 const dialog = ref(false)
 const step = ref(1)
 const step1Ref = ref<InstanceType<typeof ShipmentsStep1> | null>(null)
+const step2Ref = ref<InstanceType<typeof ShipmentsStep2> | null>(null)
 
 const draft = ref(initialDraft())
 
@@ -27,15 +28,18 @@ async function next(): Promise<void> {
     const ok = await step1Ref.value?.formRef?.validate()
     if (!ok) return
   }
+  if (step.value === 2) {
+    const ok = await step2Ref.value?.formRef?.validate()
+    if (!ok) return
+  }
   Loading.show()
   try {
     if (!draft.value.id) {
       const item = await shipmentsStore.create({ ...draft.value })
-      draft.value.id = item.id
-      draft.value._etag = item._etag
+      draft.value = { ...draft.value, ...item }
     } else {
       const item = await shipmentsStore.update(draft.value.id, { ...draft.value })
-      draft.value._etag = item._etag
+      draft.value = { ...draft.value, ...item }
     }
   } finally {
     Loading.hide()
@@ -115,9 +119,7 @@ defineExpose<{ open(): void }>({ open })
           :icon="$icon('masters-container.carriers')"
           :done="step > 2"
         >
-          <div class="row items-center justify-center" style="min-height: 200px">
-            <div class="text-h6 text-grey-5">工事中</div>
-          </div>
+          <ShipmentsStep2 ref="step2Ref" />
         </q-step>
 
         <q-step

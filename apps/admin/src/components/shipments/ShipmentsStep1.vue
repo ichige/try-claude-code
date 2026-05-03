@@ -6,7 +6,7 @@ import { useAppStore } from 'stores/app'
 import { zodRule } from 'src/utils/zod-rule'
 import { shipmentDraftKey } from './shipment-draft'
 import ForwarderSelect from './ForwarderSelect.vue'
-import { step1Schema } from 'src/configs/shipments/step1'
+import { step1Schema } from 'src/configs/shipments/schemas'
 
 const draft = inject(shipmentDraftKey)!
 const appStore = useAppStore()

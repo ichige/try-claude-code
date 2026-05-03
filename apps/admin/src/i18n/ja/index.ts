@@ -29,6 +29,7 @@ export default {
       originAddress: '積地住所',
       destination: '納品先',
       destinationAddress: '納品先住所',
+      carrierId: '配送業者',
     },
   },
   validation: {

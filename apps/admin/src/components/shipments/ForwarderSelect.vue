@@ -1,3 +1,11 @@
+<script setup lang="ts">
+import { useForwardersStore } from 'stores/masters/forwarders'
+
+const emit = defineEmits<{ select: [city: string] }>()
+
+const forwardersStore = useForwardersStore()
+</script>
+
 <template>
   <q-btn flat dense icon="sym_o_list" size="sm">
     <q-menu auto-close>
@@ -14,11 +22,3 @@
     </q-menu>
   </q-btn>
 </template>
-
-<script setup lang="ts">
-import { useForwardersStore } from 'stores/masters/forwarders'
-
-const emit = defineEmits<{ select: [city: string] }>()
-
-const forwardersStore = useForwardersStore()
-</script>
