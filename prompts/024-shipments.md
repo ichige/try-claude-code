@@ -178,4 +178,13 @@ STEP2以降はステップごとに update するイメージであるので、S
 draft と createdItem と分けないと実装できないものかね？
 ```
 
+## Schema + Validation
+
+小手先のバリデートを zod スキーマへ修正する。
+
+```markdown
+ShipmentsDialog.vue の initialDraft や、ShipmentsStep1.vue の requiredStr などは composable に移動させよう。
+STEP1のバリデートは configs/dialog-form/consignors.ts を参考にして、zod スキーマとして定義しつつ、
+ShipmentsStep1.vue で参照できると思うのだが、どうだろうか？
+```
 

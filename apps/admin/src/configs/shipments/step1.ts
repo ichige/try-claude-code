@@ -1,0 +1,13 @@
+import { z } from 'zod'
+import { i18n } from 'src/boot/i18n'
+
+const { t } = i18n.global
+
+export const step1Schema = z.object({
+  consignorId: z.string().min(1, t('validation.required')),
+  deliveryDate: z.string().min(1, t('validation.required')),
+  origin:       z.string().min(1, t('validation.required')),
+  originAddress: z.string().default(''),
+  destination:  z.string().min(1, t('validation.required')),
+  destinationAddress: z.string().default(''),
+})

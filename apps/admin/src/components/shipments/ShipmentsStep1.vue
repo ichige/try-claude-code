@@ -1,22 +1,18 @@
 <script setup lang="ts">
 import { ref, computed, inject } from 'vue'
-import { useI18n } from 'vue-i18n'
-import { z } from 'zod'
 import type { QForm } from 'quasar'
 import { useConsignorsStore } from 'stores/masters/consignors'
 import { useAppStore } from 'stores/app'
 import { zodRule } from 'src/utils/zod-rule'
 import { shipmentDraftKey } from './shipment-draft'
 import ForwarderSelect from './ForwarderSelect.vue'
+import { step1Schema } from 'src/configs/shipments/step1'
 
-const { t } = useI18n()
 const draft = inject(shipmentDraftKey)!
 const appStore = useAppStore()
 const consignorsStore = useConsignorsStore()
 const datePopupRef = ref<{ hide(): void } | null>(null)
 const formRef = ref<InstanceType<typeof QForm> | null>(null)
-
-const requiredStr = z.string().min(1, t('validation.required'))
 
 /**
  * 顧客の選択
@@ -67,7 +63,7 @@ defineExpose({ formRef })
           dense
           emit-value
           map-options
-          :rules="[zodRule(requiredStr, $t('shipments.fields.consignorId'))]"
+          :rules="[zodRule(step1Schema.shape.consignorId, $t('shipments.fields.consignorId'))]"
           class="col-8"
         >
           <template #prepend>
@@ -81,7 +77,7 @@ defineExpose({ formRef })
           outlined
           dense
           readonly
-          :rules="[zodRule(requiredStr, $t('shipments.fields.deliveryDate'))]"
+          :rules="[zodRule(step1Schema.shape.deliveryDate, $t('shipments.fields.deliveryDate'))]"
           class="col-4"
         >
           <template #prepend>
@@ -121,7 +117,7 @@ defineExpose({ formRef })
           :label="$t('shipments.fields.origin')"
           outlined
           dense
-          :rules="[zodRule(requiredStr, $t('shipments.fields.origin'))]"
+          :rules="[zodRule(step1Schema.shape.origin, $t('shipments.fields.origin'))]"
           class="col-4"
         >
           <template #before>
@@ -155,7 +151,7 @@ defineExpose({ formRef })
           :label="$t('shipments.fields.destination')"
           outlined
           dense
-          :rules="[zodRule(requiredStr, $t('shipments.fields.destination'))]"
+          :rules="[zodRule(step1Schema.shape.destination, $t('shipments.fields.destination'))]"
           class="col-4"
         >
           <template #before>

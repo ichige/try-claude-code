@@ -4,30 +4,15 @@ import { Loading } from 'quasar'
 import type { ShipmentDraft } from './shipment-draft'
 import { shipmentDraftKey, shipmentStepKey } from './shipment-draft'
 import { useShipmentsStore } from 'stores/shipments'
-import { useAppStore } from 'stores/app'
+import { useShipmentDraft } from 'composables/shipments/use-shipment-draft'
 import ShipmentsStep1 from './ShipmentsStep1.vue'
 
 const shipmentsStore = useShipmentsStore()
-const appStore = useAppStore()
+const { initialDraft } = useShipmentDraft()
 
 const dialog = ref(false)
 const step = ref(1)
 const step1Ref = ref<InstanceType<typeof ShipmentsStep1> | null>(null)
-
-const initialDraft = (): ShipmentDraft => ({
-  pk: appStore.processingMonth,
-  consignorId: '',
-  deliveryDate: '',
-  origin: '',
-  originAddress: '',
-  destination: '',
-  destinationAddress: '',
-  carrierId: null,
-  breakdown: [],
-  invoice: null,
-  details: null,
-  notes: '',
-})
 
 const draft = ref(initialDraft())
 
