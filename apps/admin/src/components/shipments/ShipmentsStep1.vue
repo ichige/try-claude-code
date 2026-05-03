@@ -67,7 +67,11 @@
           outlined dense
           :rules="[zodRule(requiredStr, $t('shipments.fields.origin'))]"
           class="col-4"
-        />
+        >
+          <template #before>
+            <ForwarderSelect @select="val => draft.origin = val" />
+          </template>
+        </q-input>
         <q-input
           v-model="draft.originAddress"
           :label="$t('shipments.fields.originAddress')"
@@ -93,7 +97,11 @@
           outlined dense
           :rules="[zodRule(requiredStr, $t('shipments.fields.destination'))]"
           class="col-4"
-        />
+        >
+          <template #before>
+            <ForwarderSelect @select="val => draft.destination = val" />
+          </template>
+        </q-input>
         <q-input
           v-model="draft.destinationAddress"
           :label="$t('shipments.fields.destinationAddress')"
@@ -115,6 +123,7 @@ import { useConsignorsStore } from 'stores/masters/consignors'
 import { useAppStore } from 'stores/app'
 import { zodRule } from 'src/utils/zod-rule'
 import { shipmentDraftKey } from './shipment-draft'
+import ForwarderSelect from './ForwarderSelect.vue'
 
 const { t } = useI18n()
 const draft = inject(shipmentDraftKey)!
