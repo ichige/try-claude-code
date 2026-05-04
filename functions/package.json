@@ -10,7 +10,6 @@
     "build": "node build.js",
     "typecheck": "tsc",
     "dev": "func start",
-    "predev": "npm run build",
     "lint": "eslint src/",
     "lint:fix": "eslint src/ --fix",
     "format": "prettier --write \"src/**/*.ts\"",
@@ -22,15 +21,15 @@
     "@azure/cosmos": "^4.9.3",
     "@azure/functions": "^4.14.0",
     "@azure/identity": "^4.13.1",
-    "zod": "^4.3.6"
+    "zod": "^4.4.2"
   },
   "devDependencies": {
     "@types/node": "^24.12.2",
     "esbuild": "^0.28.0",
-    "eslint": "^10.2.1",
+    "eslint": "^10.3.0",
     "prettier": "^3.8.3",
     "typescript": "^5.0.0",
-    "typescript-eslint": "^8.59.0",
+    "typescript-eslint": "^8.59.1",
     "vitest": "^4.1.5"
   },
   "engines": {

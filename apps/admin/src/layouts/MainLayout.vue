@@ -6,6 +6,7 @@
         <BreadcrumbNav />
 
         <q-space />
+        <MonthSelector />
         <AccountSetting />
       </q-toolbar>
     </q-header>
@@ -35,6 +36,7 @@
 import ProductLogo from 'components/layouts/ProductLogo.vue'
 import BreadcrumbNav from 'components/layouts/BreadcrumbNav.vue'
 import EssentialLink from 'components/layouts/EssentialLink.vue'
+import MonthSelector from 'components/layouts/MonthSelector.vue'
 import AccountSetting from 'components/layouts/AccountSetting.vue'
 import DialogForm from 'components/dialogs/DialogForm.vue'
 import { useUIStore } from 'stores/ui'
