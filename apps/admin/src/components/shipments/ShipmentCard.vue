@@ -10,20 +10,6 @@ const props = defineProps<{ item: ShipmentDraft }>()
 const consignorsStore = useConsignorsStore()
 const carriersStore = useCarriersStore()
 
-const consignorName = computed(
-  () =>
-    consignorsStore.list.find((c) => c.id === props.item.consignorId)?.companyName ??
-    props.item.consignorId,
-)
-
-const carrierName = computed(() => {
-  if (!props.item.carrierId) return '―'
-  return (
-    carriersStore.list.find((c) => c.id === props.item.carrierId)?.companyName ??
-    props.item.carrierId
-  )
-})
-
 const breakdownRows = computed(() =>
   BREAKDOWN_DEFS.map((def) => ({
     code: def.code,
@@ -53,7 +39,7 @@ const breakdownRows = computed(() =>
             </span>
           </q-item-label>
         </q-item-section>
-        <q-item-section>{{ consignorName }}</q-item-section>
+        <q-item-section>{{ consignorsStore.nameById(item.consignorId) }}</q-item-section>
       </q-item>
       <q-item>
         <q-item-section style="max-width: 6rem">
@@ -157,7 +143,7 @@ const breakdownRows = computed(() =>
             </span>
           </q-item-label>
         </q-item-section>
-        <q-item-section>{{ carrierName }}</q-item-section>
+        <q-item-section>{{ carriersStore.nameById(item.carrierId) }}</q-item-section>
       </q-item>
     </q-list>
 

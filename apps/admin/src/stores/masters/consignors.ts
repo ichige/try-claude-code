@@ -8,7 +8,16 @@ import { createMasterStore } from './factory'
  */
 export const useConsignorsStore = defineStore('masters/consignors', () => {
   const store = createMasterStore<ConsignorsItem>('Consignors')
-  return store satisfies MasterStore
+
+  /**
+   * ID から取引先名を返す。存在しない場合は ID をそのまま返す。
+   * @param id - 取引先 ID
+   */
+  function nameById(id: string): string {
+    return store.getById(id)?.companyName ?? id
+  }
+
+  return { ...store, nameById } satisfies MasterStore & { nameById: typeof nameById }
 })
 
 if (import.meta.hot) {

@@ -16,6 +16,7 @@ const forwardersStore = useForwardersStore()
 const datePopupRef = ref<{ hide(): void } | null>(null)
 const formRef = ref<InstanceType<typeof QForm> | null>(null)
 
+
 /**
  * 顧客の選択
  */
@@ -72,6 +73,27 @@ defineExpose({ formRef })
       </div>
 
       <div class="row q-col-gutter-sm">
+        <!-- 取引先 -->
+        <q-input
+          :model-value="consignorName"
+          :label="$t('shipments.fields.consignorId')"
+          outlined
+          dense
+          readonly
+          :rules="[(_val) => zodRule(step1Schema.shape.consignorId)(draft.consignorId)]"
+          class="col-6"
+        >
+          <template #before>
+            <ListSelectBtn
+              :options="consignorOptions"
+              @select="(val) => (draft.consignorId = val)"
+            />
+          </template>
+          <template #prepend>
+            <q-icon :name="$icon('companyName')" size="xs" />
+          </template>
+        </q-input>
+
         <!-- 配送日 -->
         <q-input
           :model-value="draft.deliveryDate"
@@ -99,27 +121,6 @@ defineExpose({ formRef })
           </template>
           <template #prepend>
             <q-icon :name="$icon('calendar-month')" size="xs" />
-          </template>
-        </q-input>
-
-        <!-- 取引先 -->
-        <q-input
-          :model-value="consignorName"
-          :label="$t('shipments.fields.consignorId')"
-          outlined
-          dense
-          readonly
-          :rules="[(_val) => zodRule(step1Schema.shape.consignorId)(draft.consignorId)]"
-          class="col-6"
-        >
-          <template #before>
-            <ListSelectBtn
-              :options="consignorOptions"
-              @select="(val) => (draft.consignorId = val)"
-            />
-          </template>
-          <template #prepend>
-            <q-icon :name="$icon('companyName')" size="xs" />
           </template>
         </q-input>
       </div>

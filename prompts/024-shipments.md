@@ -312,4 +312,19 @@ ChargesPage.vue の計算シミュレータ(金額) simulatorYen は、マイナ
 これと同じ動作にならないのは理由があるはずだ？
 ```
 
+## 取引先名や配送業者名などを取得するメソッドをStoreに追加
 
+```markdown
+ShipmentCard.vue にある、consignorName や、carrierName は、各ストアのメソッドとして定義できないものかな？
+```
+
+```markdown
+ShipmentsStep1.vue の consignorName の input は readonly だけど、クリックイベントは拾えないのかね？
+要するに、input 要素とアイコンとどっちでも反応してほしいわけだ。
+面倒そうやな。
+単に子のクリックイベントを伝播できないものか？
+試しに入れてみてくれ。
+input ではなくprepend の icon のクリックイベントにすることもできるか？
+やっぱ慣れの問題だな。元にもどしておいてくれ。
+明日は一覧表示の開発へ進む予定だ。
+```
