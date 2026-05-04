@@ -328,3 +328,24 @@ input ではなくprepend の icon のクリックイベントにすることも
 やっぱ慣れの問題だな。元にもどしておいてくれ。
 明日は一覧表示の開発へ進む予定だ。
 ```
+
+## 取引一覧作成
+
+いくつかマスタ系のテーブルがあるので、それを踏襲するだけであっさり作成できるはずである。
+
+```markdown
+ShipmentsPage.vue に Shipments コンテナのレコードを一覧表示する QTable を作成したい。
+まずは Store の調整から始める。
+stores/masters 配下の各マスタStoreでは、factory.ts の共通利用で items に全件保持している。
+useShipmentsStore では、月単位で一覧を管理するため、動作が異なることに注意する。
+- fetchAll に相当するメソッドでは、pk 指定による useAppStore.processingMonth による絞り込みが必要。
+- items の管理も processingMonth というキーが必要になり、processingMonth の変更で、中身を入れ替える。
+    - マスタデータと違って、都度最新化するため、processingMonth が変わるごとに毎回フェッチする。
+    - 管理対象は processingMonth だけになり、processingMonth が変わったタイミングで、以前まで保持していたデータは完全に入れ替える。
+- マスタデータ同様に、prefetch メソッドを追加して、prefetch-guard.ts ルータガードで実行する。
+このような仕様となるが、実装できそうか？
+```
+
+頼んでもいなかったけど、prefetch を Promise.all で実装してくれた。
+
+
