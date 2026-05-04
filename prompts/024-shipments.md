@@ -247,3 +247,19 @@ ShipmentsItem の notes 欄だけの入力フォームを表示する。
 - 保存で更新して完了。
 こんなイメージで作成できそうか？
 ```
+
+## UI微修正
+
+まずはセレクターに簡易フィルタ機能を追加する。
+
+```markdown
+ForwarderSelect.vue で、件数が多い場合に絞り込み用の簡易フィルタを追加したい。
+実装できるか？
+あと、このセレクターの機能は Forwarder に限らず利用するので、抽象的な名前にしておいた方が良さそう。
+```
+
+取引先選択も同じUIを使用する。
+
+```markdown
+ShipmentsStep1.vue の取引先(consignorId)選択でも、ListSelectBtn.vue が利用できるかな？
+```
