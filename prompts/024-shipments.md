@@ -231,3 +231,19 @@ packages/shared/src/types/shipments.ts にある ShipmentBreakdown である。
 ```markdown
 breakdown: ShipmentBreakdown では、label フィールドが不要になったんで、削除しておいてくれ。
 ```
+
+## STEP4 の入力フォームを作成
+
+ここでは備考欄のみ変更できる。
+「承認」して初めて請求書発行対象になるというイメージではあるが、現時点ではまだステート管理はしない。
+
+```markdown
+STEP4 では STEP1 ～ STEP3 までに入力した内容を表示し、
+ShipmentsItem の notes 欄だけの入力フォームを表示する。
+- 入力内容の表示は QCard を使う。
+    - たぶんこのコンポーネントを再利用するので、ShipmentsItem を受けとり、表示するようなイメージで。
+    - QList + QItem あたりの組み合わせかな？
+- 入力内容の下部に notes 入力欄(textarea)を設ける。
+- 保存で更新して完了。
+こんなイメージで作成できそうか？
+```

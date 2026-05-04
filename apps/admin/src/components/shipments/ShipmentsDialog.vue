@@ -7,6 +7,7 @@ import { useShipmentDraft } from 'composables/shipments/use-shipment-draft'
 import ShipmentsStep1 from './ShipmentsStep1.vue'
 import ShipmentsStep2 from './ShipmentsStep2.vue'
 import ShipmentsStep3 from './ShipmentsStep3.vue'
+import ShipmentsStep4 from './ShipmentsStep4.vue'
 
 const shipmentsStore = useShipmentsStore()
 const { initialDraft } = useShipmentDraft()
@@ -133,9 +134,7 @@ defineExpose<{ open(): void }>({ open })
         </q-step>
 
         <q-step :name="4" :title="$t('shipments.step4.title')" :icon="$icon('task-alt')">
-          <div class="row items-center justify-center" style="min-height: 200px">
-            <div class="text-h6 text-grey-5">工事中</div>
-          </div>
+          <ShipmentsStep4 />
         </q-step>
 
         <template #navigation>
