@@ -11,7 +11,6 @@ export type ShipmentBreakdownCode = 'distance' | ChargeCode
  */
 export interface ShipmentBreakdown {
   code: string
-  label: string
   quantity: number
 }
 
