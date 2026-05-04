@@ -79,7 +79,7 @@ defineExpose({ formRef })
           outlined
           dense
           readonly
-          :rules="[zodRule(step1Schema.shape.deliveryDate, $t('shipments.fields.deliveryDate'))]"
+          :rules="[zodRule(step1Schema.shape.deliveryDate)]"
           class="col-4"
         >
           <template #before>
@@ -109,13 +109,7 @@ defineExpose({ formRef })
           outlined
           dense
           readonly
-          :rules="[
-            (_val) =>
-              zodRule(
-                step1Schema.shape.consignorId,
-                $t('shipments.fields.consignorId'),
-              )(draft.consignorId),
-          ]"
+          :rules="[(_val) => zodRule(step1Schema.shape.consignorId)(draft.consignorId)]"
           class="col-6"
         >
           <template #before>
@@ -147,9 +141,10 @@ defineExpose({ formRef })
           :label="$t('shipments.fields.origin')"
           outlined
           dense
-          :rules="[zodRule(step1Schema.shape.origin, $t('shipments.fields.origin'))]"
+          :rules="[zodRule(step1Schema.shape.origin)]"
           class="col-4"
           clearable
+          @clear="() => (draft.origin = '')"
         >
           <template #before>
             <ListSelectBtn :options="forwarderOptions" @select="(val) => (draft.origin = val)" />
@@ -167,6 +162,7 @@ defineExpose({ formRef })
           dense
           clearable
           class="col-8"
+          @clear="() => (draft.originAddress = '')"
         >
           <template #prepend>
             <q-icon :name="$icon('address')" size="xs" />
@@ -193,8 +189,9 @@ defineExpose({ formRef })
           outlined
           dense
           clearable
-          :rules="[zodRule(step1Schema.shape.destination, $t('shipments.fields.destination'))]"
+          :rules="[zodRule(step1Schema.shape.destination)]"
           class="col-4"
+          @clear="() => (draft.destination = '')"
         >
           <template #before>
             <ListSelectBtn
@@ -213,6 +210,7 @@ defineExpose({ formRef })
           dense
           clearable
           class="col-8"
+          @clear="() => (draft.destinationAddress = '')"
         >
           <template #prepend>
             <q-icon :name="$icon('address')" size="xs" />

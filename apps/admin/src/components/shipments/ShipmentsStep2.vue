@@ -34,7 +34,7 @@ defineExpose({ formRef })
           dense
           emit-value
           map-options
-          :rules="[zodRule(step2Schema.shape.carrierId, $t('shipments.fields.carrierId'))]"
+          :rules="[zodRule(step2Schema.shape.carrierId)]"
           class="col-8"
         >
           <template #prepend>

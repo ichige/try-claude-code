@@ -35,7 +35,7 @@
           outlined dense
           :readonly="step === 3"
           maxlength="32"
-          :rules="step === 1 ? [zodRule(nameSchema, $t('tariffs.fields.name'))] : []"
+          :rules="step === 1 ? [zodRule(nameSchema)] : []"
           class="col q-ml-md"
         >
           <template #prepend>
@@ -232,8 +232,8 @@ const { t } = useI18n()
  * マスタ名のバリデート
  */
 const nameSchema = z.string()
-  .min(1, t('validation.required'))
-  .max(32, t('validation.maxLength', { max: 32 }))
+  .min(1, t('validation.required', { field: t('tariffs.fields.name') }))
+  .max(32, t('validation.maxLength', { field: t('tariffs.fields.name'), max: 32 }))
 
 const draft = inject(tariffDraftKey)!
 const step = inject(tariffStepKey)!

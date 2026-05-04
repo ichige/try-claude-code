@@ -16,10 +16,10 @@ export const label = t('navi.masters-container.consignors')
  * 入力値のスキーマ
  */
 export const schema = z.object({
-  companyName: z.string().min(1, t('validation.required')),
+  companyName: z.string().min(1, t('validation.required', { field: t('containers.fields.companyName') })),
   companyCode: z.string().default(''),
   invoiceNumber: z.string().default(''),
-  paymentRate: z.coerce.number({ error: t('validation.numeric') }),
+  paymentRate: z.coerce.number({ error: t('validation.numeric', { field: t('containers.fields.paymentRate') }) }),
   postalCode: z.string().default(''),
   prefecture: z.string().default(''),
   cityStreet: z.string().default(''),
@@ -69,7 +69,7 @@ export function buildItems(form: Record<string, string | number | boolean | null
           component: () => h(QInput, {
             modelValue: form['companyName'], 'onUpdate:modelValue': upd('companyName'),
             label: t('containers.fields.companyName'), outlined: true, dense: true,
-            rules: [zodRule(schema.shape['companyName'] as z.ZodType, t('containers.fields.companyName'))],
+            rules: [zodRule(schema.shape['companyName'] as z.ZodType)],
           }, { prepend: () => h(QIcon, { name: resolveIcon('companyName'), size: 'xs' }) }),
         },
         {
@@ -91,7 +91,7 @@ export function buildItems(form: Record<string, string | number | boolean | null
           component: () => h(QInput, {
             modelValue: form['paymentRate'], 'onUpdate:modelValue': upd('paymentRate'),
             label: t('containers.fields.paymentRate'), type: 'number', inputClass: 'text-right', outlined: true, dense: true,
-            rules: [zodRule(schema.shape['paymentRate'] as z.ZodType, t('containers.fields.paymentRate'))],
+            rules: [zodRule(schema.shape['paymentRate'] as z.ZodType)],
           }, { prepend: () => h(QIcon, { name: resolveIcon('paymentRate'), size: 'xs' }) }),
         },
       ],

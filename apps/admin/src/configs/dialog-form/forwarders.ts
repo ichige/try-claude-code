@@ -16,8 +16,8 @@ export const label = t('navi.masters-container.forwarders')
  * 入力値のスキーマ検証
  */
 export const schema = z.object({
-  prefecture: z.string().min(1, t('validation.required')),
-  city: z.string().min(1, t('validation.required')),
+  prefecture: z.string().min(1, t('validation.required', { field: t('containers.fields.prefecture') })),
+  city: z.string().min(1, t('validation.required', { field: t('containers.fields.city') })),
   notes: z.string().default(''),
 })
 
@@ -51,7 +51,7 @@ export function buildItems(form: Record<string, string | number | boolean | null
           component: () => h(QInput, {
             modelValue: form['prefecture'], 'onUpdate:modelValue': upd('prefecture'),
             label: t('containers.fields.prefecture'), outlined: true, dense: true,
-            rules: [zodRule(schema.shape['prefecture'] as z.ZodType, t('containers.fields.prefecture'))],
+            rules: [zodRule(schema.shape['prefecture'] as z.ZodType)],
           }, { prepend: () => h(QIcon, { name: resolveIcon('prefecture'), size: 'xs' }) }),
         },
         {
@@ -59,7 +59,7 @@ export function buildItems(form: Record<string, string | number | boolean | null
           component: () => h(QInput, {
             modelValue: form['city'], 'onUpdate:modelValue': upd('city'),
             label: t('containers.fields.city'), outlined: true, dense: true,
-            rules: [zodRule(schema.shape['city'] as z.ZodType, t('containers.fields.city'))],
+            rules: [zodRule(schema.shape['city'] as z.ZodType)],
           }, { prepend: () => h(QIcon, { name: resolveIcon('city'), size: 'xs' }) }),
         },
       ],

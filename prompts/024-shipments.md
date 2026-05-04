@@ -263,3 +263,30 @@ ForwarderSelect.vue で、件数が多い場合に絞り込み用の簡易フィ
 ```markdown
 ShipmentsStep1.vue の取引先(consignorId)選択でも、ListSelectBtn.vue が利用できるかな？
 ```
+
+clearable を設定すると、null になるので調整。
+
+```markdown
+ShipmentsDialog.vue で Qinput に clearable を指定すると、model 値が null になるようだ。  
+強制的に空文字に変換できるものか？
+---
+onClear を使うのでは？
+```
+
+バリデーションメッセージがおかしいので修正。
+
+```markdown
+draft.destination で zodRule を利用しているが、`{field}は必須です` ← `は必須です` と表示される。
+第２引数が悪いのか？
+なぜ `{field}` が消える？
+legacy false とはなんだ？
+ということで、zod に渡す前に t 変換せずに、キーだけ返ってきたものを t 変換するという修正をしたかったわけだだ？
+しかし、その変換方法って、zodRuleに渡す時点で、t に引数渡せばよいのでは？
+
+t('validation.required', { field: t('xxxxx')) 
+となるのでは？
+
+スキーマがフィールド名に依存するとは？
+
+いや、私が言ってるのは、zodRule の第２引数が不要なのではなないか？という事だけど。
+```
