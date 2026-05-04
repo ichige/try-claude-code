@@ -4,6 +4,7 @@ import type { QForm } from 'quasar'
 import { useCarriersStore } from 'stores/masters/carriers'
 import { zodRule } from 'src/utils/zod-rule'
 import { shipmentDraftKey } from './shipment-draft'
+import ListSelectBtn from 'src/components/ListSelectBtn.vue'
 import { step2Schema } from 'src/configs/shipments/schemas'
 
 const draft = inject(shipmentDraftKey)!
@@ -12,6 +13,10 @@ const formRef = ref<InstanceType<typeof QForm> | null>(null)
 
 const carrierOptions = computed(() =>
   carriersStore.list.map((c) => ({ label: c.companyName, value: c.id })),
+)
+
+const carrierName = computed(
+  () => carriersStore.list.find((c) => c.id === draft.value.carrierId)?.companyName ?? '',
 )
 
 defineExpose({ formRef })
@@ -26,21 +31,25 @@ defineExpose({ formRef })
         <div class="col bg-grey-5" style="height: 1px" />
       </div>
       <div class="row q-col-gutter-sm">
-        <q-select
-          v-model="draft.carrierId"
-          :options="carrierOptions"
+        <q-input
+          :model-value="carrierName"
           :label="$t('shipments.fields.carrierId')"
           outlined
           dense
-          emit-value
-          map-options
-          :rules="[zodRule(step2Schema.shape.carrierId)]"
-          class="col-8"
+          readonly
+          :rules="[(_val) => zodRule(step2Schema.shape.carrierId)(draft.carrierId)]"
+          class="col-6"
         >
+          <template #before>
+            <ListSelectBtn
+              :options="carrierOptions"
+              @select="(val) => (draft.carrierId = val)"
+            />
+          </template>
           <template #prepend>
             <q-icon :name="$icon('masters-container.carriers')" size="xs" />
           </template>
-        </q-select>
+        </q-input>
       </div>
     </q-card-section>
   </q-form>

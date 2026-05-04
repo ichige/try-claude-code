@@ -16,6 +16,10 @@ const draft = inject(shipmentDraftKey)!
       outlined
       dense
       autogrow
-    />
+    >
+      <template v-slot:prepend>
+        <q-icon :name="$icon('other')" />
+      </template>
+    </q-input>
   </div>
 </template>

@@ -293,5 +293,23 @@ t('validation.required', { field: t('xxxxx'))
 zodRule の第2引数は不要になったんで、削除してもらってOKす。
 テストコードも微妙なのかも。
 
-
 ```
+
+STEP2のUIもSTEP1を踏襲させる。
+
+```markdown
+ShipmentsStep2.vue の 配送業者選択(draft.carrierId) だけど、STEP1 と同様に ListSelectBtn を利用するように修正してほしい。
+```
+
+STEP3の数値入力も調整。
+
+```markdown
+ShipmentsStep3.vue の数値入力だけど、utils/clamp.ts の toNonNegative でマイナス値を制御できるか？
+普通にマイナス値が入力できるぜ？フォーカスが外れると、0に更新されるようだけど。
+そういう事ではなく、値がマイナスになっても、フォー数が外れないと更新されないって言っているのだけど？
+
+ChargesPage.vue の計算シミュレータ(金額) simulatorYen は、マイナス値がそもそも入らない。
+これと同じ動作にならないのは理由があるはずだ？
+```
+
+
