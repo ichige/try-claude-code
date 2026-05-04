@@ -18,14 +18,14 @@ export interface ShipmentBreakdown {
  * 取引先への請求書データ
  */
 export interface ShipmentInvoice {
-  // TODO
+  [key: string]: unknown
 }
 
 /**
  * 取引先への明細書データ
  */
 export interface ShipmentInvoiceDetails {
-  // TODO
+  [key: string]: unknown
 }
 
 /**
