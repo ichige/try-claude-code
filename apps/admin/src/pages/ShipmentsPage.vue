@@ -83,6 +83,14 @@ const rows = computed(() => {
               <q-tooltip v-if="value">{{ value }}</q-tooltip>
             </q-td>
           </template>
+
+          <!--suppress VueUnrecognizedSlot アクション -->
+          <template #body-cell-actions="props">
+            <q-td :props="props" class="q-gutter-x-sm">
+              <q-btn size="xs" :icon="$icon('edit')" color="info" unelevated @click="dialogRef?.openEdit(props.row)" />
+              <q-btn size="xs" :icon="$icon('delete')" color="negative" unelevated disable />
+            </q-td>
+          </template>
         </q-table>
       </q-card-section>
     </q-card>

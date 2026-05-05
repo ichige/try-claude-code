@@ -62,6 +62,7 @@ export function useShipmentsColumns() {
       field: 'notes',
       align: 'left',
     },
+    { name: 'actions', label: '', field: 'id', align: 'center', sortable: false },
   ]
 
   return { columns }

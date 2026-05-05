@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, provide } from 'vue'
 import { Loading } from 'quasar'
+import type { ShipmentsItem } from '@shisamo/shared'
 import { shipmentDraftKey, shipmentStepKey } from './shipment-draft'
 import { useShipmentsStore } from 'stores/shipments'
 import { useShipmentDraft } from 'composables/shipments/use-shipment-draft'
@@ -96,11 +97,22 @@ function reset(): void {
 }
 
 /**
- * ダイアログオープン
+ * ダイアログオープン（新規作成）
  */
 function open(): void {
   reset()
   step.value = 1
+  dialog.value = true
+}
+
+/**
+ * 既存取引の編集ダイアログを開く。
+ * completed の場合は STEP4、それ以外は STEP1 から表示する。
+ * @param item - 編集対象の取引アイテム
+ */
+function openEdit(item: ShipmentsItem): void {
+  draft.value = { ...item }
+  step.value = item.status === 'completed' ? 4 : 1
   dialog.value = true
 }
 
@@ -113,7 +125,7 @@ function close(): void {
   dialog.value = false
 }
 
-defineExpose<{ open(): void }>({ open })
+defineExpose<{ open(): void; openEdit(item: ShipmentsItem): void }>({ open, openEdit })
 </script>
 
 <template>

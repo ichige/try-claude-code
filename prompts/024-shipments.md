@@ -417,4 +417,11 @@ Shipments でステート管理をしたいので、status 的なフィールド
 勝手に更新処理まで追加した。
 まぁ、どーせ必要だから良しとする。
 
-
+```markdown
+ShipmentsPage.vue に 汎用マスタ ContainerTable.vue を参考にして、actions スロットに、編集ボタンと削除ボタンを追加した。
+- 削除ボタンはまだ実装しないで表示だけでOK。
+- 編集ボタンでは、選択した取引データを ShipmentsDialog.vue で開きたい。
+    - status が `completed` の場合はSTEP4表示。
+    - それ以外の status であれば、STEP1から表示でOK。
+実装できそうか？
+```
