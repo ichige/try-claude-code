@@ -450,4 +450,23 @@ ShipmentsPage.vue に 汎用マスタ ContainerTable.vue を参考にして、ac
 ```markdown
 「次へ」ボタンは status の変更だけを行い、DB更新はしない。
 と指示をしたけど、そうはなってないぞ？
+---
+ShipmentsDialog の 編集モードで、useShipmentsStore 管理の item をそのまま参照してないか？
+編集対象とするなら、オブジェクトを複製するべきだと思うが？
 ```
+
+## UIとロジックの最終調整
+
+### テーブルにステータスを表示
+
+```markdown
+ShipmentsPage.vue で追加した status を表示したい。
+- new : 未配車
+- assigned : 配車済
+- submitted : 報告済
+- completed : 承認済
+- reverted : 差し戻し
+といったラベルで良いかと思う。
+実装できるか？
+```
+

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import type { ShipmentStatus } from '@shisamo/shared'
 import { useRoute } from 'vue-router'
 import { useShipmentsStore } from 'stores/shipments'
 import { useConsignorsStore } from 'stores/masters/consignors'
@@ -20,6 +21,22 @@ const rows = computed(() => {
   if (!consignorId.value) return all
   return all.filter((item) => item.consignorId === consignorId.value)
 })
+
+const STATUS_COLORS: Record<ShipmentStatus, string> = {
+  new: 'blue-grey',
+  assigned: 'primary',
+  submitted: 'warning',
+  completed: 'positive',
+  reverted: 'negative',
+}
+
+/**
+ * @param status - 取引ステータス
+ * @returns Quasar カラー名
+ */
+function statusColor(status: ShipmentStatus): string {
+  return STATUS_COLORS[status] ?? 'grey'
+}
 
 
 </script>
@@ -73,6 +90,19 @@ const rows = computed(() => {
             <q-td class="text-right">
               <span v-if="value !== null">{{ value }} km</span>
               <span v-else class="text-grey-4">―</span>
+            </q-td>
+          </template>
+
+          <!--suppress VueUnrecognizedSlot ステータス -->
+          <template #body-cell-status="{ value }">
+            <q-td class="text-center">
+              <q-chip
+                :color="statusColor(value)"
+                text-color="white"
+                size="sm"
+                square
+                dense
+              >{{ $t(`shipments.status.${value}`) }}</q-chip>
             </q-td>
           </template>
 

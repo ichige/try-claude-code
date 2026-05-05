@@ -57,6 +57,13 @@ export function useShipmentsColumns() {
       sortable: true,
     },
     {
+      name: 'status',
+      label: t('shipments.fields.status'),
+      field: 'status',
+      align: 'center',
+      sortable: true,
+    },
+    {
       name: 'notes',
       label: t('shipments.fields.notes'),
       field: 'notes',

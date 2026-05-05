@@ -26,6 +26,13 @@ export default {
       approve: '承認',
       revert: '差し戻し',
     },
+    status: {
+      new: '未配車',
+      assigned: '配車済',
+      submitted: '報告済',
+      completed: '承認済',
+      reverted: '差し戻し',
+    },
     fields: {
       consignorId: '取引先',
       deliveryDate: '配送日',
@@ -34,6 +41,7 @@ export default {
       destination: '納品先',
       destinationAddress: '納品先住所',
       carrierId: '配送業者',
+      status: 'ステータス',
       distance: '走行距離',
       notes: '備考',
     },

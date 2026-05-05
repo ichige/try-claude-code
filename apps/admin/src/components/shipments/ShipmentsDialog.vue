@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, provide } from 'vue'
+import { ref, provide, toRaw } from 'vue'
 import { Loading } from 'quasar'
 import type { ShipmentsItem } from '@shisamo/shared'
 import { shipmentDraftKey, shipmentStepKey } from './shipment-draft'
@@ -133,7 +133,7 @@ function open(): void {
  * @param item - 編集対象の取引アイテム
  */
 function openEdit(item: ShipmentsItem): void {
-  draft.value = { ...item }
+  draft.value = structuredClone(toRaw(item))
   step.value = item.status === 'completed' ? 4 : 1
   dialog.value = true
 }
@@ -191,14 +191,14 @@ defineExpose<{ open(): void; openEdit(item: ShipmentsItem): void }>({ open, open
 
         <template #navigation>
           <q-stepper-navigation class="row justify-end q-gutter-x-sm q-pa-md">
-            <q-btn v-if="step !== 1" flat :label="$t('labels.back')" @click="back" />
+            <!-- 戻るボタンは共通(completedでは非表示) -->
             <q-btn
-              v-if="step === 4"
+              v-if="step !== 1 || draft.status !== 'completed'"
               flat
-              color="warning"
-              :label="$t('shipments.labels.revert')"
-              @click="revert"
+              :label="$t('labels.back')"
+              @click="back"
             />
+            <!-- 次へボタンはSTEP3まで -->
             <q-btn
               v-if="step !== 4"
               color="primary"
@@ -206,19 +206,30 @@ defineExpose<{ open(): void; openEdit(item: ShipmentsItem): void }>({ open, open
               :label="$t('labels.next')"
               @click="next"
             />
+            <!-- 保存ボタンは completed 以外で表示 -->
             <q-btn
-              v-if="step === 4"
+              v-if="draft.status !== 'completed'"
+              color="secondary"
+              unelevated
+              :label="$t('labels.save')"
+              @click="save"
+            />
+            <!-- 承認ボタンは STEP4 かつ completed 以外で表示 -->
+            <q-btn
+              v-if="step === 4 && draft.status !== 'completed'"
               color="positive"
               unelevated
               :disable="draft.status !== 'submitted' && draft.status !== 'reverted'"
               :label="$t('shipments.labels.approve')"
               @click="approve"
             />
+            <!-- 差し戻しボタンは STEP4 かつ completed で表示 -->
             <q-btn
-              color="secondary"
-              unelevated
-              :label="$t('labels.save')"
-              @click="save"
+              v-if="step === 4 && draft.status === 'completed'"
+              flat
+              color="warning"
+              :label="$t('shipments.labels.revert')"
+              @click="revert"
             />
           </q-stepper-navigation>
         </template>
