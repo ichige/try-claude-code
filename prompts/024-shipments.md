@@ -470,3 +470,9 @@ ShipmentsPage.vue で追加した status を表示したい。
 実装できるか？
 ```
 
+### QDate の日付解除で null になる
+
+```markdown
+
+```
+
