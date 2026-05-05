@@ -384,5 +384,8 @@ changeMonth の機能は、layouts のヘッダでの一元管理になるので
 ### 実装ミスを修正
 
 ```markdown
-
+ShipmentsStep1.vue で、納品先(draft.destination)の選定をしてる箇所がある。
+そこの向き先を forwardersStore ではなく、useConsigneesStore に変更できるか？
 ```
+
+うむ一発で修正できた。

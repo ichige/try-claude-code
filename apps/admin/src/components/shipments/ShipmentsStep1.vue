@@ -2,6 +2,7 @@
 import { ref, computed, inject } from 'vue'
 import type { QForm } from 'quasar'
 import { useConsignorsStore } from 'stores/masters/consignors'
+import { useConsigneesStore } from 'stores/masters/consignees'
 import { useForwardersStore } from 'stores/masters/forwarders'
 import { useAppStore } from 'stores/app'
 import { zodRule } from 'src/utils/zod-rule'
@@ -12,6 +13,7 @@ import { step1Schema } from 'src/configs/shipments/schemas'
 const draft = inject(shipmentDraftKey)!
 const appStore = useAppStore()
 const consignorsStore = useConsignorsStore()
+const consigneesStore = useConsigneesStore()
 const forwardersStore = useForwardersStore()
 const datePopupRef = ref<{ hide(): void } | null>(null)
 const formRef = ref<InstanceType<typeof QForm> | null>(null)
@@ -36,6 +38,13 @@ const consignorName = computed(
  */
 const forwarderOptions = computed(() =>
   forwardersStore.list.map((f) => ({ label: `${f.prefecture} ${f.city}`, value: f.city })),
+)
+
+/**
+ * 納品先の選択
+ */
+const consigneeOptions = computed(() =>
+  consigneesStore.list.map((c) => ({ label: c.companyName, value: c.companyName })),
 )
 
 /**
@@ -196,7 +205,7 @@ defineExpose({ formRef })
         >
           <template #before>
             <ListSelectBtn
-              :options="forwarderOptions"
+              :options="consigneeOptions"
               @select="(val) => (draft.destination = val)"
             />
           </template>
