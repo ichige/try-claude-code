@@ -480,3 +480,12 @@ ShipmentsPage.vue で追加した status を表示したい。
 null 値にならないように対応するか、q-date の再選択で解除にならないようにするか、どちらか実装できそうか？
 ```
 
+### STEP1の重複処理を削除
+
+```markdown
+@apps/admin/src/components/shipments/ShipmentsStep1.vue
+consignorName 関数は、useConsignorsStore に対応するメソッドがあるのでは？
+---
+consignorOptions なども、再利用性を考慮して Store の getters に移行した方が良いのでは？
+であれば、冗長的なので、composables/shipments に切り出しておくか？
+```

@@ -2,49 +2,20 @@
 import { ref, computed, inject } from 'vue'
 import type { QForm } from 'quasar'
 import { useConsignorsStore } from 'stores/masters/consignors'
-import { useConsigneesStore } from 'stores/masters/consignees'
-import { useForwardersStore } from 'stores/masters/forwarders'
 import { useAppStore } from 'stores/app'
 import { zodRule } from 'src/utils/zod-rule'
 import { shipmentDraftKey } from './shipment-draft'
 import ListSelectBtn from 'src/components/ListSelectBtn.vue'
 import { step1Schema } from 'src/configs/shipments/schemas'
+import { useShipmentOptions } from 'src/composables/shipments/use-shipment-options'
 
 const draft = inject(shipmentDraftKey)!
 const appStore = useAppStore()
 const consignorsStore = useConsignorsStore()
-const consigneesStore = useConsigneesStore()
-const forwardersStore = useForwardersStore()
 const datePopupRef = ref<{ hide(): void } | null>(null)
 const formRef = ref<InstanceType<typeof QForm> | null>(null)
 
-/**
- * 顧客の選択
- */
-const consignorOptions = computed(() =>
-  consignorsStore.list.map((c) => ({ label: c.companyName, value: c.id })),
-)
-
-/**
- * 選択済み取引先の表示名
- */
-const consignorName = computed(
-  () => consignorsStore.list.find((c) => c.id === draft.value.consignorId)?.companyName ?? '',
-)
-
-/**
- * 地点の選択
- */
-const forwarderOptions = computed(() =>
-  forwardersStore.list.map((f) => ({ label: `${f.prefecture} ${f.city}`, value: f.city })),
-)
-
-/**
- * 納品先の選択
- */
-const consigneeOptions = computed(() =>
-  consigneesStore.list.map((c) => ({ label: c.companyName, value: c.companyName })),
-)
+const { consignorOptions, consigneeOptions, forwarderOptions } = useShipmentOptions()
 
 /**
  * QDate の options 制限と default-year-month に使う YYYY/MM 形式
@@ -92,7 +63,7 @@ defineExpose({ formRef })
       <div class="row q-col-gutter-sm">
         <!-- 取引先 -->
         <q-input
-          :model-value="consignorName"
+          :model-value="consignorsStore.nameById(draft.consignorId)"
           :label="$t('shipments.fields.consignorId')"
           outlined
           dense
