@@ -40,6 +40,8 @@ async function next(): Promise<void> {
       const item = await shipmentsStore.create({ ...draft.value })
       draft.value = { ...draft.value, ...item }
     } else {
+      if (step.value === 2) draft.value.status = 'assigned'
+      if (step.value === 3) draft.value.status = 'submitted'
       const item = await shipmentsStore.update(draft.value.id, { ...draft.value })
       draft.value = { ...draft.value, ...item }
     }
@@ -57,10 +59,26 @@ function back(): void {
 }
 
 /**
- * 保存ボタン
+ * 保存ボタン(STEP4): 確認完了として status を completed に更新する。
  */
 async function save(): Promise<void> {
   if (!draft.value.id || !draft.value._etag) return
+  draft.value.status = 'completed'
+  Loading.show()
+  try {
+    await shipmentsStore.update(draft.value.id, { ...draft.value })
+    close()
+  } finally {
+    Loading.hide()
+  }
+}
+
+/**
+ * 差し戻しボタン(STEP4): status を reverted に戻して編集可能にする。
+ */
+async function revert(): Promise<void> {
+  if (!draft.value.id || !draft.value._etag) return
+  draft.value.status = 'reverted'
   Loading.show()
   try {
     await shipmentsStore.update(draft.value.id, { ...draft.value })
@@ -146,6 +164,13 @@ defineExpose<{ open(): void }>({ open })
               unelevated
               :label="$t('labels.next')"
               @click="next"
+            />
+            <q-btn
+              v-if="step === 4"
+              flat
+              color="warning"
+              :label="$t('shipments.labels.revert')"
+              @click="revert"
             />
             <q-btn
               v-if="step === 4"

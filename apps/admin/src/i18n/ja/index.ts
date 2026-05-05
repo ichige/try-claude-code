@@ -22,6 +22,9 @@ export default {
     step2: { title: '配送業者の選定' },
     step3: { title: '実績入力' },
     step4: { title: '確認' },
+    labels: {
+      revert: '差し戻し',
+    },
     fields: {
       consignorId: '取引先',
       deliveryDate: '配送日',

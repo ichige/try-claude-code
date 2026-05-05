@@ -150,6 +150,15 @@ prepend スロットではなく before の方が良い。
 LocationInput.vue という形でコンポーネントにするのは悪くないけど、QInputは要件によってカスタマイズが入るので、スロット部分だけ共通化した方が良くないか？
 ```
 
+### 実装ミスを修正
+
+```markdown
+ShipmentsStep1.vue で、納品先(draft.destination)の選定をしてる箇所がある。
+そこの向き先を forwardersStore ではなく、useConsigneesStore に変更できるか？
+```
+
+うむ一発で修正できた。
+
 ## Store の準備
 
 このダイアログフォームでは、「次へ」でDBを更新するという動作にする。  
@@ -381,11 +390,31 @@ changeMonth の機能は、layouts のヘッダでの一元管理になるので
 
 あとはデザイン調整や機能追加。
 
-### 実装ミスを修正
+## ステート管理を追加
+
+| ステート | 更新タイミング | 説明 |
+| --- | --- | --- |
+| new | STEP1データ作成時 | このタイミングでは物理削除可能である。 |
+| assigned | STEP2で配送業者を選定し更新 | 物理削除・編集は可能。 |
+| submitted | STEP3で実績入力が完了 | 物理削除・編集は可能。 |
+| completed | STEP4で確認完了 | 物理削除・編集共に不可となる。 |
+| reverted | STEP4で強制的に戻す | 物理削除・編集は可能。 |
+
+強制的に completed から巻き戻す(編集可)事は可能とする。
+
+ステートが `created` | `assigned` | `submitted` | `reverted`  の状態であれば、 編集画面もSTEP1から開始する。
+`completed` の場合はSTEP4のみ再表示する。
+
+- STEP1 ～ STEP3 では「保存」→ ダイアログクローズボタンを用意。
+- 作成モードでは「保存」を押すまではDB登録しない。
+- 編集モードでは「保存」を押すまでDB更新しない。
+- STEP4で `completed` の場合は `reverted` へ変更できるボタンを用意する。
 
 ```markdown
-ShipmentsStep1.vue で、納品先(draft.destination)の選定をしてる箇所がある。
-そこの向き先を forwardersStore ではなく、useConsigneesStore に変更できるか？
+Shipments でステート管理をしたいので、status 的なフィールドを追加したい。
 ```
 
-うむ一発で修正できた。
+勝手に更新処理まで追加した。
+まぁ、どーせ必要だから良しとする。
+
+
