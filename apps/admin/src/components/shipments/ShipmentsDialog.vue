@@ -193,7 +193,7 @@ defineExpose<{ open(): void; openEdit(item: ShipmentsItem): void }>({ open, open
           <q-stepper-navigation class="row justify-end q-gutter-x-sm q-pa-md">
             <!-- 戻るボタンは共通(completedでは非表示) -->
             <q-btn
-              v-if="step !== 1 || draft.status !== 'completed'"
+              v-if="step !== 1 && draft.status !== 'completed'"
               flat
               :label="$t('labels.back')"
               @click="back"

@@ -18,7 +18,6 @@ const forwardersStore = useForwardersStore()
 const datePopupRef = ref<{ hide(): void } | null>(null)
 const formRef = ref<InstanceType<typeof QForm> | null>(null)
 
-
 /**
  * 顧客の選択
  */
@@ -160,7 +159,7 @@ defineExpose({ formRef })
             <ListSelectBtn :options="forwarderOptions" @select="(val) => (draft.origin = val)" />
           </template>
           <template #prepend>
-            <q-icon :name="$icon('warehouse')" size="xs" />
+            <q-icon :name="$icon('origin')" size="xs" />
           </template>
         </q-input>
 
@@ -210,7 +209,7 @@ defineExpose({ formRef })
             />
           </template>
           <template #prepend>
-            <q-icon :name="$icon('store')" size="xs" />
+            <q-icon :name="$icon('destination')" size="xs" />
           </template>
         </q-input>
         <q-input

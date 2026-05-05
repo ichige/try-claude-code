@@ -179,6 +179,7 @@ export default {
     createdAt: '作成日時',
     updatedAt: '更新日時',
     create: '登録',
+    delivery: '配送',
     back: '戻る',
     next: '次へ',
     'dark-mode': 'ダークモード',

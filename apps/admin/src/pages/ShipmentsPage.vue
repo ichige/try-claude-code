@@ -14,14 +14,20 @@ const { columns } = useShipmentsColumns()
 
 const dialogRef = ref<InstanceType<typeof ShipmentsDialog> | null>(null)
 
+/** URLパスの取引ID(オプション) */
 const consignorId = computed(() => route.params.consignorId as string | undefined)
 
+/**
+ * テーブル表示対象のフィルタ
+ * URLで取引先IDでの絞り込みあり
+ */
 const rows = computed(() => {
   const all = shipmentsStore.list
   if (!consignorId.value) return all
   return all.filter((item) => item.consignorId === consignorId.value)
 })
 
+/** status の表示色 */
 const STATUS_COLORS: Record<ShipmentStatus, string> = {
   new: 'blue-grey',
   assigned: 'primary',
@@ -37,8 +43,6 @@ const STATUS_COLORS: Record<ShipmentStatus, string> = {
 function statusColor(status: ShipmentStatus): string {
   return STATUS_COLORS[status] ?? 'grey'
 }
-
-
 </script>
 
 <template>
@@ -85,6 +89,13 @@ function statusColor(status: ShipmentStatus): string {
           table-header-class="bg-blue-grey-2 text-black"
           :no-data-label="$t('labels.noData')"
         >
+          <!--suppress VueUnrecognizedSlot 共通ヘッダセル -->
+          <template #header-cell="props">
+            <q-th>
+              <q-icon :name="$icon(props.col.name)" size="xs" class="q-mr-xs" />
+              <span>{{ props.col.label }}</span>
+            </q-th>
+          </template>
           <!--suppress VueUnrecognizedSlot 走行距離 -->
           <template #body-cell-distance="{ value }">
             <q-td class="text-right">
@@ -96,13 +107,9 @@ function statusColor(status: ShipmentStatus): string {
           <!--suppress VueUnrecognizedSlot ステータス -->
           <template #body-cell-status="{ value }">
             <q-td class="text-center">
-              <q-chip
-                :color="statusColor(value)"
-                text-color="white"
-                size="sm"
-                square
-                dense
-              >{{ $t(`shipments.status.${value}`) }}</q-chip>
+              <q-chip :color="statusColor(value)" text-color="white" size="sm" square dense>{{
+                $t(`shipments.status.${value}`)
+              }}</q-chip>
             </q-td>
           </template>
 
@@ -117,7 +124,13 @@ function statusColor(status: ShipmentStatus): string {
           <!--suppress VueUnrecognizedSlot アクション -->
           <template #body-cell-actions="props">
             <q-td :props="props" class="q-gutter-x-sm">
-              <q-btn size="xs" :icon="$icon('edit')" color="info" unelevated @click="dialogRef?.openEdit(props.row)" />
+              <q-btn
+                size="xs"
+                :icon="$icon('edit')"
+                color="info"
+                unelevated
+                @click="dialogRef?.openEdit(props.row)"
+              />
               <q-btn size="xs" :icon="$icon('delete')" color="negative" unelevated disable />
             </q-td>
           </template>

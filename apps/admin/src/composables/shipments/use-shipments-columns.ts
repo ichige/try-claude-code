@@ -13,6 +13,7 @@ export function useShipmentsColumns() {
   const carriersStore = useCarriersStore()
 
   const columns: QTableProps['columns'] = [
+    // 取引先名
     {
       name: 'consignorName',
       label: t('shipments.fields.consignorId'),
@@ -20,6 +21,7 @@ export function useShipmentsColumns() {
       align: 'left',
       sortable: true,
     },
+    // 配送日
     {
       name: 'deliveryDate',
       label: t('shipments.fields.deliveryDate'),
@@ -27,6 +29,7 @@ export function useShipmentsColumns() {
       align: 'center',
       sortable: true,
     },
+    // 発送地
     {
       name: 'origin',
       label: t('shipments.fields.origin'),
@@ -34,6 +37,7 @@ export function useShipmentsColumns() {
       align: 'left',
       sortable: true,
     },
+    // 納品先
     {
       name: 'destination',
       label: t('shipments.fields.destination'),
@@ -41,6 +45,7 @@ export function useShipmentsColumns() {
       align: 'left',
       sortable: true,
     },
+    // 配送業者名
     {
       name: 'carrierName',
       label: t('shipments.fields.carrierId'),
@@ -48,6 +53,7 @@ export function useShipmentsColumns() {
       align: 'left',
       sortable: true,
     },
+    // 走行距離
     {
       name: 'distance',
       label: t('shipments.fields.distance'),
@@ -56,6 +62,7 @@ export function useShipmentsColumns() {
       align: 'right',
       sortable: true,
     },
+    // 取引ステータス
     {
       name: 'status',
       label: t('shipments.fields.status'),
@@ -63,13 +70,14 @@ export function useShipmentsColumns() {
       align: 'center',
       sortable: true,
     },
+    // 備考欄
     {
       name: 'notes',
       label: t('shipments.fields.notes'),
       field: 'notes',
       align: 'left',
     },
-    { name: 'actions', label: '', field: 'id', align: 'center', sortable: false },
+    { name: 'actions', label: t('labels.update'), field: 'id', align: 'center', sortable: false },
   ]
 
   return { columns }

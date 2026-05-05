@@ -44,7 +44,7 @@ const breakdownRows = computed(() =>
       <q-item>
         <q-item-section style="max-width: 6rem">
           <q-item-label lines="1">
-            <q-icon :name="$icon('calendar-month')" size="xs" />
+            <q-icon :name="$icon('deliveryDate')" size="xs" />
             <span class="text-caption text-grey-7 q-ml-xs">
               {{ $t('shipments.fields.deliveryDate') }}
             </span>
@@ -67,7 +67,7 @@ const breakdownRows = computed(() =>
       <q-item>
         <q-item-section style="max-width: 6rem">
           <q-item-label lines="1">
-            <q-icon :name="$icon('warehouse')" size="xs" />
+            <q-icon :name="$icon('origin')" size="xs" />
             <span class="text-caption text-grey-7 q-ml-xs">
               {{ $t('shipments.fields.origin') }}
             </span>
@@ -93,7 +93,7 @@ const breakdownRows = computed(() =>
     <!-- 納品先 -->
     <q-card-section class="q-py-sm">
       <div class="row items-center q-mb-xs">
-        <q-icon :name="$icon('masters-container.consignees')" size="xs" />
+        <q-icon :name="$icon('explorer')" size="xs" />
         <div class="text-caption text-primary q-ml-xs">
           {{ $t('shipments.fields.destination') }}
         </div>
@@ -103,7 +103,7 @@ const breakdownRows = computed(() =>
       <q-item>
         <q-item-section style="max-width: 6rem">
           <q-item-label lines="1">
-            <q-icon :name="$icon('store')" size="xs" />
+            <q-icon :name="$icon('destination')" size="xs" />
             <span class="text-caption text-grey-7 q-ml-xs">
               {{ $t('shipments.fields.destination') }}
             </span>
@@ -126,11 +126,11 @@ const breakdownRows = computed(() =>
 
     <q-separator />
 
-    <!-- 配送業者 -->
+    <!-- 配送 -->
     <q-card-section class="q-py-sm">
       <div class="row items-center q-mb-xs">
-        <q-icon :name="$icon('masters-container.carriers')" size="xs" />
-        <div class="text-caption text-primary q-ml-xs">{{ $t('shipments.fields.carrierId') }}</div>
+        <q-icon :name="$icon('delivery')" size="xs" />
+        <div class="text-caption text-primary q-ml-xs">{{ $t('delivery') }}</div>
       </div>
     </q-card-section>
     <q-list dense>
