@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref, provide } from 'vue'
+import { ref, provide, toRaw } from 'vue'
 import { Loading } from 'quasar'
+import type { ShipmentsItem } from '@shisamo/shared'
 import { shipmentDraftKey, shipmentStepKey } from './shipment-draft'
 import { useShipmentsStore } from 'stores/shipments'
 import { useShipmentDraft } from 'composables/shipments/use-shipment-draft'
@@ -23,28 +24,19 @@ provide(shipmentDraftKey, draft)
 provide(shipmentStepKey, step)
 
 /**
- * 次へボタン
+ * 次へボタン。DB更新は行わず、バリデートと status 変更のみ実施する。
+ * STEP1: status 現状維持(new のまま)。STEP2: new → assigned。STEP3: assigned → submitted。
  */
 async function next(): Promise<void> {
   if (step.value === 1) {
     const ok = await step1Ref.value?.formRef?.validate()
     if (!ok) return
-  }
-  if (step.value === 2) {
+  } else if (step.value === 2) {
     const ok = await step2Ref.value?.formRef?.validate()
     if (!ok) return
-  }
-  Loading.show()
-  try {
-    if (!draft.value.id) {
-      const item = await shipmentsStore.create({ ...draft.value })
-      draft.value = { ...draft.value, ...item }
-    } else {
-      const item = await shipmentsStore.update(draft.value.id, { ...draft.value })
-      draft.value = { ...draft.value, ...item }
-    }
-  } finally {
-    Loading.hide()
+    if (draft.value.status === 'new') draft.value.status = 'assigned'
+  } else if (step.value === 3) {
+    if (draft.value.status === 'assigned') draft.value.status = 'submitted'
   }
   step.value++
 }
@@ -57,10 +49,59 @@ function back(): void {
 }
 
 /**
- * 保存ボタン
+ * 保存ボタン(全ステップ): バリデート後に create/update してダイアログを閉じる。
+ * STEP2 では new → assigned、STEP3 では assigned → submitted へ status を変更する。
  */
 async function save(): Promise<void> {
-  if (!draft.value.id || !draft.value._etag) return
+  if (step.value === 1) {
+    const ok = await step1Ref.value?.formRef?.validate()
+    if (!ok) return
+  }
+  if (step.value === 2) {
+    const ok = await step2Ref.value?.formRef?.validate()
+    if (!ok) return
+    if (draft.value.status === 'new') draft.value.status = 'assigned'
+  }
+  if (step.value === 3) {
+    if (draft.value.status === 'assigned') draft.value.status = 'submitted'
+  }
+  Loading.show()
+  try {
+    if (!draft.value.id) {
+      await shipmentsStore.create({ ...draft.value })
+    } else {
+      await shipmentsStore.update(draft.value.id, { ...draft.value })
+    }
+    close()
+  } finally {
+    Loading.hide()
+  }
+}
+
+/**
+ * 承認ボタン(STEP4): status を completed に変更して create/update する。
+ */
+async function approve(): Promise<void> {
+  draft.value.status = 'completed'
+  Loading.show()
+  try {
+    if (!draft.value.id) {
+      await shipmentsStore.create({ ...draft.value })
+    } else {
+      await shipmentsStore.update(draft.value.id, { ...draft.value })
+    }
+    close()
+  } finally {
+    Loading.hide()
+  }
+}
+
+/**
+ * 差し戻しボタン(STEP4): status を reverted に戻して編集可能にする。
+ */
+async function revert(): Promise<void> {
+  if (!draft.value.id) return
+  draft.value.status = 'reverted'
   Loading.show()
   try {
     await shipmentsStore.update(draft.value.id, { ...draft.value })
@@ -78,11 +119,22 @@ function reset(): void {
 }
 
 /**
- * ダイアログオープン
+ * ダイアログオープン（新規作成）
  */
 function open(): void {
   reset()
   step.value = 1
+  dialog.value = true
+}
+
+/**
+ * 既存取引の編集ダイアログを開く。
+ * completed の場合は STEP4、それ以外は STEP1 から表示する。
+ * @param item - 編集対象の取引アイテム
+ */
+function openEdit(item: ShipmentsItem): void {
+  draft.value = structuredClone(toRaw(item))
+  step.value = item.status === 'completed' ? 4 : 1
   dialog.value = true
 }
 
@@ -95,7 +147,7 @@ function close(): void {
   dialog.value = false
 }
 
-defineExpose<{ open(): void }>({ open })
+defineExpose<{ open(): void; openEdit(item: ShipmentsItem): void }>({ open, openEdit })
 </script>
 
 <template>
@@ -139,7 +191,14 @@ defineExpose<{ open(): void }>({ open })
 
         <template #navigation>
           <q-stepper-navigation class="row justify-end q-gutter-x-sm q-pa-md">
-            <q-btn v-if="step !== 1" flat :label="$t('labels.back')" @click="back" />
+            <!-- 戻るボタンは共通(completedでは非表示) -->
+            <q-btn
+              v-if="step !== 1 && draft.status !== 'completed'"
+              flat
+              :label="$t('labels.back')"
+              @click="back"
+            />
+            <!-- 次へボタンはSTEP3まで -->
             <q-btn
               v-if="step !== 4"
               color="primary"
@@ -147,12 +206,30 @@ defineExpose<{ open(): void }>({ open })
               :label="$t('labels.next')"
               @click="next"
             />
+            <!-- 保存ボタンは completed 以外で表示 -->
             <q-btn
-              v-if="step === 4"
-              color="primary"
+              v-if="draft.status !== 'completed'"
+              color="secondary"
               unelevated
               :label="$t('labels.save')"
               @click="save"
+            />
+            <!-- 承認ボタンは STEP4 かつ completed 以外で表示 -->
+            <q-btn
+              v-if="step === 4 && draft.status !== 'completed'"
+              color="positive"
+              unelevated
+              :disable="draft.status !== 'submitted' && draft.status !== 'reverted'"
+              :label="$t('shipments.labels.approve')"
+              @click="approve"
+            />
+            <!-- 差し戻しボタンは STEP4 かつ completed で表示 -->
+            <q-btn
+              v-if="step === 4 && draft.status === 'completed'"
+              flat
+              color="warning"
+              :label="$t('shipments.labels.revert')"
+              @click="revert"
             />
           </q-stepper-navigation>
         </template>

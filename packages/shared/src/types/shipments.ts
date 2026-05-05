@@ -2,6 +2,16 @@ import type { CosmosItem } from './cosmos'
 import type { ChargeCode } from './charges'
 
 /**
+ * 取引のステータス
+ * - new: STEP1 作成直後。物理削除可能。
+ * - assigned: STEP2 で配送業者を選定済み。物理削除・編集可能。
+ * - submitted: STEP3 で実績入力完了。物理削除・編集可能。
+ * - completed: STEP4 で確認完了。物理削除・編集不可。
+ * - reverted: STEP4 から強制差し戻し。物理削除・編集可能。
+ */
+export type ShipmentStatus = 'new' | 'assigned' | 'submitted' | 'completed' | 'reverted'
+
+/**
  * 配送内訳のコード
  */
 export type ShipmentBreakdownCode = 'distance' | ChargeCode
@@ -32,6 +42,8 @@ export interface ShipmentInvoiceDetails {
  * Shipments(配送依頼取引) コンテナのアイテム。
  */
 export interface ShipmentsItem extends CosmosItem {
+  /** ステータス */
+  status: ShipmentStatus
   /** 取引先ID(荷主) */
   consignorId: string
   /** 配送日(YYYY-MM-DD) */

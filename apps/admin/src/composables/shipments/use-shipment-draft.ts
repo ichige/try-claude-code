@@ -14,6 +14,7 @@ export function useShipmentDraft() {
   function initialDraft(): ShipmentDraft {
     return {
       pk: appStore.processingMonth,
+      status: 'new',
       consignorId: '',
       deliveryDate: '',
       origin: '',

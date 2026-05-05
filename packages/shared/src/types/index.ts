@@ -6,6 +6,7 @@ export type { BulkDeleteResponse, BulkOperationResult, CosmosItem } from './cosm
 export type { ForwardersItem } from './forwarders'
 export type {
   ShipmentsItem,
+  ShipmentStatus,
   ShipmentBreakdown,
   ShipmentInvoice,
   ShipmentInvoiceDetails,

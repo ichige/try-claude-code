@@ -150,6 +150,15 @@ prepend スロットではなく before の方が良い。
 LocationInput.vue という形でコンポーネントにするのは悪くないけど、QInputは要件によってカスタマイズが入るので、スロット部分だけ共通化した方が良くないか？
 ```
 
+### 実装ミスを修正
+
+```markdown
+ShipmentsStep1.vue で、納品先(draft.destination)の選定をしてる箇所がある。
+そこの向き先を forwardersStore ではなく、useConsigneesStore に変更できるか？
+```
+
+うむ一発で修正できた。
+
 ## Store の準備
 
 このダイアログフォームでは、「次へ」でDBを更新するという動作にする。  
@@ -328,3 +337,136 @@ input ではなくprepend の icon のクリックイベントにすることも
 やっぱ慣れの問題だな。元にもどしておいてくれ。
 明日は一覧表示の開発へ進む予定だ。
 ```
+
+## 取引一覧作成
+
+いくつかマスタ系のテーブルがあるので、それを踏襲するだけであっさり作成できるはずである。
+
+```markdown
+ShipmentsPage.vue に Shipments コンテナのレコードを一覧表示する QTable を作成したい。
+まずは Store の調整から始める。
+stores/masters 配下の各マスタStoreでは、factory.ts の共通利用で items に全件保持している。
+useShipmentsStore では、月単位で一覧を管理するため、動作が異なることに注意する。
+- fetchAll に相当するメソッドでは、pk 指定による useAppStore.processingMonth による絞り込みが必要。
+- items の管理も processingMonth というキーが必要になり、processingMonth の変更で、中身を入れ替える。
+    - マスタデータと違って、都度最新化するため、processingMonth が変わるごとに毎回フェッチする。
+    - 管理対象は processingMonth だけになり、processingMonth が変わったタイミングで、以前まで保持していたデータは完全に入れ替える。
+- マスタデータ同様に、prefetch メソッドを追加して、prefetch-guard.ts ルータガードで実行する。
+このような仕様となるが、実装できそうか？
+```
+
+頼んでもいなかったけど、prefetch を Promise.all で実装してくれた。
+
+```markdown
+QTable の実装は、TariffsPage.vue や ChargesPage.vue が参考になるはず。
+両ページ共にバージョン管理の概念があるが、Shipments においては、processingMonth がその代わりを担っていると考えて良い。
+テーブルに表示する内容は以下になる。
+
+- consignorName: 取引先名
+    - consignorId を元に useConsignorsStore から名前を参照する。
+- deliveryDate: 配送日
+    - YYYY-MM-DD フォーマットのままでOK
+- origin: 発送地名
+    - そのままでOK
+- destination: 納品先名
+    - そのままでOK
+- carrierName: 配送業者名
+    - carrierId を元に useCarriersStore から名前を参照
+- distance: 走行距離
+    - breakdown の distance を参照
+- notes: 備考
+    - 10文字以下を省略(Quasarにスタイルがあるかと)
+こんなイメージで作成できそうか？
+```
+
+だいたいイイ感じに作成してくれた。
+余計な実装だけ削除しておく。
+
+```markdown
+watch で appStore.processingMonth を参照してるけど、このページではその実装は不要なので削除しておいて。
+columns は composables/shipments あたりに切り出しておいて。
+changeMonth の機能は、layouts のヘッダでの一元管理になるので、ここでは不要なので削除して。
+```
+
+あとはデザイン調整や機能追加。
+
+## ステート管理を追加
+
+| ステート | 更新タイミング | 説明 |
+| --- | --- | --- |
+| new | STEP1データ作成時 | このタイミングでは物理削除可能である。 |
+| assigned | STEP2で配送業者を選定し更新 | 物理削除・編集は可能。 |
+| submitted | STEP3で実績入力が完了 | 物理削除・編集は可能。 |
+| completed | STEP4で確認完了 | 物理削除・編集共に不可となる。 |
+| reverted | STEP4で強制的に戻す | 物理削除・編集は可能。 |
+
+強制的に completed から巻き戻す(編集可)事は可能とする。
+
+ステートが `created` | `assigned` | `submitted` | `reverted`  の状態であれば、 編集画面もSTEP1から開始する。
+`completed` の場合はSTEP4のみ再表示する。
+
+- STEP1 ～ STEP3 では「保存」→ ダイアログクローズボタンを用意。
+- 作成モードでは「保存」を押すまではDB登録しない。
+- 編集モードでは「保存」を押すまでDB更新しない。
+- STEP4で `completed` の場合は `reverted` へ変更できるボタンを用意する。
+
+```markdown
+Shipments でステート管理をしたいので、status 的なフィールドを追加したい。
+```
+
+勝手に更新処理まで追加した。
+まぁ、どーせ必要だから良しとする。
+
+```markdown
+ShipmentsPage.vue に 汎用マスタ ContainerTable.vue を参考にして、actions スロットに、編集ボタンと削除ボタンを追加した。
+- 削除ボタンはまだ実装しないで表示だけでOK。
+- 編集ボタンでは、選択した取引データを ShipmentsDialog.vue で開きたい。
+    - status が `completed` の場合はSTEP4表示。
+    - それ以外の status であれば、STEP1から表示でOK。
+実装できそうか？
+```
+
+まずはレールに沿った感じで編集機能を追加してくれた。
+
+```markdown
+現状では ShipmentsDialog.vue の STEP1 → STEP3では「次へ」ボタンでDB更新しているが、これを変更したい。
+- 「次へ」ボタンは status の変更だけを行い、DB更新はしない。
+    - STEP1の場合は現状維持。
+    - STEP2の場合、new であれば assigned へ変更。それ以外は現状維持。
+    - STEP3の場合、assigned であれば submitted へ変更。それ以外は現状維持。
+- STEP1 ~ STEP4に「保存」ボタンを設ける。保存ボタンは処理後にダイアログを閉じる。
+    - 各ステップではバリデートエラーが出なければ、create or update を行い、status は変更または維持する。
+    - STEP2の場合、status が new であれば、assigned へ変更する。
+    - STEP3の場合、status が　assigned であれば submitted へ変更。それ以外は現状維持。
+    - STEP4の場合、status は現状維持。
+- STEP4には「承認」ボタンを追加する。
+    - status が submitted であれば completed に変更して create or update を行う。
+    - フロー的にはあり得ないが、submitted or reverted でない場合はボタンを非活性にしておく。
+こんなイメージで修正できるか？
+```
+
+実装がいまいちっぽい。
+
+```markdown
+「次へ」ボタンは status の変更だけを行い、DB更新はしない。
+と指示をしたけど、そうはなってないぞ？
+---
+ShipmentsDialog の 編集モードで、useShipmentsStore 管理の item をそのまま参照してないか？
+編集対象とするなら、オブジェクトを複製するべきだと思うが？
+```
+
+## UIとロジックの最終調整
+
+### テーブルにステータスを表示
+
+```markdown
+ShipmentsPage.vue で追加した status を表示したい。
+- new : 未配車
+- assigned : 配車済
+- submitted : 報告済
+- completed : 承認済
+- reverted : 差し戻し
+といったラベルで良いかと思う。
+実装できるか？
+```
+
