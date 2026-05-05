@@ -131,6 +131,7 @@ defineExpose({ formRef })
           outlined
           dense
           :rules="[zodRule(step1Schema.shape.origin)]"
+          maxlength="80"
           class="col-4"
           clearable
           @clear="() => (draft.origin = '')"
@@ -150,6 +151,7 @@ defineExpose({ formRef })
           outlined
           dense
           clearable
+          maxlength="256"
           class="col-8"
           @clear="() => (draft.originAddress = '')"
         >
@@ -179,6 +181,7 @@ defineExpose({ formRef })
           dense
           clearable
           :rules="[zodRule(step1Schema.shape.destination)]"
+          maxlength="80"
           class="col-4"
           @clear="() => (draft.destination = '')"
         >
@@ -198,6 +201,7 @@ defineExpose({ formRef })
           outlined
           dense
           clearable
+          maxlength="256"
           class="col-8"
           @clear="() => (draft.destinationAddress = '')"
         >
