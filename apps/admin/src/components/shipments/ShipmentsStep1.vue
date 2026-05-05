@@ -67,6 +67,15 @@ function closeDatePopup(): void {
   datePopupRef.value?.hide()
 }
 
+/**
+ * @param val - QDate から渡される日付文字列、または再クリック時の null
+ */
+function onDeliveryDateUpdate(val: string | null): void {
+  if (val === null) return
+  draft.value.deliveryDate = val
+  closeDatePopup()
+}
+
 defineExpose({ formRef })
 </script>
 
@@ -116,13 +125,13 @@ defineExpose({ formRef })
             <q-icon :name="$icon('list-alt')" class="cursor-pointer" size="xs" color="secondary">
               <q-popup-proxy ref="datePopupRef" cover>
                 <q-date
-                  v-model="draft.deliveryDate"
+                  :model-value="draft.deliveryDate"
                   mask="YYYY-MM-DD"
                   :default-year-month="monthPrefix"
                   :navigation-min-year-month="monthPrefix"
                   :navigation-max-year-month="monthPrefix"
                   :options="dateOptions"
-                  @update:model-value="closeDatePopup"
+                  @update:model-value="onDeliveryDateUpdate"
                 />
               </q-popup-proxy>
             </q-icon>

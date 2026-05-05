@@ -473,6 +473,10 @@ ShipmentsPage.vue で追加した status を表示したい。
 ### QDate の日付解除で null になる
 
 ```markdown
-
+@apps/admin/src/components/shipments/ShipmentsStep1.vue
+配送日 draft.deliveryDate の入力で、q-popup-proxy を使って q-date で日付を選択させている。
+一度選択した日付を再クリックすると、選択が解除されるようではあるが、その際に model 値が null になる。
+これが zod.string のエラーを誘発するようである。
+null 値にならないように対応するか、q-date の再選択で解除にならないようにするか、どちらか実装できそうか？
 ```
 
