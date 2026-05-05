@@ -24,30 +24,19 @@ provide(shipmentDraftKey, draft)
 provide(shipmentStepKey, step)
 
 /**
- * 次へボタン
+ * 次へボタン。DB更新は行わず、バリデートと status 変更のみ実施する。
+ * STEP1: status 現状維持(new のまま)。STEP2: new → assigned。STEP3: assigned → submitted。
  */
 async function next(): Promise<void> {
   if (step.value === 1) {
     const ok = await step1Ref.value?.formRef?.validate()
     if (!ok) return
-  }
-  if (step.value === 2) {
+  } else if (step.value === 2) {
     const ok = await step2Ref.value?.formRef?.validate()
     if (!ok) return
-  }
-  Loading.show()
-  try {
-    if (!draft.value.id) {
-      const item = await shipmentsStore.create({ ...draft.value })
-      draft.value = { ...draft.value, ...item }
-    } else {
-      if (step.value === 2) draft.value.status = 'assigned'
-      if (step.value === 3) draft.value.status = 'submitted'
-      const item = await shipmentsStore.update(draft.value.id, { ...draft.value })
-      draft.value = { ...draft.value, ...item }
-    }
-  } finally {
-    Loading.hide()
+    if (draft.value.status === 'new') draft.value.status = 'assigned'
+  } else if (step.value === 3) {
+    if (draft.value.status === 'assigned') draft.value.status = 'submitted'
   }
   step.value++
 }
@@ -60,14 +49,47 @@ function back(): void {
 }
 
 /**
- * 保存ボタン(STEP4): 確認完了として status を completed に更新する。
+ * 保存ボタン(全ステップ): バリデート後に create/update してダイアログを閉じる。
+ * STEP2 では new → assigned、STEP3 では assigned → submitted へ status を変更する。
  */
 async function save(): Promise<void> {
-  if (!draft.value.id || !draft.value._etag) return
+  if (step.value === 1) {
+    const ok = await step1Ref.value?.formRef?.validate()
+    if (!ok) return
+  }
+  if (step.value === 2) {
+    const ok = await step2Ref.value?.formRef?.validate()
+    if (!ok) return
+    if (draft.value.status === 'new') draft.value.status = 'assigned'
+  }
+  if (step.value === 3) {
+    if (draft.value.status === 'assigned') draft.value.status = 'submitted'
+  }
+  Loading.show()
+  try {
+    if (!draft.value.id) {
+      await shipmentsStore.create({ ...draft.value })
+    } else {
+      await shipmentsStore.update(draft.value.id, { ...draft.value })
+    }
+    close()
+  } finally {
+    Loading.hide()
+  }
+}
+
+/**
+ * 承認ボタン(STEP4): status を completed に変更して create/update する。
+ */
+async function approve(): Promise<void> {
   draft.value.status = 'completed'
   Loading.show()
   try {
-    await shipmentsStore.update(draft.value.id, { ...draft.value })
+    if (!draft.value.id) {
+      await shipmentsStore.create({ ...draft.value })
+    } else {
+      await shipmentsStore.update(draft.value.id, { ...draft.value })
+    }
     close()
   } finally {
     Loading.hide()
@@ -78,7 +100,7 @@ async function save(): Promise<void> {
  * 差し戻しボタン(STEP4): status を reverted に戻して編集可能にする。
  */
 async function revert(): Promise<void> {
-  if (!draft.value.id || !draft.value._etag) return
+  if (!draft.value.id) return
   draft.value.status = 'reverted'
   Loading.show()
   try {
@@ -171,6 +193,13 @@ defineExpose<{ open(): void; openEdit(item: ShipmentsItem): void }>({ open, open
           <q-stepper-navigation class="row justify-end q-gutter-x-sm q-pa-md">
             <q-btn v-if="step !== 1" flat :label="$t('labels.back')" @click="back" />
             <q-btn
+              v-if="step === 4"
+              flat
+              color="warning"
+              :label="$t('shipments.labels.revert')"
+              @click="revert"
+            />
+            <q-btn
               v-if="step !== 4"
               color="primary"
               unelevated
@@ -179,14 +208,14 @@ defineExpose<{ open(): void; openEdit(item: ShipmentsItem): void }>({ open, open
             />
             <q-btn
               v-if="step === 4"
-              flat
-              color="warning"
-              :label="$t('shipments.labels.revert')"
-              @click="revert"
+              color="positive"
+              unelevated
+              :disable="draft.status !== 'submitted' && draft.status !== 'reverted'"
+              :label="$t('shipments.labels.approve')"
+              @click="approve"
             />
             <q-btn
-              v-if="step === 4"
-              color="primary"
+              color="secondary"
               unelevated
               :label="$t('labels.save')"
               @click="save"

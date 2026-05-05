@@ -425,3 +425,29 @@ ShipmentsPage.vue に 汎用マスタ ContainerTable.vue を参考にして、ac
     - それ以外の status であれば、STEP1から表示でOK。
 実装できそうか？
 ```
+
+まずはレールに沿った感じで編集機能を追加してくれた。
+
+```markdown
+現状では ShipmentsDialog.vue の STEP1 → STEP3では「次へ」ボタンでDB更新しているが、これを変更したい。
+- 「次へ」ボタンは status の変更だけを行い、DB更新はしない。
+    - STEP1の場合は現状維持。
+    - STEP2の場合、new であれば assigned へ変更。それ以外は現状維持。
+    - STEP3の場合、assigned であれば submitted へ変更。それ以外は現状維持。
+- STEP1 ~ STEP4に「保存」ボタンを設ける。保存ボタンは処理後にダイアログを閉じる。
+    - 各ステップではバリデートエラーが出なければ、create or update を行い、status は変更または維持する。
+    - STEP2の場合、status が new であれば、assigned へ変更する。
+    - STEP3の場合、status が　assigned であれば submitted へ変更。それ以外は現状維持。
+    - STEP4の場合、status は現状維持。
+- STEP4には「承認」ボタンを追加する。
+    - status が submitted であれば completed に変更して create or update を行う。
+    - フロー的にはあり得ないが、submitted or reverted でない場合はボタンを非活性にしておく。
+こんなイメージで修正できるか？
+```
+
+実装がいまいちっぽい。
+
+```markdown
+「次へ」ボタンは status の変更だけを行い、DB更新はしない。
+と指示をしたけど、そうはなってないぞ？
+```

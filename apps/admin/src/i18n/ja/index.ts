@@ -23,6 +23,7 @@ export default {
     step3: { title: '実績入力' },
     step4: { title: '確認' },
     labels: {
+      approve: '承認',
       revert: '差し戻し',
     },
     fields: {
