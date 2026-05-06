@@ -470,3 +470,69 @@ ShipmentsPage.vue で追加した status を表示したい。
 実装できるか？
 ```
 
+### QDate の日付解除で null になる
+
+```markdown
+@apps/admin/src/components/shipments/ShipmentsStep1.vue
+配送日 draft.deliveryDate の入力で、q-popup-proxy を使って q-date で日付を選択させている。
+一度選択した日付を再クリックすると、選択が解除されるようではあるが、その際に model 値が null になる。
+これが zod.string のエラーを誘発するようである。
+null 値にならないように対応するか、q-date の再選択で解除にならないようにするか、どちらか実装できそうか？
+```
+
+### STEP1の重複処理を削除
+
+```markdown
+@apps/admin/src/components/shipments/ShipmentsStep1.vue
+consignorName 関数は、useConsignorsStore に対応するメソッドがあるのでは？
+---
+consignorOptions なども、再利用性を考慮して Store の getters に移行した方が良いのでは？
+であれば、冗長的なので、composables/shipments に切り出しておくか？
+```
+
+### STEP1のバリデートを強化
+
+```markdown
+@apps/admin/src/configs/shipments/schemas.ts
+step1Schema だが、最大文字数を設定しておきたい。
+origin: max 80
+originAddress: max 256
+destination: max 80
+destinationAddress: max 256
+に調整してほしい。
+ShipmentsStep1.vue にも maxlength を設定したい。
+```
+
+### STEP3のバリデートを強化
+
+```markdown
+@apps/admin/src/components/shipments/ShipmentsStep3.vue
+QInput で min=0 を指定しているが、なぜこれで0以下の入力が制御されるかわかるか？
+---
+スピナーとはブラウザの機能なのか？
+では同様に max も指定できるのか？
+各項目で最大値の zod バリデーションを追加できるか？
+---
+- distance: 3000 
+- delivery-count: 100
+- highway-fee: 100000
+- waiting-time: 1440
+- working-time: 1440
+- parking-fee: 100000
+- cancel-fee: 200000
+- flat-rate-fee: 200000
+- other-fee1: 200000
+- other-fee2: 200000
+こんなものですな。
+---
+@apps/admin/src/configs/shipments/breakdown.ts
+i18n対応してない項目があるようだから、対応しておいて。
+```
+
+### テーブルの簡易フィルタ
+
+```markdown
+@apps/admin/src/pages/ShipmentsPage.vue
+取引先のテーブルにも簡易フィルタを追加したい。
+実装は @apps/admin/src/components/masters/ContainerTable.vue が参考になるかと。
+```

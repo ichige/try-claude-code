@@ -50,7 +50,17 @@ export default {
     required: '{field}は必須です',
     numeric: '{field}は数値で入力してください',
     maxLength: '{field}は{max}文字以内で入力してください',
+    integer: '整数で入力してください',
     minValue: '{min}以上の値を入力してください',
+    maxValue: '{max}以下の値を入力してください',
+    format: {
+      companyCode: '半角英数字・ハイフン・アンダースコアのみ使用できます',
+      invoiceNumber: 'T + 数値13桁の形式で入力してください（例: T0000000000000）',
+      postalCode: 'xxx-xxxx の形式で入力してください',
+      phone: '数字とハイフンのみ使用できます',
+      email: 'メールアドレスの形式で入力してください',
+      website: 'URL の形式で入力してください（例: https://example.com）',
+    },
   },
   tariffs: {
     step1: {

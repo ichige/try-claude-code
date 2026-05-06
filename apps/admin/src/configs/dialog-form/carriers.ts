@@ -15,18 +15,21 @@ export const label = t('navi.masters-container.carriers')
 /**
  * 入力値のスキーマ検証
  */
+const ml = (field: string, max: number) => t('validation.maxLength', { field, max })
+const f = (key: string) => t(`containers.fields.${key}`)
+
 export const schema = z.object({
-  companyName: z.string().min(1, t('validation.required', { field: t('containers.fields.companyName') })),
-  companyCode: z.string().default(''),
-  invoiceNumber: z.string().default(''),
-  lineId: z.string().default(''),
-  postalCode: z.string().default(''),
-  prefecture: z.string().default(''),
-  cityStreet: z.string().default(''),
-  building: z.string().default(''),
-  phone: z.string().default(''),
-  email: z.string().default(''),
-  notes: z.string().default(''),
+  companyName:   z.string().min(1, t('validation.required', { field: f('companyName') })).max(80, ml(f('companyName'), 80)),
+  companyCode:   z.string().max(80, ml(f('companyCode'), 80)).regex(/^[a-zA-Z0-9_-]*$/, t('validation.format.companyCode')).default(''),
+  invoiceNumber: z.string().refine((v) => v === '' || /^T\d{13}$/.test(v), t('validation.format.invoiceNumber')).default(''),
+  lineId:        z.string().default(''),
+  postalCode:    z.string().refine((v) => v === '' || /^\d{3}-\d{4}$/.test(v), t('validation.format.postalCode')).default(''),
+  prefecture:    z.string().max(16, ml(f('prefecture'), 16)).default(''),
+  cityStreet:    z.string().max(256, ml(f('cityStreet'), 256)).default(''),
+  building:      z.string().max(128, ml(f('building'), 128)).default(''),
+  phone:         z.string().max(16, ml(f('phone'), 16)).regex(/^[\d-]*$/, t('validation.format.phone')).default(''),
+  email:         z.string().refine((v) => v === '' || z.string().email().safeParse(v).success, t('validation.format.email')).default(''),
+  notes:         z.string().max(1024, ml(f('notes'), 1024)).default(''),
 })
 
 /**
@@ -75,6 +78,7 @@ export function buildItems(form: Record<string, string | number | boolean | null
           component: () => h(QInput, {
             modelValue: form['companyCode'], 'onUpdate:modelValue': upd('companyCode'),
             label: t('containers.fields.companyCode'), outlined: true, dense: true,
+            maxlength: '80', rules: [zodRule(schema.shape['companyCode'] as z.ZodType)],
           }, { prepend: () => h(QIcon, { name: resolveIcon('companyCode'), size: 'xs' }) }),
         },
         {
@@ -82,6 +86,7 @@ export function buildItems(form: Record<string, string | number | boolean | null
           component: () => h(QInput, {
             modelValue: form['invoiceNumber'], 'onUpdate:modelValue': upd('invoiceNumber'),
             label: t('containers.fields.invoiceNumber'), outlined: true, dense: true,
+            maxlength: '14', rules: [zodRule(schema.shape['invoiceNumber'] as z.ZodType)],
           }, { prepend: () => h(QIcon, { name: resolveIcon('invoiceNumber'), size: 'xs' }) }),
         },
       ],
@@ -94,6 +99,7 @@ export function buildItems(form: Record<string, string | number | boolean | null
           component: () => h(QInput, {
             modelValue: form['postalCode'], 'onUpdate:modelValue': upd('postalCode'),
             label: t('containers.fields.postalCode'), outlined: true, dense: true,
+            maxlength: '8', rules: [zodRule(schema.shape['postalCode'] as z.ZodType)],
           }, { prepend: () => h(QIcon, { name: resolveIcon('postalCode'), size: 'xs' }) }),
         },
         {
@@ -101,6 +107,7 @@ export function buildItems(form: Record<string, string | number | boolean | null
           component: () => h(QInput, {
             modelValue: form['prefecture'], 'onUpdate:modelValue': upd('prefecture'),
             label: t('containers.fields.prefecture'), outlined: true, dense: true,
+            maxlength: '16', rules: [zodRule(schema.shape['prefecture'] as z.ZodType)],
           }, { prepend: () => h(QIcon, { name: resolveIcon('prefecture'), size: 'xs' }) }),
         },
         {
@@ -108,6 +115,7 @@ export function buildItems(form: Record<string, string | number | boolean | null
           component: () => h(QInput, {
             modelValue: form['cityStreet'], 'onUpdate:modelValue': upd('cityStreet'),
             label: t('containers.fields.cityStreet'), outlined: true, dense: true,
+            maxlength: '256', rules: [zodRule(schema.shape['cityStreet'] as z.ZodType)],
           }, { prepend: () => h(QIcon, { name: resolveIcon('cityStreet'), size: 'xs' }) }),
         },
         {
@@ -115,6 +123,7 @@ export function buildItems(form: Record<string, string | number | boolean | null
           component: () => h(QInput, {
             modelValue: form['building'], 'onUpdate:modelValue': upd('building'),
             label: t('containers.fields.building'), outlined: true, dense: true,
+            maxlength: '128', rules: [zodRule(schema.shape['building'] as z.ZodType)],
           }, { prepend: () => h(QIcon, { name: resolveIcon('building'), size: 'xs' }) }),
         },
       ],
@@ -127,6 +136,7 @@ export function buildItems(form: Record<string, string | number | boolean | null
           component: () => h(QInput, {
             modelValue: form['phone'], 'onUpdate:modelValue': upd('phone'),
             label: t('containers.fields.phone'), outlined: true, dense: true,
+            maxlength: '16', rules: [zodRule(schema.shape['phone'] as z.ZodType)],
           }, { prepend: () => h(QIcon, { name: resolveIcon('phone'), size: 'xs' }) }),
         },
         {
@@ -134,6 +144,7 @@ export function buildItems(form: Record<string, string | number | boolean | null
           component: () => h(QInput, {
             modelValue: form['email'], 'onUpdate:modelValue': upd('email'),
             label: t('containers.fields.email'), outlined: true, dense: true,
+            rules: [zodRule(schema.shape['email'] as z.ZodType)],
           }, { prepend: () => h(QIcon, { name: resolveIcon('email'), size: 'xs' }) }),
         },
         {
@@ -153,6 +164,7 @@ export function buildItems(form: Record<string, string | number | boolean | null
           component: () => h(QInput, {
             modelValue: form['notes'], 'onUpdate:modelValue': upd('notes'),
             label: t('containers.fields.notes'), type: 'textarea', outlined: true, dense: true, rows: '3',
+            maxlength: '1024', rules: [zodRule(schema.shape['notes'] as z.ZodType)],
           }),
         },
       ],

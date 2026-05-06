@@ -190,12 +190,14 @@ defineExpose<{ open(): void; openEdit(item: ShipmentsItem): void }>({ open, open
         </q-step>
 
         <template #navigation>
-          <q-stepper-navigation class="row justify-end q-gutter-x-sm q-pa-md">
+          <q-stepper-navigation class="row justify-end q-gutter-x-sm">
             <!-- 戻るボタンは共通(completedでは非表示) -->
             <q-btn
               v-if="step !== 1 && draft.status !== 'completed'"
-              flat
+              unelevated
+              color="grey-5"
               :label="$t('labels.back')"
+              :icon="$icon('previous')"
               @click="back"
             />
             <!-- 次へボタンはSTEP3まで -->
@@ -203,7 +205,9 @@ defineExpose<{ open(): void; openEdit(item: ShipmentsItem): void }>({ open, open
               v-if="step !== 4"
               color="primary"
               unelevated
+              size="md"
               :label="$t('labels.next')"
+              :icon="$icon('next')"
               @click="next"
             />
             <!-- 保存ボタンは completed 以外で表示 -->
@@ -211,7 +215,9 @@ defineExpose<{ open(): void; openEdit(item: ShipmentsItem): void }>({ open, open
               v-if="draft.status !== 'completed'"
               color="secondary"
               unelevated
+              size="md"
               :label="$t('labels.save')"
+              :icon="$icon('save')"
               @click="save"
             />
             <!-- 承認ボタンは STEP4 かつ completed 以外で表示 -->
@@ -221,6 +227,7 @@ defineExpose<{ open(): void; openEdit(item: ShipmentsItem): void }>({ open, open
               unelevated
               :disable="draft.status !== 'submitted' && draft.status !== 'reverted'"
               :label="$t('shipments.labels.approve')"
+              :icon="$icon('approve')"
               @click="approve"
             />
             <!-- 差し戻しボタンは STEP4 かつ completed で表示 -->
@@ -229,6 +236,7 @@ defineExpose<{ open(): void; openEdit(item: ShipmentsItem): void }>({ open, open
               flat
               color="warning"
               :label="$t('shipments.labels.revert')"
+              :icon="$icon('revert')"
               @click="revert"
             />
           </q-stepper-navigation>

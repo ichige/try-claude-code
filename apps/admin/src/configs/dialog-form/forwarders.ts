@@ -15,10 +15,13 @@ export const label = t('navi.masters-container.forwarders')
 /**
  * 入力値のスキーマ検証
  */
+const ml = (field: string, max: number) => t('validation.maxLength', { field, max })
+const f = (key: string) => t(`containers.fields.${key}`)
+
 export const schema = z.object({
-  prefecture: z.string().min(1, t('validation.required', { field: t('containers.fields.prefecture') })),
-  city: z.string().min(1, t('validation.required', { field: t('containers.fields.city') })),
-  notes: z.string().default(''),
+  prefecture: z.string().min(1, t('validation.required', { field: f('prefecture') })).max(16, ml(f('prefecture'), 16)),
+  city:       z.string().min(1, t('validation.required', { field: f('city') })).max(80, ml(f('city'), 80)),
+  notes:      z.string().max(1024, ml(f('notes'), 1024)).default(''),
 })
 
 /**
@@ -51,7 +54,7 @@ export function buildItems(form: Record<string, string | number | boolean | null
           component: () => h(QInput, {
             modelValue: form['prefecture'], 'onUpdate:modelValue': upd('prefecture'),
             label: t('containers.fields.prefecture'), outlined: true, dense: true,
-            rules: [zodRule(schema.shape['prefecture'] as z.ZodType)],
+            maxlength: '16', rules: [zodRule(schema.shape['prefecture'] as z.ZodType)],
           }, { prepend: () => h(QIcon, { name: resolveIcon('prefecture'), size: 'xs' }) }),
         },
         {
@@ -59,7 +62,7 @@ export function buildItems(form: Record<string, string | number | boolean | null
           component: () => h(QInput, {
             modelValue: form['city'], 'onUpdate:modelValue': upd('city'),
             label: t('containers.fields.city'), outlined: true, dense: true,
-            rules: [zodRule(schema.shape['city'] as z.ZodType)],
+            maxlength: '80', rules: [zodRule(schema.shape['city'] as z.ZodType)],
           }, { prepend: () => h(QIcon, { name: resolveIcon('city'), size: 'xs' }) }),
         },
       ],
@@ -72,6 +75,7 @@ export function buildItems(form: Record<string, string | number | boolean | null
           component: () => h(QInput, {
             modelValue: form['notes'], 'onUpdate:modelValue': upd('notes'),
             label: t('containers.fields.notes'), type: 'textarea', outlined: true, dense: true, rows: '3',
+            maxlength: '1024', rules: [zodRule(schema.shape['notes'] as z.ZodType)],
           }),
         },
       ],
