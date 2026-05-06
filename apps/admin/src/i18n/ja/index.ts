@@ -58,6 +58,7 @@ export default {
       postalCode: 'xxx-xxxx の形式で入力してください',
       phone: '数字とハイフンのみ使用できます',
       email: 'メールアドレスの形式で入力してください',
+      website: 'URL の形式で入力してください（例: https://example.com）',
     },
   },
   tariffs: {
