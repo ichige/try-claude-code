@@ -57,3 +57,14 @@ apps/admin/src/configs/dialog-form/consignees.ts
 - notes: max 1024
   変更できるか？
 ```
+
+## forwarders
+
+```markdown
+@apps/admin/src/configs/dialog-form/forwarders.ts
+バリデートに以下の条件と追加して強化したい。
+- prefecture: max 16
+- city: max 80
+- notes: 1024
+  変更できるか？
+```
