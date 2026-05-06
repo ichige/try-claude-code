@@ -13,6 +13,7 @@ const consignorsStore = useConsignorsStore()
 const { columns } = useShipmentsColumns()
 
 const dialogRef = ref<InstanceType<typeof ShipmentsDialog> | null>(null)
+const filter = ref('')
 
 /** URLパスの取引ID(オプション) */
 const consignorId = computed(() => route.params.consignorId as string | undefined)
@@ -75,6 +76,12 @@ function statusColor(status: ShipmentStatus): string {
           :label="$t('labels.create')"
           @click="dialogRef?.open()"
         />
+        <q-space />
+        <q-input v-model="filter" :placeholder="$t('labels.search')" dense outlined clearable>
+          <template #prepend>
+            <q-icon :name="$icon('search')" />
+          </template>
+        </q-input>
       </q-card-actions>
 
       <!-- 一覧テーブル -->
@@ -82,6 +89,7 @@ function statusColor(status: ShipmentStatus): string {
         <q-table
           :rows="rows"
           :columns="columns"
+          :filter="filter"
           row-key="id"
           flat
           bordered
