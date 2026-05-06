@@ -194,7 +194,8 @@ defineExpose<{ open(): void; openEdit(item: ShipmentsItem): void }>({ open, open
             <!-- 戻るボタンは共通(completedでは非表示) -->
             <q-btn
               v-if="step !== 1 && draft.status !== 'completed'"
-              flat
+              unelevated
+              color="grey-5"
               :label="$t('labels.back')"
               :icon="$icon('previous')"
               @click="back"

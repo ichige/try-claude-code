@@ -15,3 +15,10 @@ export const step1Schema = z.object({
 export const step2Schema = z.object({
   carrierId: z.string().min(1, t('validation.required', { field: t('shipments.fields.carrierId') })),
 })
+
+/**
+ * @param max - 数量の上限値
+ * @returns 0 以上 max 以下の数値バリデーションスキーマ
+ */
+export const breakdownQuantitySchema = (max: number) =>
+  z.number().min(0, t('validation.minValue', { min: 0 })).max(max, t('validation.maxValue', { max }))

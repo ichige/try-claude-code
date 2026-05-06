@@ -502,3 +502,29 @@ destinationAddress: max 256
 に調整してほしい。
 ShipmentsStep1.vue にも maxlength を設定したい。
 ```
+
+### STEP3のバリデートを強化
+
+```markdown
+@apps/admin/src/components/shipments/ShipmentsStep3.vue
+QInput で min=0 を指定しているが、なぜこれで0以下の入力が制御されるかわかるか？
+---
+スピナーとはブラウザの機能なのか？
+では同様に max も指定できるのか？
+各項目で最大値の zod バリデーションを追加できるか？
+---
+- distance: 3000 
+- delivery-count: 100
+- highway-fee: 100000
+- waiting-time: 1440
+- working-time: 1440
+- parking-fee: 100000
+- cancel-fee: 200000
+- flat-rate-fee: 200000
+- other-fee1: 200000
+- other-fee2: 200000
+こんなものですな。
+---
+@apps/admin/src/configs/shipments/breakdown.ts
+i18n対応してない項目があるようだから、対応しておいて。
+```

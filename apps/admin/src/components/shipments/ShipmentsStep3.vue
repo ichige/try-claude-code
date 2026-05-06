@@ -5,6 +5,8 @@ import type { BreakdownDef } from 'src/configs/shipments/breakdown'
 import { shipmentDraftKey } from './shipment-draft'
 import { BREAKDOWN_DEFS } from 'src/configs/shipments/breakdown'
 import { toNonNegative } from 'src/utils/clamp'
+import { zodRule } from 'src/utils/zod-rule'
+import { breakdownQuantitySchema } from 'src/configs/shipments/schemas'
 
 const draft = inject(shipmentDraftKey)!
 
@@ -29,8 +31,10 @@ const rows = computed(() =>
         :suffix="row.def.suffix"
         type="number"
         min="0"
+        :max="row.def.max"
         outlined
         dense
+        :rules="[zodRule(breakdownQuantitySchema(row.def.max))]"
         class="col-6"
         input-class="text-right"
         @update:model-value="(v) => (row.item.quantity = toNonNegative(v))"
